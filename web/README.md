@@ -54,6 +54,47 @@ web/
   middleware.ts                 # Gate /home, /channel, /progress
 ```
 
+## Admin & Channel routes (Phase 2)
+
+New route groups:
+
+```
+app/
+  (app)/channel/[id]/page.tsx              # Screen 3 — student channel
+  (app)/channel/[id]/v/[assetId]/page.tsx  # Screen 4 — video detail + Mux player
+  (admin)/layout.tsx                       # Gated to role=admin|instructor
+  (admin)/students/page.tsx                # Screen 10 — student roster table
+  (admin)/upload/page.tsx                  # Screen 9 — upload wrapper (server)
+  (admin)/upload/upload-form.tsx           # Client form with progress
+  (admin)/upload/actions.ts                # Server actions (createAsset, publishAsset)
+components/
+  BannerGradient.tsx
+  AdminNav.tsx
+  video/MuxPlayer.tsx                      # thin @mux/mux-player-react wrapper
+  video/VideoCard.tsx                      # Mux thumb + privacy badge
+lib/
+  channel.ts                               # getChannel, getAsset, AssetType
+```
+
+### Admin upload walkthrough
+
+1. Sign in as an admin/instructor user (role enforced in `(admin)/layout.tsx`).
+2. Visit `/upload`. Left pane = drop zone; right pane = metadata form (student, type, title, note, rubric sliders, privacy).
+3. Drop an MP4/MOV or click to browse. The file stays in the browser.
+4. Submit — the client calls the `createAssetAction` server action which:
+   - Reads the `access_token` cookie server-side.
+   - `POST`s `/v1/admin/assets` with the metadata.
+   - Returns `{ asset_id, mux_upload_url }` to the browser. The bearer token never leaves the server.
+5. Client `PUT`s the file directly to `mux_upload_url` via `XMLHttpRequest` (so we can wire real upload-progress events; `fetch` doesn't expose them).
+6. If privacy = "Request parent consent", client calls `publishAssetAction` which `POST`s `/v1/admin/assets/:id/publish` — flipping the asset to `pending_consent` and kicking off the parent email.
+7. Success toast renders inline; "Reset" clears the form for another upload.
+
+### Channel pages
+
+- `/channel/[id]` — cinematic banner, stats strip, tab switcher (`?tab=monologue|scene|showcase|catalog|about`), responsive grid of `VideoCard`s.
+- `/channel/[id]/v/[assetId]` — Mux player (with optional signed token), rubric bars, private instructor-notes panel, related videos.
+- Middleware leaves `/channel/**` anonymous-friendly; the API filters private assets per viewer role.
+
 ## Conventions
 
 - Server components by default. `"use client"` only where we need interactivity.

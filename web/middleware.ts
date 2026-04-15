@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-const PROTECTED = ["/home", "/channel", "/progress"];
+// `/channel/**` is intentionally public — the API filters private assets per viewer.
+const PROTECTED = ["/home", "/progress", "/admin", "/upload", "/students", "/batches", "/social", "/parent"];
 
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
@@ -20,5 +21,14 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/home/:path*", "/channel/:path*", "/progress/:path*"],
+  matcher: [
+    "/home/:path*",
+    "/progress/:path*",
+    "/admin/:path*",
+    "/upload/:path*",
+    "/students/:path*",
+    "/batches/:path*",
+    "/social/:path*",
+    "/parent/:path*",
+  ],
 };

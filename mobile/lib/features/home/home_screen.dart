@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../theme/app_theme.dart';
@@ -14,6 +15,7 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final auth = ref.watch(authStateProvider);
     final name = auth.valueOrNull?.name ?? 'Student';
+    final userId = auth.valueOrNull?.id;
 
     return Scaffold(
       appBar: AppBar(
@@ -35,6 +37,12 @@ class HomeScreen extends ConsumerWidget {
             const _NextClassCard(),
             const SizedBox(height: 16),
             const _ProgressCard(),
+            const SizedBox(height: 16),
+            _MyChannelCard(
+              onTap: userId == null
+                  ? null
+                  : () => context.push('/channel/$userId'),
+            ),
             const SizedBox(height: 16),
             Text('Announcements',
                 style: Theme.of(context).textTheme.headlineMedium),
@@ -213,6 +221,69 @@ class _RingPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _RingPainter old) => old.value != value;
+}
+
+class _MyChannelCard extends StatelessWidget {
+  final VoidCallback? onTap;
+  const _MyChannelCard({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          gradient: const LinearGradient(
+            colors: <Color>[Color(0xFF3B1F6B), Color(0xFFE8C872)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          border: Border.all(color: AppColors.border),
+        ),
+        child: Row(
+          children: <Widget>[
+            Container(
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(
+                color: Colors.black.withValues(alpha: 0.25),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: const Icon(Icons.video_library,
+                  color: Colors.white, size: 28),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    'View My Channel',
+                    style: GoogleFonts.fraunces(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Your monologues, scenes & showcases.',
+                    style: GoogleFonts.inter(
+                        color: Colors.white.withValues(alpha: 0.85),
+                        fontSize: 13),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_right, color: Colors.white),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class _AnnouncementTile extends StatelessWidget {

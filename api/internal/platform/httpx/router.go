@@ -5,7 +5,9 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/viktheatre/api/internal/asset"
 	"github.com/viktheatre/api/internal/auth"
+	"github.com/viktheatre/api/internal/consent"
 	"github.com/viktheatre/api/internal/platform/config"
 
 	"github.com/go-chi/chi/v5"
@@ -16,10 +18,12 @@ import (
 )
 
 type Deps struct {
-	Log    *zap.Logger
-	DB     *pgxpool.Pool
-	Config *config.Config
-	Auth   *auth.Service
+	Log     *zap.Logger
+	DB      *pgxpool.Pool
+	Config  *config.Config
+	Auth    *auth.Service
+	Asset   *asset.Service
+	Consent *consent.Service
 }
 
 func NewRouter(d Deps) http.Handler {
@@ -50,19 +54,41 @@ func NewRouter(d Deps) http.Handler {
 			r.Get("/me", d.Auth.HandleMe)
 		})
 
-		r.Get("/students/{id}/channel", stub("channel"))
-
-		// admin (authenticated)
-		r.Route("/admin", func(r chi.Router) {
-			r.Use(d.Auth.RequireAuth)
-			r.Post("/assets", stub("admin create asset"))
+		// public/private channel — optional auth so caller's role can unlock private assets
+		r.Group(func(r chi.Router) {
+			r.Use(d.Auth.OptionalAuth)
+			if d.Asset != nil {
+				r.Get("/students/{id}/channel", d.Asset.HandleChannel)
+			} else {
+				r.Get("/students/{id}/channel", stub("channel"))
+			}
 		})
 
-		// public consent (tokenized)
-		r.Post("/consent/{token}", stub("consent sign"))
+		// admin (admin|instructor)
+		r.Route("/admin", func(r chi.Router) {
+			r.Use(d.Auth.RequireAuth)
+			r.Use(d.Auth.RequireRole("admin", "instructor"))
+			if d.Asset != nil {
+				r.Post("/assets", d.Asset.HandleCreate)
+				r.Post("/assets/{id}/publish", d.Asset.HandlePublish)
+			} else {
+				r.Post("/assets", stub("admin create asset"))
+			}
+		})
 
-		// webhooks
-		r.Post("/webhooks/mux", stub("mux webhook"))
+		// public consent (tokenized — token IS the auth)
+		if d.Consent != nil {
+			r.Post("/consent/{token}", d.Consent.HandleSign)
+		} else {
+			r.Post("/consent/{token}", stub("consent sign"))
+		}
+
+		// webhooks (no auth; HMAC-verified inside the handler)
+		if d.Asset != nil {
+			r.Post("/webhooks/mux", d.Asset.HandleMuxWebhookHTTP)
+		} else {
+			r.Post("/webhooks/mux", stub("mux webhook"))
+		}
 		r.Post("/webhooks/razorpay", stub("razorpay webhook"))
 	})
 

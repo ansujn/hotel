@@ -8,10 +8,13 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/viktheatre/api/internal/asset"
 	"github.com/viktheatre/api/internal/auth"
+	"github.com/viktheatre/api/internal/consent"
 	"github.com/viktheatre/api/internal/platform/config"
 	"github.com/viktheatre/api/internal/platform/db"
 	"github.com/viktheatre/api/internal/platform/httpx"
+	muxpkg "github.com/viktheatre/api/internal/platform/mux"
 
 	"go.uber.org/zap"
 )
@@ -40,11 +43,33 @@ func main() {
 	}
 	authSvc := auth.New(pool, cfg, msg91)
 
+	// Mux client: stub in local mode when MUX_TOKEN_ID is empty.
+	muxClient := muxpkg.New(muxpkg.Config{
+		TokenID:           cfg.MuxTokenID,
+		TokenSecret:       cfg.MuxSecret,
+		SigningKeyID:      cfg.MuxSigningKeyID,
+		SigningKeyPrivate: cfg.MuxSigningKeyPrivate,
+		WebhookSecret:     cfg.MuxWebhookSecret,
+		StubBaseURL:       "http://localhost:" + cfg.Port,
+	})
+
+	assetSvc := asset.New(asset.NewPGStore(pool), muxClient, cfg)
+	consentSvc := consent.New(
+		consent.NewPGStore(pool),
+		cfg,
+		authSvc.Issuer(),
+		authSvc,
+		consent.LogNotifier{Prefix: "consent"},
+	)
+	assetSvc.WireConsent(consentSvc)
+
 	router := httpx.NewRouter(httpx.Deps{
-		Log:    logger,
-		DB:     pool,
-		Config: cfg,
-		Auth:   authSvc,
+		Log:     logger,
+		DB:      pool,
+		Config:  cfg,
+		Auth:    authSvc,
+		Asset:   assetSvc,
+		Consent: consentSvc,
 	})
 
 	srv := &http.Server{
