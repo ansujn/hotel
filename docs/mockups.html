@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Vik Theatre — Full Screen Mockups</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0B0B0F; --surface:#15151C; --surface2:#1f1f2b; --surface3:#2a2a38;
+  --primary:#E8C872; --accent:#8B5CF6; --text:#F5F5F7;
+  --muted:#9CA3AF; --success:#10B981; --danger:#EF4444; --info:#60A5FA;
+  --border:rgba(255,255,255,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0;font-family:Inter,sans-serif}
+body{background:#05050a;color:var(--text);padding:40px 20px;line-height:1.5}
+.wrap{max-width:1400px;margin:0 auto}
+.serif,h1,h2,h3,h4{font-family:Fraunces,serif}
+.pageHeader{text-align:center;padding:30px 0 50px;border-bottom:1px solid var(--border);margin-bottom:50px}
+.pageHeader h1{font-size:52px;background:linear-gradient(135deg,#fff,#E8C872);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:900}
+.pageHeader p{color:var(--muted);margin-top:12px}
+.screenBlock{margin-bottom:80px}
+.screenLabel{display:flex;align-items:baseline;gap:16px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px dashed var(--border)}
+.screenLabel .n{font-family:Fraunces;color:var(--primary);font-size:36px;font-weight:900;letter-spacing:-.02em}
+.screenLabel h2{font-size:24px;flex:1}
+.screenLabel .tag{font-size:11px;padding:4px 10px;border-radius:999px;background:var(--surface);border:1px solid var(--border);color:var(--muted);letter-spacing:.1em;text-transform:uppercase}
+.screen{background:var(--bg);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 30px 60px rgba(0,0,0,.5)}
+.browserBar{display:flex;align-items:center;gap:8px;padding:10px 14px;background:#0a0a0f;border-bottom:1px solid var(--border)}
+.browserBar .dots{display:flex;gap:6px}
+.browserBar .dots span{width:11px;height:11px;border-radius:50%}
+.browserBar .dots span:nth-child(1){background:#ff5f57}
+.browserBar .dots span:nth-child(2){background:#febc2e}
+.browserBar .dots span:nth-child(3){background:#28c840}
+.browserBar .url{flex:1;background:var(--surface);padding:6px 12px;border-radius:6px;font-size:12px;color:var(--muted)}
+
+/* ========== TOP NAV (shared) ========== */
+.topnav{display:flex;align-items:center;justify-content:space-between;padding:16px 32px;border-bottom:1px solid var(--border);background:rgba(11,11,15,.8)}
+.logo{font-family:Fraunces;font-size:22px;font-weight:900}
+.logo span{color:var(--primary)}
+.navlinks{display:flex;gap:24px}
+.navlinks a{color:var(--muted);text-decoration:none;font-size:14px}
+.navlinks a.active{color:var(--text)}
+.navright{display:flex;align-items:center;gap:14px}
+.bell{width:36px;height:36px;border-radius:50%;background:var(--surface);display:flex;align-items:center;justify-content:center}
+.avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#8B5CF6,#E8C872);display:flex;align-items:center;justify-content:center;font-weight:700;color:#000}
+.btn{padding:10px 18px;border-radius:8px;font-weight:600;font-size:13px;cursor:pointer;border:0}
+.btn.primary{background:var(--primary);color:#000}
+.btn.ghost{background:transparent;color:var(--text);border:1px solid var(--border)}
+.btn.accent{background:var(--accent);color:#fff}
+
+/* ========== GENERIC ========== */
+.badge{display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;letter-spacing:.08em;font-weight:700}
+.badge.priv{background:rgba(239,68,68,.15);color:var(--danger)}
+.badge.pub{background:rgba(16,185,129,.15);color:var(--success)}
+.badge.pend{background:rgba(232,200,114,.15);color:var(--primary)}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:var(--surface2);font-size:12px}
+
+/* ========== SCREEN 1 LOGIN ========== */
+.loginBody{display:grid;grid-template-columns:1.1fr 1fr;min-height:540px}
+.loginLeft{background:linear-gradient(135deg,#8B5CF6 0%,#3b2b6b 60%,#0b0b0f 100%);padding:60px;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between}
+.loginLeft::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 80% 30%,rgba(232,200,114,.2),transparent 50%)}
+.loginLeft h1{font-family:Fraunces;font-size:48px;font-weight:900;line-height:1.05;position:relative;z-index:2}
+.loginLeft h1 em{font-style:italic;color:var(--primary)}
+.loginLeft p{color:rgba(255,255,255,.8);margin-top:16px;position:relative;z-index:2;font-size:16px}
+.loginLeft .quote{position:relative;z-index:2;border-left:2px solid var(--primary);padding-left:16px;margin-top:40px}
+.loginLeft .quote p{font-style:italic;font-size:14px;color:rgba(255,255,255,.7)}
+.loginRight{padding:60px;display:flex;flex-direction:column;justify-content:center}
+.loginRight h3{font-family:Fraunces;font-size:28px;margin-bottom:8px}
+.loginRight .sub{color:var(--muted);margin-bottom:28px}
+.roleTabs{display:grid;grid-template-columns:1fr 1fr 1fr;background:var(--surface);border-radius:10px;padding:4px;margin-bottom:24px}
+.roleTabs div{padding:10px;text-align:center;border-radius:8px;font-size:13px;color:var(--muted);cursor:pointer}
+.roleTabs div.active{background:var(--primary);color:#000;font-weight:600}
+.field{margin-bottom:16px}
+.field label{font-size:12px;color:var(--muted);display:block;margin-bottom:6px}
+.field input{width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:12px 14px;border-radius:8px;font-size:14px}
+.otpRow{display:flex;gap:8px;margin-bottom:16px}
+.otpRow .box{flex:1;background:var(--surface);border:1px solid var(--border);height:48px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:Fraunces;font-size:20px;font-weight:700;color:var(--primary)}
+
+/* ========== SCREEN 2 DASHBOARD ========== */
+.dashBody{padding:32px}
+.welcome{background:linear-gradient(135deg,rgba(139,92,246,.2),rgba(232,200,114,.1));border:1px solid var(--border);border-radius:16px;padding:28px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:center}
+.welcome h2{font-family:Fraunces;font-size:28px}
+.welcome p{color:var(--muted);margin-top:6px}
+.nextClass{text-align:right}
+.nextClass .when{font-family:Fraunces;font-size:22px;color:var(--primary)}
+.dashGrid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:20px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px}
+.card h4{font-family:Fraunces;font-size:16px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center}
+.card h4 .more{font-size:12px;color:var(--muted);cursor:pointer}
+.heroVideo{height:220px;background:linear-gradient(135deg,#3b2b6b,#0b0b0f),url('') center/cover;border-radius:10px;position:relative;overflow:hidden;display:flex;align-items:flex-end;padding:16px;margin-bottom:12px}
+.heroVideo::before{content:"▶";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:60px;height:60px;border-radius:50%;background:rgba(232,200,114,.9);color:#000;display:flex;align-items:center;justify-content:center;font-size:22px}
+.heroVideo .caption{position:relative;z-index:2;color:#fff}
+.heroVideo .caption .t{font-family:Fraunces;font-size:18px;font-weight:700}
+.heroVideo .caption .m{font-size:12px;color:rgba(255,255,255,.7)}
+.ring2{width:140px;height:140px;border-radius:50%;background:conic-gradient(var(--primary) 0 72%,var(--surface2) 72% 100%);display:flex;align-items:center;justify-content:center;margin:0 auto;position:relative}
+.ring2::before{content:"";position:absolute;inset:12px;border-radius:50%;background:var(--surface)}
+.ring2 span{position:relative;font-family:Fraunces;font-size:32px;font-weight:700}
+.ring2 small{position:relative;display:block;color:var(--muted);font-size:11px}
+.feedItem{padding:12px 0;border-bottom:1px solid var(--border);font-size:13px}
+.feedItem:last-child{border-bottom:0}
+.feedItem .t{color:var(--muted);font-size:11px;margin-bottom:4px}
+
+/* ========== SCREEN 3 CHANNEL ========== */
+.channelBanner{height:280px;background:linear-gradient(135deg,#8B5CF6 0%,#E8C872 100%);position:relative;overflow:hidden}
+.channelBanner::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 20% 60%,rgba(0,0,0,.5),transparent 60%),linear-gradient(180deg,transparent 50%,#0b0b0f 100%)}
+.channelHead{display:flex;gap:24px;align-items:flex-end;padding:0 40px;margin-top:-60px;position:relative;z-index:2}
+.channelAvatar{width:140px;height:140px;border-radius:50%;background:linear-gradient(135deg,#8B5CF6,#E8C872);border:4px solid var(--bg);display:flex;align-items:center;justify-content:center;font-family:Fraunces;font-size:52px;font-weight:900;color:#000}
+.channelInfo{padding-bottom:14px;flex:1}
+.channelInfo h2{font-family:Fraunces;font-size:34px}
+.channelInfo .stats{display:flex;gap:18px;color:var(--muted);font-size:13px;margin-top:6px}
+.channelInfo .stats b{color:var(--text)}
+.channelTabs{display:flex;gap:8px;padding:20px 40px 0;border-bottom:1px solid var(--border)}
+.channelTabs div{padding:12px 20px;font-size:14px;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+.channelTabs div.active{color:var(--text);border-bottom-color:var(--primary)}
+.videoGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;padding:24px 40px}
+.vcard{background:var(--surface);border-radius:10px;overflow:hidden}
+.vcard .thumb{height:140px;background:linear-gradient(135deg,#2a2a38,#1f1f2b);position:relative}
+.vcard .thumb::after{content:"▶";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:28px;opacity:.5}
+.vcard .thumb .dur{position:absolute;bottom:6px;right:6px;background:rgba(0,0,0,.8);padding:2px 6px;border-radius:4px;font-size:10px}
+.vcard .meta{padding:10px 12px}
+.vcard .meta .t{font-size:13px;font-weight:600;margin-bottom:4px}
+.vcard .meta .s{font-size:11px;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
+
+/* ========== SCREEN 4 VIDEO DETAIL ========== */
+.vdBody{display:grid;grid-template-columns:2fr 1fr;gap:24px;padding:28px}
+.player{background:#000;border-radius:12px;aspect-ratio:16/9;position:relative;display:flex;align-items:center;justify-content:center}
+.player::after{content:"▶";width:80px;height:80px;border-radius:50%;background:rgba(232,200,114,.9);color:#000;display:flex;align-items:center;justify-content:center;font-size:32px}
+.player .ctrls{position:absolute;bottom:14px;left:14px;right:14px;display:flex;align-items:center;gap:10px;color:#fff;font-size:11px}
+.player .ctrls .track{flex:1;height:4px;background:rgba(255,255,255,.2);border-radius:2px;position:relative}
+.player .ctrls .track::after{content:"";position:absolute;left:0;top:0;bottom:0;width:35%;background:var(--primary);border-radius:2px}
+.vdTitle{font-family:Fraunces;font-size:26px;margin-top:18px}
+.vdMeta{display:flex;gap:12px;color:var(--muted);font-size:13px;margin:6px 0 18px}
+.rubricBox{background:var(--surface);border-radius:12px;padding:18px;margin-top:16px}
+.rubricBox h4{font-family:Fraunces;margin-bottom:12px}
+.rubBar{display:flex;align-items:center;gap:10px;font-size:12px;margin-bottom:8px}
+.rubBar .l{width:140px;color:var(--muted)}
+.rubBar .t{flex:1;height:6px;background:var(--surface2);border-radius:3px;overflow:hidden}
+.rubBar .f{height:100%;background:linear-gradient(90deg,var(--accent),var(--primary))}
+.sidecard{background:var(--surface);border-radius:12px;padding:18px;margin-bottom:14px}
+.sidecard h5{font-family:Fraunces;margin-bottom:10px;font-size:14px}
+.noteBubble{background:var(--surface2);padding:12px;border-radius:10px;font-size:13px;margin-bottom:10px;border-left:3px solid var(--primary)}
+.noteBubble .who{font-size:11px;color:var(--primary);margin-bottom:4px}
+
+/* ========== SCREEN 5 BATCH ========== */
+.batchBody{padding:32px}
+.batchHead{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:24px}
+.batchHead h2{font-family:Fraunces;font-size:30px}
+.batchHead .sub{color:var(--muted);margin-top:4px;font-size:14px}
+.rosterGrid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px}
+.student{background:var(--surface);border-radius:12px;padding:16px;text-align:center}
+.student .av{width:64px;height:64px;border-radius:50%;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-weight:700;font-family:Fraunces;font-size:22px;color:#000}
+.student .nm{font-size:13px;font-weight:600}
+.student .at{font-size:11px;color:var(--muted);margin-top:2px}
+
+/* ========== SCREEN 6 PROGRESS ========== */
+.progressBody{padding:32px;display:grid;grid-template-columns:1fr 1.3fr;gap:24px}
+.radarWrap{background:var(--surface);border-radius:14px;padding:30px;text-align:center}
+.radarSvg{margin:10px auto}
+.timeline{background:var(--surface);border-radius:14px;padding:24px}
+.timelineItem{border-left:2px solid var(--border);padding:12px 0 12px 20px;position:relative}
+.timelineItem::before{content:"";position:absolute;left:-7px;top:18px;width:12px;height:12px;border-radius:50%;background:var(--primary)}
+.timelineItem .d{font-family:Fraunces;color:var(--primary);font-size:13px}
+.timelineItem .t{font-weight:600;margin:4px 0}
+.timelineItem .n{color:var(--muted);font-size:13px}
+
+/* ========== SCREEN 7 PARENT ========== */
+.parentBody{padding:32px}
+.parentTop{background:linear-gradient(135deg,rgba(16,185,129,.12),rgba(232,200,114,.05));border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:22px;display:flex;justify-content:space-between;align-items:center}
+.parentTop h2{font-family:Fraunces;font-size:24px}
+.parentTop p{color:var(--muted);font-size:14px;margin-top:4px}
+.parentAlert{background:rgba(232,200,114,.1);border:1px solid var(--primary);border-radius:12px;padding:20px;margin-bottom:22px;display:flex;gap:16px;align-items:center}
+.parentAlert .icn{width:48px;height:48px;border-radius:50%;background:var(--primary);color:#000;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.parentAlert h5{font-family:Fraunces;margin-bottom:4px}
+.parentAlert p{color:var(--muted);font-size:13px}
+.parentAlert .btn{margin-left:auto}
+.parentGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+
+/* ========== SCREEN 8 CONSENT ========== */
+.consentBody{padding:40px 60px;max-width:760px;margin:0 auto}
+.consentSteps{display:flex;gap:12px;margin-bottom:32px}
+.cStep{flex:1;padding:12px;border-radius:8px;background:var(--surface);text-align:center;font-size:12px;color:var(--muted);border:1px solid var(--border)}
+.cStep.active{background:var(--primary);color:#000;font-weight:600;border-color:var(--primary)}
+.consentPreview{background:var(--surface);border-radius:14px;padding:24px;margin-bottom:24px;display:flex;gap:20px}
+.consentPreview .thumb{width:200px;height:120px;background:linear-gradient(135deg,#8B5CF6,#3b2b6b);border-radius:10px;position:relative;flex-shrink:0}
+.consentPreview .thumb::after{content:"▶";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:32px}
+.consentPreview h4{font-family:Fraunces;font-size:20px;margin-bottom:6px}
+.consentPreview .desc{color:var(--muted);font-size:13px}
+.consentScope{background:var(--surface);border-radius:14px;padding:4px 24px;margin-bottom:22px}
+.scopeRow{display:flex;justify-content:space-between;align-items:center;padding:18px 0;border-bottom:1px solid var(--border)}
+.scopeRow:last-child{border-bottom:0}
+.scopeRow .title{font-weight:600}
+.scopeRow .hint{color:var(--muted);font-size:12px;margin-top:3px}
+.sw{width:44px;height:24px;background:var(--primary);border-radius:999px;position:relative;flex-shrink:0}
+.sw::after{content:"";position:absolute;top:2px;right:2px;width:20px;height:20px;background:#000;border-radius:50%}
+.sw.off{background:var(--surface2)}
+.sw.off::after{right:auto;left:2px;background:#888}
+.consentSign{background:linear-gradient(135deg,rgba(139,92,246,.15),rgba(232,200,114,.08));border:1px solid var(--primary);border-radius:14px;padding:24px}
+.consentSign h5{font-family:Fraunces;margin-bottom:10px}
+
+/* ========== SCREEN 9 UPLOAD ========== */
+.uploadBody{padding:32px;display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.dropzone{background:var(--surface);border:2px dashed var(--primary);border-radius:14px;padding:60px 30px;text-align:center;display:flex;flex-direction:column;justify-content:center}
+.dropzone .icn{font-size:48px;margin-bottom:14px}
+.dropzone h4{font-family:Fraunces;font-size:22px;margin-bottom:8px}
+.dropzone p{color:var(--muted);font-size:13px}
+.uploadForm{background:var(--surface);border-radius:14px;padding:24px}
+.formRow{margin-bottom:16px}
+.formRow label{font-size:12px;color:var(--muted);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.1em}
+.formRow select,.formRow input,.formRow textarea{width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:10px 12px;border-radius:8px;font-size:13px;font-family:inherit}
+.formRow textarea{min-height:70px;resize:vertical}
+.formRow .slide{display:flex;align-items:center;gap:10px;margin-bottom:6px;font-size:12px}
+.formRow .slide span{width:100px;color:var(--muted)}
+.formRow .slide .track{flex:1;height:6px;background:var(--surface2);border-radius:3px;position:relative}
+.formRow .slide .track::after{content:"";position:absolute;left:0;top:0;bottom:0;width:var(--w,60%);background:linear-gradient(90deg,var(--accent),var(--primary));border-radius:3px}
+.formRow .slide b{width:30px;text-align:right;color:var(--primary)}
+.privacyPicker{display:flex;gap:8px;margin-top:4px}
+.privacyPicker div{flex:1;padding:10px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);text-align:center;font-size:12px;cursor:pointer}
+.privacyPicker div.active{background:var(--primary);color:#000;font-weight:700;border-color:var(--primary)}
+
+/* ========== SCREEN 10 ADMIN STUDENTS ========== */
+.adminBody{padding:32px}
+.adminToolbar{display:flex;justify-content:space-between;margin-bottom:20px;gap:12px}
+.adminSearch{flex:1;background:var(--surface);border:1px solid var(--border);padding:10px 14px;border-radius:8px;display:flex;gap:10px;align-items:center;color:var(--muted);font-size:13px}
+table{width:100%;border-collapse:collapse;background:var(--surface);border-radius:12px;overflow:hidden}
+th{text-align:left;padding:14px 16px;background:var(--surface2);font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:600}
+td{padding:14px 16px;border-top:1px solid var(--border);font-size:13px;vertical-align:middle}
+td .sm-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#8B5CF6,#E8C872);display:inline-flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:13px;margin-right:8px;vertical-align:middle}
+
+/* ========== SCREEN 11 BATCHES KANBAN ========== */
+.kanban{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;padding:32px}
+.kcol{background:var(--surface);border-radius:12px;padding:16px}
+.kcol h4{font-family:Fraunces;margin-bottom:4px;display:flex;justify-content:space-between;align-items:center}
+.kcol .ct{font-size:11px;color:var(--muted);margin-bottom:12px}
+.kcard{background:var(--surface2);padding:10px 12px;border-radius:8px;margin-bottom:8px;font-size:13px;display:flex;align-items:center;gap:8px}
+.kcard .sm-av{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#8B5CF6,#E8C872);display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:12px}
+
+/* ========== SCREEN 12 NOTIFICATIONS ========== */
+.notifBody{padding:32px;max-width:760px;margin:0 auto}
+.notifItem{background:var(--surface);border-radius:12px;padding:16px;margin-bottom:10px;display:flex;gap:14px;align-items:flex-start}
+.notifItem .ic{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.notifItem .bd{flex:1}
+.notifItem h5{font-size:14px;margin-bottom:3px}
+.notifItem p{color:var(--muted);font-size:13px}
+.notifItem .tm{color:var(--muted);font-size:11px}
+
+/* ========== SCREEN 13 LANDING ========== */
+.landingHero{min-height:520px;background:linear-gradient(135deg,rgba(11,11,15,.85),rgba(11,11,15,.3)),linear-gradient(135deg,#8B5CF6 0%,#3b2b6b 60%,#E8C872 100%);padding:100px 60px;display:flex;flex-direction:column;justify-content:center;position:relative}
+.landingHero::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 80% 50%,rgba(232,200,114,.25),transparent 50%)}
+.landingHero .inner{max-width:700px;position:relative;z-index:2}
+.landingHero h1{font-family:Fraunces;font-size:68px;line-height:1.02;font-weight:900;margin-bottom:20px}
+.landingHero h1 em{font-style:italic;color:var(--primary)}
+.landingHero p{font-size:18px;color:rgba(255,255,255,.85);margin-bottom:28px;max-width:520px}
+.heroCta{display:flex;gap:12px}
+.sectionBlock{padding:60px}
+.sectionBlock h2{font-family:Fraunces;font-size:40px;margin-bottom:40px;text-align:center}
+.classesGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.classCard{background:var(--surface);border-radius:14px;overflow:hidden;border:1px solid var(--border)}
+.classCard .pic{height:140px;background:linear-gradient(135deg,#8B5CF6,#E8C872)}
+.classCard:nth-child(2) .pic{background:linear-gradient(135deg,#E8C872,#ef4444)}
+.classCard:nth-child(3) .pic{background:linear-gradient(135deg,#10B981,#8B5CF6)}
+.classCard:nth-child(4) .pic{background:linear-gradient(135deg,#60A5FA,#E8C872)}
+.classCard .pad{padding:18px}
+.classCard h4{font-family:Fraunces;font-size:18px;margin-bottom:6px}
+.classCard .desc{color:var(--muted);font-size:13px;margin-bottom:10px}
+.classCard .price{color:var(--primary);font-weight:700}
+
+/* ========== SCREEN 14 CLASSES LIST ========== */
+.classList{padding:40px 60px}
+.classRow{background:var(--surface);border-radius:14px;padding:24px;margin-bottom:14px;display:grid;grid-template-columns:auto 1fr auto auto;gap:24px;align-items:center;border:1px solid var(--border)}
+.classRow .tag{background:rgba(139,92,246,.2);color:#c4b5fd;padding:6px 14px;border-radius:999px;font-size:12px}
+.classRow h4{font-family:Fraunces;font-size:20px}
+.classRow .sub{color:var(--muted);font-size:13px;margin-top:2px}
+.classRow .fee{font-family:Fraunces;font-size:24px;color:var(--primary);font-weight:700}
+
+/* ========== SCREEN 15 ENQUIRY ========== */
+.enquiryBody{padding:60px;max-width:640px;margin:0 auto}
+.enquiryBody h2{font-family:Fraunces;font-size:36px;margin-bottom:10px;text-align:center}
+.enquiryBody .subt{color:var(--muted);text-align:center;margin-bottom:36px}
+.enqForm{background:var(--surface);border-radius:14px;padding:30px}
+
+/* ========== SCREEN 16 BLOG ========== */
+.blogBody{padding:40px 60px}
+.blogFeat{display:grid;grid-template-columns:1.3fr 1fr;gap:24px;margin-bottom:32px}
+.blogFeat .big{background:var(--surface);border-radius:14px;overflow:hidden}
+.blogFeat .big .pic{height:320px;background:linear-gradient(135deg,#8B5CF6,#E8C872)}
+.blogFeat .big .pad{padding:24px}
+.blogFeat .big h3{font-family:Fraunces;font-size:28px;margin-bottom:10px}
+.blogList{display:flex;flex-direction:column;gap:14px}
+.blogItem{background:var(--surface);border-radius:12px;padding:16px;display:flex;gap:14px}
+.blogItem .pic{width:120px;height:90px;border-radius:8px;background:linear-gradient(135deg,#3b2b6b,#8B5CF6);flex-shrink:0}
+.blogItem h5{font-family:Fraunces;font-size:15px;margin-bottom:4px}
+.blogItem .d{color:var(--muted);font-size:12px}
+
+/* ========== SCREEN 17 SOCIAL HUB ========== */
+.hubBody{display:grid;grid-template-columns:260px 1fr 320px;min-height:700px}
+.hubLib{background:var(--surface);border-right:1px solid var(--border);padding:20px;overflow:auto}
+.hubLib h5{font-family:Fraunces;font-size:14px;margin-bottom:14px}
+.libItem{background:var(--surface2);border-radius:8px;padding:8px;margin-bottom:8px;display:flex;gap:10px;align-items:center;font-size:12px;cursor:pointer}
+.libItem .pic{width:48px;height:48px;background:linear-gradient(135deg,#8B5CF6,#E8C872);border-radius:6px;flex-shrink:0}
+.hubComp{padding:30px;border-right:1px solid var(--border)}
+.hubComp h4{font-family:Fraunces;font-size:22px;margin-bottom:20px}
+.postPreview{background:var(--surface);border-radius:14px;padding:20px;margin-bottom:18px}
+.postHead{display:flex;gap:10px;align-items:center;margin-bottom:12px}
+.postPic{height:320px;background:linear-gradient(135deg,#8B5CF6,#E8C872);border-radius:10px;margin-bottom:12px}
+.captionBox{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px;color:var(--text);font-size:13px;min-height:70px}
+.channelPick{display:flex;gap:10px;margin-top:14px}
+.chBtn{flex:1;background:var(--surface2);padding:12px;border-radius:8px;text-align:center;font-size:12px;border:2px solid transparent}
+.chBtn.on{border-color:var(--primary)}
+.hubCal{padding:20px;background:var(--surface)}
+.hubCal h5{font-family:Fraunces;margin-bottom:14px}
+.calDay{background:var(--surface2);border-radius:8px;padding:10px 12px;margin-bottom:8px;font-size:12px}
+.calDay .d{color:var(--primary);font-family:Fraunces;font-size:13px;margin-bottom:4px}
+.calDay .tt{display:flex;align-items:center;gap:8px}
+.calDay .tdot{width:6px;height:6px;border-radius:50%;background:var(--success)}
+
+/* ========== SCREEN 18 AUTO CLIP ========== */
+.clipBody{padding:32px}
+.clipTop{background:var(--surface);border-radius:14px;padding:20px;display:flex;gap:20px;align-items:center;margin-bottom:24px}
+.clipTop .pic{width:220px;height:140px;background:linear-gradient(135deg,#8B5CF6,#3b2b6b);border-radius:10px;position:relative;flex-shrink:0}
+.clipTop .pic::after{content:"▶";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:32px}
+.clipTop h4{font-family:Fraunces;font-size:22px;margin-bottom:6px}
+.clipTop .desc{color:var(--muted);font-size:13px;margin-bottom:12px}
+.clipSuggestions{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.clipCard{background:var(--surface);border-radius:14px;overflow:hidden;border:1px solid var(--border)}
+.clipCard .vert{aspect-ratio:9/16;background:linear-gradient(135deg,#8B5CF6,#E8C872);position:relative}
+.clipCard:nth-child(2) .vert{background:linear-gradient(135deg,#ef4444,#E8C872)}
+.clipCard:nth-child(3) .vert{background:linear-gradient(135deg,#10B981,#8B5CF6)}
+.clipCard .vert::after{content:"▶";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:32px}
+.clipCard .vert .stamp{position:absolute;top:10px;left:10px;background:rgba(0,0,0,.7);padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700}
+.clipCard .pad{padding:14px}
+.clipCard h5{font-size:14px;margin-bottom:6px}
+.clipCard .meta{color:var(--muted);font-size:11px;margin-bottom:10px}
+
+/* Section label big */
+.sectionDivider{padding:40px 0 30px;text-align:center;border-top:2px dashed var(--border);margin-top:40px}
+.sectionDivider .lbl{color:var(--primary);font-family:Fraunces;letter-spacing:.3em;font-size:14px}
+.sectionDivider h2{font-size:40px;margin-top:8px;font-family:Fraunces;font-weight:900}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="pageHeader">
+  <h1>Vik Theatre — Full Screen Mockups</h1>
+  <p>18 pages · desktop views · click each to open in Figma or v0.dev and build</p>
+</div>
+
+<!-- ========== SECTION A: STUDENT PLATFORM ========== -->
+<div class="sectionDivider" style="border-top:0;padding-top:0">
+  <div class="lbl">PART A</div>
+  <h2>Student Platform</h2>
+</div>
+
+<!-- SCREEN 1 -->
+<div class="screenBlock">
+  <div class="screenLabel"><div class="n">01</div><h2>Login / Role Switcher</h2><div class="tag">Shared entry</div></div>
+  <div class="screen">
+    <div class="browserBar"><div class="dots"><span></span><span></span><span></span></div><div class="url">🔒  app.viktheatre.in/login</div></div>
+    <div class="loginBody">
+      <div class="loginLeft">
+        <div>
+          <div style="color:var(--primary);letter-spacing:.25em;font-size:12px;margin-bottom:16px;position:relative;z-index:2">VIK THEATRE</div>
+          <h1>Where every voice<br/>finds its <em>stage</em>.</h1>
+          <p>Your monologues, your progress, your moments — all in one place.</p>
+        </div>
+        <div class="quote">
+          <p>"Drama is life with the dull bits cut out." — Alfred Hitchcock</p>
+        </div>
+      </div>
+      <div class="loginRight">
+        <h3>Welcome back</h3>
+        <div class="sub">Sign in to continue your journey</div>
+        <div class="roleTabs"><div>Student</div><div class="active">Parent</div><div>Instructor</div></div>
+        <div class="field"><label>Mobile number</label><input value="+91 98765 43210"></div>
+        <div class="field"><label>Enter OTP sent via SMS</label>
+          <div class="otpRow"><div class="box">4</div><div class="box">9</div><div class="box">2</div><div class="box">7</div><div class="box">1</div><div class="box">8</div></div>
+        </div>
+        <button class="btn primary" style="width:100%;padding:14px">Continue</button>
+        <div style="color:var(--muted);font-size:12px;margin-top:14px;text-align:center">Didn't receive? <span style="color:var(--primary);cursor:pointer">Resend in 0:23</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 2 -->
+<div class="screenBlock">
+  <div class="screenLabel"><div class="n">02</div><h2>Student Dashboard</h2><div class="tag">Home</div></div>
+  <div class="screen">
+    <div class="browserBar"><div class="dots"><span></span><span></span><span></span></div><div class="url">🔒  app.viktheatre.in/home</div></div>
+    <div class="topnav">
+      <div class="logo">Vik<span>.</span></div>
+      <div class="navlinks"><a class="active">Home</a><a>My Channel</a><a>Batch</a><a>Progress</a></div>
+      <div class="navright"><div class="bell">🔔</div><div class="avatar">A</div></div>
+    </div>
+    <div class="dashBody">
+      <div class="welcome">
+        <div>
+          <h2>Welcome back, Aarav 👋</h2>
+          <p>You have 1 new monologue uploaded and a class tomorrow</p>
+        </div>
+        <div class="nextClass">
+          <div style="color:var(--muted);font-size:12px;letter-spacing:.1em">NEXT CLASS</div>
+          <div class="when">Tomorrow · 6:30 PM</div>
+          <button class="btn primary" style="margin-top:8px">Join on Zoom</button>
+        </div>
+      </div>
+      <div class="dashGrid">
+        <div class="card">
+          <h4>Latest Upload <span class="more">View all →</span></h4>
+          <div class="heroVideo"><div class="caption"><div class="t">Hamlet · Act III, Scene I</div><div class="m">Uploaded Apr 13 · 2:34 · <span class="badge pub">PUBLIC</span></div></div></div>
+          <div style="color:var(--muted);font-size:13px">Instructor notes: "Strong presence. Watch pacing at line 47."</div>
+        </div>
+        <div class="card">
+          <h4>Progress</h4>
+          <div class="ring2"><span>72%<small>overall</small></span></div>
+          <div style="margin-top:14px;font-size:12px;color:var(--muted);text-align:center">↑ 8% from last month</div>
+        </div>
+        <div class="card">
+          <h4>Announcements</h4>
+          <div class="feedItem"><div class="t">YESTERDAY · Vik</div>Showcase rehearsal moved to Saturday 4 PM</div>
+          <div class="feedItem"><div class="t">2 DAYS AGO · Vik</div>Pick your monologue for Showcase 2026</div>
+          <div class="feedItem"><div class="t">APR 10</div>Parent-teacher meet scheduled</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 3 CHANNEL -->
+<div class="screenBlock">
+  <div class="screenLabel"><div class="n">03</div><h2>Student Channel (centerpiece)</h2><div class="tag">Public-facing</div></div>
+  <div class="screen">
+    <div class="browserBar"><div class="dots"><span></span><span></span><span></span></div><div class="url">🌐  viktheatre.in/c/aarav-sharma</div></div>
+    <div class="topnav">
+      <div class="logo">Vik<span>.</span></div>
+      <div class="navlinks"><a>Home</a><a class="active">My Channel</a><a>Batch</a><a>Progress</a></div>
+      <div class="navright"><div class="bell">🔔</div><div class="avatar">A</div></div>
+    </div>
+    <div class="channelBanner"></div>
+    <div class="channelHead">
+      <div class="channelAvatar">A</div>
+      <div class="channelInfo">
+        <h2>Aarav Sharma</h2>
+        <div class="stats"><span><b>12</b> pieces</span><span><b>Thursday Evening</b> batch</span><span>Since <b>Jan 2026</b></span><span>Instructor: <b>Vik Prasad</b></span></div>
+      </div>
+      <button class="btn primary">Share Channel</button>
+      <button class="btn ghost">Edit</button>
+    </div>
+    <div class="channelTabs"><div class="active">Monologues</div><div>Scenes</div><div>Showcases</div><div>Catalog</div><div>About</div></div>
+    <div class="videoGrid">
+      <div class="vcard"><div class="thumb"><div class="dur">2:34</div></div><div class="meta"><div class="t">Hamlet · Act III</div><div class="s"><span>Apr 13</span><span class="badge pub">PUBLIC</span></div></div></div>
+      <div class="vcard"><div class="thumb"><div class="dur">1:48</div></div><div class="meta"><div class="t">Intro Piece</div><div class="s"><span>Apr 06</span><span class="badge priv">PRIVATE</span></div></div></div>
+      <div class="vcard"><div class="thumb"><div class="dur">0:52</div></div><div class="meta"><div class="t">Diction Drill #4</div><div class="s"><span>Apr 02</span><span class="badge pend">PENDING</span></div></div></div>
+      <div class="vcard"><div class="thumb"><div class="dur">3:21</div></div><div class="meta"><div class="t">Showcase 2026</div><div class="s"><span>Mar 28</span><span class="badge pub">PUBLIC</span></div></div></div>
+      <div class="vcard"><div class="thumb"><div class="dur">1:12</div></div><div class="meta"><div class="t">Freestyle</div><div class="s"><span>Mar 20</span><span class="badge priv">PRIVATE</span></div></div></div>
+      <div class="vcard"><div class="thumb"><div class="dur">2:45</div></div><div class="meta"><div class="t">Kabir Doha</div><div class="s"><span>Mar 14</span><span class="badge pub">PUBLIC</span></div></div></div>
+      <div class="vcard"><div class="thumb"><div class="dur">1:58</div></div><div class="meta"><div class="t">Cold Reading</div><div class="s"><span>Mar 08</span><span class="badge priv">PRIVATE</span></div></div></div>
+      <div class="vcard"><div class="thumb"><div class="dur">4:02</div></div><div class="meta"><div class="t">Group Scene</div><div class="s"><span>Feb 28</span><span class="badge pub">PUBLIC</span></div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 4 -->
+<div class="screenBlock">
+  <div class="screenLabel"><div class="n">04</div><h2>Video Detail</h2><div class="tag">Deep view</div></div>
+  <div class="screen">
+    <div class="browserBar"><div class="dots"><span></span><span></span><span></span></div><div class="url">🌐  viktheatre.in/c/aarav-sharma/hamlet-act-3</div></div>
+    <div class="topnav">
+      <div class="logo">Vik<span>.</span></div>
+      <div class="navlinks"><a>Home</a><a class="active">My Channel</a><a>Batch</a><a>Progress</a></div>
+      <div class="navright"><div class="bell">🔔</div><div class="avatar">A</div></div>
+    </div>
+    <div class="vdBody">
+      <div>
+        <div class="player"><div class="ctrls"><span>▶</span><span>1:04</span><div class="track"></div><span>2:34</span><span>⚙</span><span>⛶</span></div></div>
+        <h3 class="vdTitle">Hamlet · Act III, Scene I — "To be or not to be"</h3>
+        <div class="vdMeta"><span>Uploaded Apr 13, 2026</span>·<span>Instructor: Vik Prasad</span>·<span class="badge pub">PUBLIC</span></div>
+        <div class="rubricBox">
+          <h4>Rubric scores for this piece</h4>
+          <div class="rubBar"><div class="l">Diction</div><div class="t"><div class="f" style="width:85%"></div></div><div>85</div></div>
+          <div class="rubBar"><div class="l">Stage Presence</div><div class="t"><div class="f" style="width:78%"></div></div><div>78</div></div>
+          <div class="rubBar"><div class="l">Memorization</div><div class="t"><div class="f" style="width:92%"></div></div><div>92</div></div>
+          <div class="rubBar"><div class="l">Emotional Truth</div><div class="t"><div class="f" style="width:70%"></div></div><div>70</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="sidecard">
+          <h5>Instructor Notes <span class="badge priv" style="margin-left:6px">PRIVATE</span></h5>
+          <div class="noteBubble"><div class="who">Vik · Apr 13</div>Excellent command of text. Pacing flattens around line 47 — try beat-work exercise before next take.</div>
+          <div class="noteBubble"><div class="who">Vik · Apr 13</div>Use the full breath on "undiscovered country." Don't rush the caesura.</div>
+        </div>
+        <div class="sidecard">
+          <h5>Related from Aarav</h5>
+          <div style="display:flex;gap:10px;align-items:center;padding:8px 0"><div style="width:60px;height:40px;background:linear-gradient(135deg,#8B5CF6,#3b2b6b);border-radius:6px"></div><div style="font-size:12px"><div style="font-weight:600">Showcase 2026</div><div style="color:var(--muted)">3:21</div></div></div>
+          <div style="display:flex;gap:10px;align-items:center;padding:8px 0"><div style="width:60px;height:40px;background:linear-gradient(135deg,#E8C872,#8B5CF6);border-radius:6px"></div><div style="font-size:12px"><div style="font-weight:600">Kabir Doha</div><div style="color:var(--muted)">2:45</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 5 BATCH -->
+<div class="screenBlock">
+  <div class="screenLabel"><div class="n">05</div><h2>Batch Page</h2><div class="tag">Roster</div></div>
+  <div class="screen">
+    <div class="browserBar"><div class="dots"><span></span><span></span><span></span></div><div class="url">🔒  app.viktheatre.in/batch/thursday-evening</div></div>
+    <div class="topnav"><div class="logo">Vik<span>.</span></div><div class="navlinks"><a>Home</a><a>My Channel</a><a class="active">Batch</a><a>Progress</a></div><div class="navright"><div class="bell">🔔</div><div class="avatar">A</div></div></div>
+    <div class="batchBody">
+      <div class="batchHead">
+        <div>
+          <h2>Thursday Evening Batch</h2>
+          <div class="sub">Thursdays 6:30–8:30 PM · 10 students · Instructor: Vik Prasad</div>
+        </div>
+        <div style="display:flex;gap:10px"><button class="btn ghost">Calendar</button><button class="btn primary">Announcement</button></div>
+      </div>
+      <div class="rosterGrid">
+        <div class="student"><div class="av" style="background:linear-gradient(135deg,#8B5CF6,#E8C872)">A</div><div class="nm">Aarav Sharma</div><div class="at">Attendance 96%</div></div>
+        <div class="student"><div class="av" style="background:linear-gradient(135deg,#ef4444,#E8C872)">P</div><div class="nm">Priya Menon</div><div class="at">Attendance 100%</div></div>
+        <div class="student"><div class="av" style="background:linear-gradient(135deg,#10B981,#8B5CF6)">K</div><div class="nm">Kabir Singh</div><div class="at">Attendance 88%</div></div>
+        <div class="student"><div class="av" style="background:linear-gradient(135deg,#60A5FA,#E8C872)">M</div><div class="nm">Meera Iyer</div><div class="at">Attendance 92%</div></div>
+        <div class="student"><div class="av" style="background:linear-gradient(135deg,#E8C872,#ef4444)">R</div><div class="nm">Rohan Desai</div><div class="at">Attendance 80%</div></div>
+        <div class="student"><div class="av" style="background:linear-gradient(135deg,#8B5CF6,#60A5FA)">S</div><div class="nm">Sanya Kapoor</div><div class="at">Attendance 96%</div></div>
+        <div class="student"><div class="av" style="background:linear-gradient(135deg,#10B981,#E8C872)">V</div><div class="nm">Vihaan Reddy</div><div class="at">Attendance 100%</div></div>
+        <div class="student"><div class="av" style="background:linear-gradient(135deg,#ef4444,#8B5CF6)">A</div><div class="nm">Ananya Rao</div><div class="at">Attendance 90%</div></div>
+        <div class="student"><div class="av" style="background:linear-gradient(135deg,#60A5FA,#10B981)">I</div><div class="nm">Ishaan Nair</div><div class="at">Attendance 84%</div></div>
+        <div class="student"><div class="av" style="background:linear-gradient(135deg,#E8C872,#8B5CF6)">T</div><div class="nm">Tara Joshi</div><div class="at">Attendance 98%</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 6 PROGRESS -->
+<div class="screenBlock">
+  <div class="screenLabel"><div class="n">06</div><h2>Progress / Catalog</h2><div class="tag">Skill growth</div></div>
+  <div class="screen">
+    <div class="browserBar"><div class="dots"><span></span><span></span><span></span></div><div class="url">🔒  app.viktheatre.in/progress</div></div>
+    <div class="topnav"><div class="logo">Vik<span>.</span></div><div class="navlinks"><a>Home</a><a>My Channel</a><a>Batch</a><a class="active">Progress</a></div><div class="navright"><div class="bell">🔔</div><div class="avatar">A</div></div></div>
+    <div class="progressBody">
+      <div class="radarWrap">
+        <h3 style="font-family:Fraunces;margin-bottom:10px">Skill Radar</h3>
+        <div style="color:var(--muted);font-size:13px;margin-bottom:10px">April 2026 assessment</div>
+        <svg viewBox="0 0 260 260" width="260" height="260" class="radarSvg">
+          <defs>
+            <radialGradient id="g1"><stop offset="0" stop-color="#E8C872" stop-opacity=".6"/><stop offset="1" stop-color="#8B5CF6" stop-opacity=".1"/></radialGradient>
+          </defs>
+          <polygon points="130,30 220,90 200,200 60,200 40,90" fill="none" stroke="#2a2a38" stroke-width="1"/>
+          <polygon points="130,60 195,100 180,180 80,180 65,100" fill="none" stroke="#2a2a38" stroke-width="1"/>
+          <polygon points="130,95 170,115 160,160 100,160 90,115" fill="none" stroke="#2a2a38" stroke-width="1"/>
+          <polygon points="130,50 210,96 190,190 70,190 50,96" fill="url(#g1)" stroke="#E8C872" stroke-width="2"/>
+          <text x="130" y="20" fill="#F5F5F7" font-size="11" text-anchor="middle">Diction 80</text>
+          <text x="240" y="92" fill="#F5F5F7" font-size="11" text-anchor="middle">Presence 65</text>
+          <text x="220" y="215" fill="#F5F5F7" font-size="11" text-anchor="middle">Memory 72</text>
+          <text x="40" y="215" fill="#F5F5F7" font-size="11" text-anchor="middle">Confidence 78</text>
+          <text x="20" y="92" fill="#F5F5F7" font-size="11" text-anchor="middle">Improv 58</text>
+        </svg>
+        <button class="btn primary" style="margin-top:14px">Download PDF report</button>
+      </div>
+      <div class="timeline">
+        <h3 style="font-family:Fraunces;margin-bottom:16px">Assessment Timeline</h3>
+        <div class="timelineItem"><div class="d">APR 10 · 2026</div><div class="t">Monthly Rubric Update</div><div class="n">Diction +5, Confidence +3. Biggest growth: stage presence after showcase rehearsals.</div></div>
+        <div class="timelineItem"><div class="d">MAR 25 · 2026</div><div class="t">Showcase Dress Rehearsal</div><div class="n">Observed strong memorization. Work on breath support.</div></div>
+        <div class="timelineItem"><div class="d">MAR 10 · 2026</div><div class="t">Mid-Term Assessment</div><div class="n">Overall 64% → 68%. Ready to attempt a full Shakespeare monologue.</div></div>
+        <div class="timelineItem"><div class="d">FEB 14 · 2026</div><div class="t">Baseline Rubric</div><div class="n">Initial assessment across 5 dimensions. Natural improviser, diction needs work.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 7 PARENT -->
+<div class="screenBlock">
+  <div class="screenLabel"><div class="n">07</div><h2>Parent Dashboard</h2><div class="tag">Parent role</div></div>
+  <div class="screen">
+    <div class="browserBar"><div class="dots"><span></span><span></span><span></span></div><div class="url">🔒  app.viktheatre.in/parent</div></div>
+    <div class="topnav"><div class="logo">Vik<span>.</span></div><div class="navlinks"><a class="active">Overview</a><a>Consent Center</a><a>Fees</a><a>Messages</a></div><div class="navright"><div class="bell" style="position:relative">🔔<span style="position:absolute;top:-2px;right:-2px;background:var(--danger);color:#fff;font-size:9px;padding:2px 5px;border-radius:999px">2</span></div><div class="avatar" style="background:linear-gradient(135deg,#10B981,#8B5CF6)">R</div></div></div>
+    <div class="parentBody">
+      <div class="parentTop">
+        <div>
+          <h2>Aarav's Journey</h2>
+          <p>Thursday Evening Batch · 3 months enrolled · Instructor: Vik Prasad</p>
+        </div>
+        <button class="btn ghost">Switch child</button>
+      </div>
+      <div class="parentAlert">
+        <div class="icn">⚠️</div>
+        <div>
+          <h5>2 new items need your consent</h5>
+          <p>A monologue and a class photo are awaiting your approval to be shared publicly.</p>
+        </div>
+        <button class="btn primary">Review →</button>
+      </div>
+      <div class="parentGrid">
+        <div class="card">
+          <h4>Recent Uploads</h4>
+          <div style="display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)"><div style="width:60px;height:44px;background:linear-gradient(135deg,#8B5CF6,#E8C872);border-radius:6px"></div><div style="flex:1;font-size:12px"><div style="font-weight:600">Hamlet · Act III</div><div style="color:var(--muted);margin-top:2px"><span class="badge pub">PUBLIC</span> Apr 13</div></div></div>
+          <div style="display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)"><div style="width:60px;height:44px;background:linear-gradient(135deg,#E8C872,#ef4444);border-radius:6px"></div><div style="flex:1;font-size:12px"><div style="font-weight:600">Diction Drill #4</div><div style="color:var(--muted);margin-top:2px"><span class="badge pend">PENDING</span> Apr 02</div></div></div>
+        </div>
+        <div class="card">
+          <h4>Attendance</h4>
+          <div style="text-align:center;padding:10px 0"><div style="font-family:Fraunces;font-size:42px;color:var(--success);font-weight:700">96%</div><div style="color:var(--muted);font-size:13px">This term</div></div>
+          <div style="font-size:12px;color:var(--muted)">12 of 13 classes attended</div>
+        </div>
+        <div class="card">
+          <h4>Fees</h4>
+          <div style="font-family:Fraunces;font-size:28px;color:var(--primary);margin-top:10px">₹0</div>
+          <div style="color:var(--muted);font-size:13px;margin:4px 0 12px">No dues</div>
+          <div style="font-size:12px;color:var(--muted)">Next invoice: 1 May 2026 (₹4,500)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 8 CONSENT -->
+<div class="screenBlock">
+  <div class="screenLabel"><div class="n">08</div><h2>Parent Consent Flow ⭐</h2><div class="tag">DPDP-critical</div></div>
+  <div class="screen">
+    <div class="browserBar"><div class="dots"><span></span><span></span><span></span></div><div class="url">🔒  app.viktheatre.in/consent/a8f23</div></div>
+    <div class="topnav"><div class="logo">Vik<span>.</span></div><div style="color:var(--muted);font-size:13px">Language: <b style="color:var(--primary)">English</b> · हिन्दी</div><div class="navright"><div class="avatar" style="background:linear-gradient(135deg,#10B981,#8B5CF6)">R</div></div></div>
+    <div class="consentBody">
+      <div style="text-align:center;margin-bottom:24px"><div style="color:var(--primary);letter-spacing:.2em;font-size:12px;margin-bottom:6px">CONSENT REQUEST</div><h2 style="font-family:Fraunces;font-size:32px">Grant publishing permission for Aarav</h2></div>
+      <div class="consentSteps"><div class="cStep">1. Review</div><div class="cStep active">2. Scope</div><div class="cStep">3. Verify & Sign</div></div>
+      <div class="consentPreview">
+        <div class="thumb"></div>
+        <div>
+          <h4>Hamlet · Act III, Scene I</h4>
+          <div class="desc">Recorded Apr 10, 2026 · 2:34 min · Thursday Evening Batch</div>
+          <div style="margin-top:10px;font-size:13px;color:var(--muted)">Aarav performed the "To be or not to be" soliloquy. We'd love to feature this on his public channel and on our social media (with your permission).</div>
+        </div>
+      </div>
+      <div class="consentScope">
+        <div class="scopeRow"><div><div class="title">Show on Aarav's public channel</div><div class="hint">Anyone with the link can view. You can revoke anytime.</div></div><div class="sw"></div></div>
+        <div class="scopeRow"><div><div class="title">Share on company social (Instagram, YouTube, Facebook)</div><div class="hint">May be clipped into a 30-sec vertical reel.</div></div><div class="sw"></div></div>
+        <div class="scopeRow"><div><div class="title">Use in brochures, printed material</div><div class="hint">Physical collateral like flyers, posters.</div></div><div class="sw off"></div></div>
+        <div class="scopeRow"><div><div class="title">Consent valid for</div><div class="hint">You can extend or revoke from your dashboard.</div></div><div style="color:var(--primary);font-weight:700">12 months</div></div>
+      </div>
+      <div class="consentSign">
+        <h5>🔒 Secure verification</h5>
+        <div style="color:var(--muted);font-size:13px;margin-bottom:14px">We'll send an OTP to your registered number ending in 3210 to confirm your identity. Your consent is logged under DPDP Act 2023.</div>
+        <button class="btn primary" style="padding:12px 24px">Continue to sign →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 9 UPLOAD -->
+<div class="screenBlock">
+  <div class="screenLabel"><div class="n">09</div><h2>Admin — Content Upload</h2><div class="tag">Instructor/Admin</div></div>
+  <div class="screen">
+    <div class="browserBar"><div class="dots"><span></span><span></span><span></span></div><div class="url">🔒  admin.viktheatre.in/upload</div></div>
+    <div class="topnav"><div class="logo">Vik<span>.</span> <span style="color:var(--muted);font-size:12px;margin-left:10px">ADMIN</span></div><div class="navlinks"><a>Students</a><a>Batches</a><a class="active">Upload</a><a>Social Hub</a></div><div class="navright"><div class="avatar" style="background:linear-gradient(135deg,#E8C872,#ef4444)">V</div></div></div>
+    <div class="uploadBody">
+      <div class="dropzone">
+        <div class="icn">📹</div>
+        <h4>Drop video, photo or PDF</h4>
+        <p>or click to browse · max 2 GB · MP4 / MOV / JPG / PDF</p>
+        <div style="margin-top:20px;background:var(--surface2);padding:10px;border-radius:8px;font-size:12px;color:var(--muted)">🎬 hamlet-aarav-apr10.mp4 · 142 MB · <span style="color:var(--success)">uploaded ✓</span></div>
+      </div>
+      <div class="uploadForm">
+        <h4 style="font-family:Fraunces;font-size:18px;margin-bottom:16px">Details</h4>
+        <div class="formRow"><label>Student</label><select><option>Aarav Sharma (Thursday Evening)</option></select></div>
+        <div class="formRow"><label>Content type</label><select><option>Monologue</option></select></div>
+        <div class="formRow"><label>Title</label><input value="Hamlet · Act III, Scene I"></div>
+        <div class="formRow"><label>Instructor note</label><textarea>Excellent command of text. Pacing flattens around line 47 — try beat-work exercise.</textarea></div>
+        <div class="formRow"><label>Rubric scores</label>
+          <div class="slide"><span>Diction</span><div class="track" style="--w:85%"></div><b>85</b></div>
+          <div class="slide"><span>Presence</span><div class="track" style="--w:78%"></div><b>78</b></div>
+          <div class="slide"><span>Memorization</span><div class="track" style="--w:92%"></div><b>92</b></div>
+        </div>
+        <div class="formRow"><label>Privacy</label>
+          <div class="privacyPicker"><div>Private</div><div class="active">Request parent consent</div><div>Public (consent on file)</div></div>
+        </div>
+        <button class="btn primary" style="width:100%;padding:14px;margin-top:10px">Save & send consent email</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 10 ADMIN STUDENTS -->
+<div class="screenBlock">
+  <div class="screenLabel"><div class="n">10</div><h2>Admin — Students</h2><div class="tag">Admin</div></div>
+  <div class="screen">
+    <div class="browserBar"><div class="dots"><span></span><span></span><span></span></div><div class="url">🔒  admin.viktheatre.in/students</div></div>
+    <div class="topnav"><div class="logo">Vik<span>.</span> <span style="color:var(--muted);font-size:12px;margin-left:10px">ADMIN</span></div><div class="navlinks"><a class="active">Students</a><a>Batches</a><a>Upload</a><a>Social Hub</a></div><div class="navright"><div class="avatar" style="background:linear-gradient(135deg,#E8C872,#ef4444)">V</div></div></div>
+    <div class="adminBody">
+      <div class="adminToolbar">
+        <div class="adminSearch">🔍 Search students…</div>
+        <button class="btn ghost">Filter: All batches</button>
+        <button class="btn primary">+ Add Student</button>
+      </div>
+      <table>
+        <thead><tr><th>Name</th><th>Batch</th><th>Parent</th><th>Videos</th><th>Consent</th><th>Last active</th><th></th></tr></thead>
+        <tbody>
+          <tr><td><span class="sm-av">A</span>Aarav Sharma</td><td>Thu Evening</td><td>Rajesh S. · +91 98765…</td><td>12</td><td><span class="badge pub">ALL ON FILE</span></td><td>2h ago</td><td>⋮</td></tr>
+          <tr><td><span class="sm-av" style="background:linear-gradient(135deg,#ef4444,#E8C872)">P</span>Priya Menon</td><td>Thu Evening</td><td>Lakshmi M.</td><td>9</td><td><span class="badge pend">1 PENDING</span></td><td>1d ago</td><td>⋮</td></tr>
+          <tr><td><span class="sm-av" style="background:linear-gradient(135deg,#10B981,#8B5CF6)">K</span>Kabir Singh</td><td>Sat Morning</td><td>Arjun S.</td><td>7</td><td><span class="badge pub">ALL ON FILE</span></td><td>3h ago</td><td>⋮</td></tr>
+          <tr><td><span class="sm-av" style="background:linear-gradient(135deg,#60A5FA,#E8C872)">M</span>Meera Iyer</td><td>Sat Morning</td><td>Shalini I.</td><td>11</td><td><span class="badge priv">NONE</span></td><td>5h ago</td><td>⋮</td></tr>
+          <tr><td><span class="sm-av" style="background:linear-gradient(135deg,#8B5CF6,#60A5FA)">S</span>Sanya Kapoor</td><td>Sun Evening</td><td>Vikram K.</td><td>6</td><td><span class="badge pend">2 PENDING</span></td><td>1d ago</td><td>⋮</td></tr>
+          <tr><td><span class="sm-av" style="background:linear-gradient(135deg,#10B981,#E8C872)">V</span>Vihaan Reddy</td><td>Sun Evening</td><td>Priya R.</td><td>8</td><td><span class="badge pub">ALL ON FILE</span></td><td>4h ago</td><td>⋮</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 11 BATCHES KANBAN -->
+<div class="screenBlock">
+  <div class="screenLabel"><div class="n">11</div><h2>Admin — Batches (Kanban)</h2><div class="tag">Admin</div></div>
+  <div class="screen">
+    <div class="browserBar"><div class="dots"><span></span><span></span><span></span></div><div class="url">🔒  admin.viktheatre.in/batches</div></div>
+    <div class="topnav"><div class="logo">Vik<span>.</span> <span style="color:var(--muted);font-size:12px;margin-left:10px">ADMIN</span></div><div class="navlinks"><a>Students</a><a class="active">Batches</a><a>Upload</a><a>Social Hub</a></div><div class="navright"><div class="avatar" style="background:linear-gradient(135deg,#E8C872,#ef4444)">V</div></div></div>
+    <div class="kanban">
+      <div class="kcol">
+        <h4>Thu Evening <span style="color:var(--primary);font-size:13px">10</span></h4>
+        <div class="ct">Thu 6:30–8:30 PM · Theatre</div>
+        <div class="kcard"><div class="sm-av">A</div>Aarav Sharma</div>
+        <div class="kcard"><div class="sm-av" style="background:linear-gradient(135deg,#ef4444,#E8C872)">P</div>Priya Menon</div>
+        <div class="kcard"><div class="sm-av" style="background:linear-gradient(135deg,#60A5FA,#10B981)">I</div>Ishaan Nair</div>
+        <div class="kcard"><div class="sm-av" style="background:linear-gradient(135deg,#E8C872,#8B5CF6)">T</div>Tara Joshi</div>
+        <div class="kcard"><div class="sm-av" style="background:linear-gradient(135deg,#ef4444,#8B5CF6)">A</div>Ananya Rao</div>
+      </div>
+      <div class="kcol">
+        <h4>Sat Morning <span style="color:var(--primary);font-size:13px">10</span></h4>
+        <div class="ct">Sat 10:00–12:00 AM · Public Speaking</div>
+        <div class="kcard"><div class="sm-av" style="background:linear-gradient(135deg,#10B981,#8B5CF6)">K</div>Kabir Singh</div>
+        <div class="kcard"><div class="sm-av" style="background:linear-gradient(135deg,#60A5FA,#E8C872)">M</div>Meera Iyer</div>
+        <div class="kcard"><div class="sm-av" style="background:linear-gradient(135deg,#E8C872,#ef4444)">R</div>Rohan Desai</div>
+      </div>
+      <div class="kcol">
+        <h4>Sun Evening <span style="color:var(--primary);font-size:13px">10</span></h4>
+        <div class="ct">Sun 5:00–7:00 PM · Kids Drama</div>
+        <div class="kcard"><div class="sm-av" style="background:linear-gradient(135deg,#8B5CF6,#60A5FA)">S</div>Sanya Kapoor</div>
+        <div class="kcard"><div class="sm-av" style="background:linear-gradient(135deg,#10B981,#E8C872)">V</div>Vihaan Reddy</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 12 NOTIFS -->
+<div class="screenBlock">
+  <div class="screenLabel"><div class="n">12</div><h2>Notifications Center</h2><div class="tag">All roles</div></div>
+  <div class="screen">
+    <div class="browserBar"><div class="dots"><span></span><span></span><span></span></div><div class="url">🔒  app.viktheatre.in/notifications</div></div>
+    <div class="topnav"><div class="logo">Vik<span>.</span></div><div class="navlinks"><a>Home</a><a>My Channel</a><a>Batch</a><a>Progress</a></div><div class="navright"><div class="bell">🔔</div><div class="avatar">A</div></div></div>
+    <div class="notifBody">
+      <h2 style="font-family:Fraunces;font-size:28px;margin-bottom:20px">Notifications</h2>
+      <div class="notifItem"><div class="ic" style="background:rgba(232,200,114,.15);color:var(--primary)">✉️</div><div class="bd"><h5>Consent pending: Diction Drill #4</h5><p>Your parent hasn't approved this for public sharing yet.</p></div><div class="tm">2h</div></div>
+      <div class="notifItem"><div class="ic" style="background:rgba(16,185,129,.15);color:var(--success)">🎬</div><div class="bd"><h5>New upload on your channel</h5><p>"Hamlet · Act III, Scene I" is now live.</p></div><div class="tm">5h</div></div>
+      <div class="notifItem"><div class="ic" style="background:rgba(139,92,246,.15);color:#c4b5fd">💬</div><div class="bd"><h5>Vik left feedback on "Intro Piece"</h5><p>"Watch pacing at line 47 — beat-work exercise before next take."</p></div><div class="tm">1d</div></div>
+      <div class="notifItem"><div class="ic" style="background:rgba(96,165,250,.15);color:var(--info)">📅</div><div class="bd"><h5>Class reminder: Thursday 6:30 PM</h5><p>Showcase rehearsal for Act III.</p></div><div class="tm">1d</div></div>
+      <div class="notifItem"><div class="ic" style="background:rgba(239,68,68,.15);color:var(--danger)">💳</div><div class="bd"><h5>Fees due on 1 May</h5><p>Invoice ₹4,500 will be generated for May term.</p></div><div class="tm">3d</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== SECTION B: COMPANY SITE + SOCIAL ========== -->
+<div class="sectionDivider">
+  <div class="lbl">PART B</div>
+  <h2>Company Site + Social Hub</h2>
+</div>
+
+<!-- SCREEN 13 LANDING -->
+<div class="screenBlock">
+  <div class="screenLabel"><div class="n">13</div><h2>Landing Page</h2><div class="tag">Public marketing</div></div>
+  <div class="screen">
+    <div class="browserBar"><div class="dots"><span></span><span></span><span></span></div><div class="url">🌐  viktheatre.in</div></div>
+    <div class="topnav"><div class="logo">Vik<span>.</span> Theatre</div><div class="navlinks"><a>Classes</a><a>Batches</a><a>Students</a><a>About</a><a>Blog</a></div><div class="navright"><button class="btn ghost">Login</button><button class="btn primary">Book Trial</button></div></div>
+    <div class="landingHero">
+      <div class="inner">
+        <div style="color:var(--primary);letter-spacing:.25em;font-size:12px;margin-bottom:16px">THEATRE · PUBLIC SPEAKING · CONFIDENCE</div>
+        <h1>Where every<br/>voice finds its <em>stage</em>.</h1>
+        <p>Personal coaching, small batches, your own video channel. From stage fright to standing ovation.</p>
+        <div class="heroCta"><button class="btn primary" style="padding:14px 28px">Book a Free Trial</button><button class="btn ghost" style="padding:14px 28px">▶ Watch 60-sec intro</button></div>
+      </div>
+    </div>
+    <div class="sectionBlock">
+      <h2>Our Classes</h2>
+      <div class="classesGrid">
+        <div class="classCard"><div class="pic"></div><div class="pad"><h4>Theatre for Teens</h4><div class="desc">Ages 13–18 · monologue, scene work, showcase.</div><div class="price">₹4,500 / month</div></div></div>
+        <div class="classCard"><div class="pic"></div><div class="pad"><h4>Public Speaking</h4><div class="desc">Adults · pitch, presentations, TED-style.</div><div class="price">₹5,000 / month</div></div></div>
+        <div class="classCard"><div class="pic"></div><div class="pad"><h4>Kids Drama</h4><div class="desc">Ages 7–12 · improv, storytelling, play.</div><div class="price">₹3,500 / month</div></div></div>
+        <div class="classCard"><div class="pic"></div><div class="pad"><h4>Adult Acting Intensive</h4><div class="desc">Audition-ready · weekend format.</div><div class="price">₹8,000 / month</div></div></div>
+      </div>
+    </div>
+    <div class="sectionBlock" style="background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+      <h2>Featured Student Channels</h2>
+      <div class="videoGrid" style="padding:0">
+        <div class="vcard"><div class="thumb"><div class="dur">2:34</div></div><div class="meta"><div class="t">Aarav · Hamlet III</div><div class="s"><span>Theatre · Teen</span></div></div></div>
+        <div class="vcard"><div class="thumb"><div class="dur">1:48</div></div><div class="meta"><div class="t">Priya · Kabir Doha</div><div class="s"><span>Theatre · Teen</span></div></div></div>
+        <div class="vcard"><div class="thumb"><div class="dur">3:02</div></div><div class="meta"><div class="t">Kabir · TED Pitch</div><div class="s"><span>Public Speaking</span></div></div></div>
+        <div class="vcard"><div class="thumb"><div class="dur">2:12</div></div><div class="meta"><div class="t">Vihaan · Storytime</div><div class="s"><span>Kids Drama</span></div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 14 CLASSES LIST -->
+<div class="screenBlock">
+  <div class="screenLabel"><div class="n">14</div><h2>Classes / Batches Listing</h2><div class="tag">Public</div></div>
+  <div class="screen">
+    <div class="browserBar"><div class="dots"><span></span><span></span><span></span></div><div class="url">🌐  viktheatre.in/batches</div></div>
+    <div class="topnav"><div class="logo">Vik<span>.</span> Theatre</div><div class="navlinks"><a>Classes</a><a class="active">Batches</a><a>Students</a><a>About</a><a>Blog</a></div><div class="navright"><button class="btn primary">Book Trial</button></div></div>
+    <div class="classList">
+      <h2 style="font-family:Fraunces;font-size:36px;margin-bottom:8px">Upcoming Batches</h2>
+      <p style="color:var(--muted);margin-bottom:30px">Small groups. Weekly. Pick the slot that fits.</p>
+      <div class="classRow"><div class="tag">THEATRE · TEEN</div><div><h4>Thursday Evening Batch</h4><div class="sub">Thu 6:30–8:30 PM · 10 seats · 3 left · Starts May 2</div></div><div style="text-align:right"><div class="fee">₹4,500</div><div style="color:var(--muted);font-size:12px">/month</div></div><button class="btn primary">Enquire</button></div>
+      <div class="classRow"><div class="tag" style="background:rgba(232,200,114,.15);color:var(--primary)">PUBLIC SPEAKING</div><div><h4>Saturday Morning Batch</h4><div class="sub">Sat 10:00–12:00 AM · 8 seats · 5 left · Starts May 4</div></div><div style="text-align:right"><div class="fee">₹5,000</div><div style="color:var(--muted);font-size:12px">/month</div></div><button class="btn primary">Enquire</button></div>
+      <div class="classRow"><div class="tag" style="background:rgba(16,185,129,.15);color:var(--success)">KIDS DRAMA</div><div><h4>Sunday Evening Batch</h4><div class="sub">Sun 5:00–7:00 PM · 12 seats · 2 left · Starts May 5</div></div><div style="text-align:right"><div class="fee">₹3,500</div><div style="color:var(--muted);font-size:12px">/month</div></div><button class="btn primary">Enquire</button></div>
+      <div class="classRow"><div class="tag" style="background:rgba(239,68,68,.15);color:var(--danger)">ACTING INTENSIVE</div><div><h4>Weekend Intensive (Adults)</h4><div class="sub">Sat + Sun · 6 seats · 1 left · Starts May 11</div></div><div style="text-align:right"><div class="fee">₹8,000</div><div style="color:var(--muted);font-size:12px">/month</div></div><button class="btn primary">Enquire</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 15 ENQUIRY -->
+<div class="screenBlock">
+  <div class="screenLabel"><div class="n">15</div><h2>Enquiry / Trial Booking</h2><div class="tag">Conversion</div></div>
+  <div class="screen">
+    <div class="browserBar"><div class="dots"><span></span><span></span><span></span></div><div class="url">🌐  viktheatre.in/book-trial</div></div>
+    <div class="topnav"><div class="logo">Vik<span>.</span> Theatre</div><div class="navlinks"><a>Classes</a><a>Batches</a><a>Students</a><a>About</a></div><div class="navright"><button class="btn ghost">Login</button></div></div>
+    <div class="enquiryBody">
+      <h2>Book your free trial class</h2>
+      <div class="subt">We'll confirm on WhatsApp within 2 hours</div>
+      <div class="enqForm">
+        <div class="formRow"><label>Your name</label><input value="Rajesh Sharma"></div>
+        <div class="formRow"><label>Mobile (WhatsApp)</label><input value="+91 98765 43210"></div>
+        <div class="formRow"><label>Email</label><input value="rajesh.s@email.com"></div>
+        <div class="formRow"><label>Student's name & age</label><input value="Aarav · 14"></div>
+        <div class="formRow"><label>Interested in</label><select><option>Theatre for Teens</option><option>Public Speaking</option><option>Kids Drama</option></select></div>
+        <div class="formRow"><label>Preferred batch</label><select><option>Thursday Evening</option></select></div>
+        <button class="btn primary" style="width:100%;padding:14px;margin-top:10px">Book Trial (₹0 · fully refundable)</button>
+        <div style="color:var(--muted);font-size:12px;text-align:center;margin-top:14px">🔒 Your data stays with us. DPDP-compliant.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 16 BLOG -->
+<div class="screenBlock">
+  <div class="screenLabel"><div class="n">16</div><h2>Blog / Showcase Feed</h2><div class="tag">Content</div></div>
+  <div class="screen">
+    <div class="browserBar"><div class="dots"><span></span><span></span><span></span></div><div class="url">🌐  viktheatre.in/blog</div></div>
+    <div class="topnav"><div class="logo">Vik<span>.</span> Theatre</div><div class="navlinks"><a>Classes</a><a>Batches</a><a>Students</a><a>About</a><a class="active">Blog</a></div><div class="navright"><button class="btn primary">Book Trial</button></div></div>
+    <div class="blogBody">
+      <h2 style="font-family:Fraunces;font-size:40px;margin-bottom:24px">From the Stage</h2>
+      <div class="blogFeat">
+        <div class="big">
+          <div class="pic"></div>
+          <div class="pad">
+            <div style="color:var(--primary);letter-spacing:.15em;font-size:11px;margin-bottom:10px">SHOWCASE · APR 12</div>
+            <h3>Showcase 2026: A Night of 30 Voices</h3>
+            <p style="color:var(--muted);font-size:14px">Our Thursday Evening batch took the stage for their first live showcase. Behind the scenes, rehearsal footage, and what the parents saw.</p>
+            <button class="btn ghost" style="margin-top:14px">Read →</button>
+          </div>
+        </div>
+        <div class="blogList">
+          <div class="blogItem"><div class="pic"></div><div><h5>How to Pick Your First Monologue</h5><div class="d">Apr 08 · Vik Prasad</div></div></div>
+          <div class="blogItem"><div class="pic"></div><div><h5>5 Breath Exercises for Stage Fright</h5><div class="d">Apr 02 · Vik Prasad</div></div></div>
+          <div class="blogItem"><div class="pic"></div><div><h5>Aarav's Journey: 3 Months In</h5><div class="d">Mar 28 · Student Feature</div></div></div>
+          <div class="blogItem"><div class="pic"></div><div><h5>Public Speaking vs Acting: What's the Difference?</h5><div class="d">Mar 20 · Vik Prasad</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 17 SOCIAL HUB -->
+<div class="screenBlock">
+  <div class="screenLabel"><div class="n">17</div><h2>Admin — Social Hub</h2><div class="tag">Daily publishing</div></div>
+  <div class="screen">
+    <div class="browserBar"><div class="dots"><span></span><span></span><span></span></div><div class="url">🔒  admin.viktheatre.in/social</div></div>
+    <div class="topnav"><div class="logo">Vik<span>.</span> <span style="color:var(--muted);font-size:12px;margin-left:10px">ADMIN</span></div><div class="navlinks"><a>Students</a><a>Batches</a><a>Upload</a><a class="active">Social Hub</a></div><div class="navright"><div class="avatar" style="background:linear-gradient(135deg,#E8C872,#ef4444)">V</div></div></div>
+    <div class="hubBody">
+      <div class="hubLib">
+        <h5>Consented Library</h5>
+        <div class="libItem"><div class="pic"></div><div><div style="font-weight:600">Hamlet · Act III</div><div style="color:var(--muted);font-size:11px">Aarav · 2:34</div></div></div>
+        <div class="libItem"><div class="pic" style="background:linear-gradient(135deg,#E8C872,#ef4444)"></div><div><div style="font-weight:600">Kabir Doha</div><div style="color:var(--muted);font-size:11px">Priya · 1:48</div></div></div>
+        <div class="libItem"><div class="pic" style="background:linear-gradient(135deg,#10B981,#8B5CF6)"></div><div><div style="font-weight:600">TED-style Pitch</div><div style="color:var(--muted);font-size:11px">Kabir · 3:02</div></div></div>
+        <div class="libItem"><div class="pic" style="background:linear-gradient(135deg,#60A5FA,#E8C872)"></div><div><div style="font-weight:600">Storytime: Panchatantra</div><div style="color:var(--muted);font-size:11px">Vihaan · 2:12</div></div></div>
+        <div class="libItem"><div class="pic" style="background:linear-gradient(135deg,#ef4444,#8B5CF6)"></div><div><div style="font-weight:600">Showcase trailer</div><div style="color:var(--muted);font-size:11px">Batch · 0:42</div></div></div>
+      </div>
+      <div class="hubComp">
+        <h4>Compose daily post</h4>
+        <div class="postPreview">
+          <div class="postHead"><div class="avatar" style="width:32px;height:32px;font-size:12px">V</div><div style="font-size:13px"><b>@viktheatre</b><div style="color:var(--muted);font-size:11px">Scheduled · Tomorrow 10 AM</div></div></div>
+          <div class="postPic"></div>
+          <div class="captionBox">✨ When 14-year-old Aarav finds "to be or not to be" in himself. 3 months of training, one soliloquy. <br/>#theatre #publicspeaking #mumbai #monologue</div>
+        </div>
+        <div style="color:var(--muted);font-size:12px;margin-bottom:6px">Publish to</div>
+        <div class="channelPick"><div class="chBtn on">📷 Instagram Reel</div><div class="chBtn on">▶ YouTube Short</div><div class="chBtn">f Facebook</div><div class="chBtn">in LinkedIn</div></div>
+        <button class="btn primary" style="width:100%;margin-top:18px;padding:13px">Schedule for tomorrow 10 AM</button>
+      </div>
+      <div class="hubCal">
+        <h5>This week</h5>
+        <div class="calDay"><div class="d">TUE · APR 15</div><div class="tt"><div class="tdot"></div>Hamlet reel · IG + YT</div></div>
+        <div class="calDay"><div class="d">WED · APR 16</div><div class="tt"><div class="tdot"></div>Breath exercise carousel · IG</div></div>
+        <div class="calDay"><div class="d">THU · APR 17</div><div class="tt"><div class="tdot"></div>Showcase trailer · YT + FB</div></div>
+        <div class="calDay"><div class="d">FRI · APR 18</div><div class="tt"><div class="tdot" style="background:var(--primary)"></div>Draft: TED-style pitch</div></div>
+        <div class="calDay"><div class="d">SAT · APR 19</div><div class="tt"><div class="tdot" style="background:var(--muted)"></div>Empty slot</div></div>
+        <div class="calDay"><div class="d">SUN · APR 20</div><div class="tt"><div class="tdot"></div>Behind the scenes · IG</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 18 AUTO CLIP -->
+<div class="screenBlock">
+  <div class="screenLabel"><div class="n">18</div><h2>Admin — Auto-Clip Studio</h2><div class="tag">AI-assist</div></div>
+  <div class="screen">
+    <div class="browserBar"><div class="dots"><span></span><span></span><span></span></div><div class="url">🔒  admin.viktheatre.in/clip-studio</div></div>
+    <div class="topnav"><div class="logo">Vik<span>.</span> <span style="color:var(--muted);font-size:12px;margin-left:10px">ADMIN</span></div><div class="navlinks"><a>Students</a><a>Batches</a><a>Upload</a><a>Social Hub</a></div><div class="navright"><div class="avatar" style="background:linear-gradient(135deg,#E8C872,#ef4444)">V</div></div></div>
+    <div class="clipBody">
+      <div class="clipTop">
+        <div class="pic"></div>
+        <div style="flex:1">
+          <h4>Source: Hamlet · Act III — Aarav (2:34)</h4>
+          <div class="desc">Fully consented for social. AI found 3 strong vertical moments.</div>
+          <div style="display:flex;gap:8px"><span class="chip">🎭 Theatre</span><span class="chip">🔊 High-energy</span><span class="chip">✨ Public-consent</span></div>
+        </div>
+        <button class="btn ghost">Re-analyze</button>
+      </div>
+      <h4 style="font-family:Fraunces;font-size:20px;margin-bottom:14px">AI-suggested clips (9:16 vertical)</h4>
+      <div class="clipSuggestions">
+        <div class="clipCard"><div class="vert"><div class="stamp">0:00–0:28</div></div><div class="pad"><h5>Opening: "To be, or not to be"</h5><div class="meta">28 sec · strong hook · captions auto-generated</div><div style="display:flex;gap:6px"><button class="btn primary" style="flex:1;padding:8px;font-size:12px">→ Social Hub</button><button class="btn ghost" style="padding:8px;font-size:12px">Edit</button></div></div></div>
+        <div class="clipCard"><div class="vert"><div class="stamp">1:10–1:38</div></div><div class="pad"><h5>Emotional peak moment</h5><div class="meta">28 sec · high-emotion score · ideal reel length</div><div style="display:flex;gap:6px"><button class="btn primary" style="flex:1;padding:8px;font-size:12px">→ Social Hub</button><button class="btn ghost" style="padding:8px;font-size:12px">Edit</button></div></div></div>
+        <div class="clipCard"><div class="vert"><div class="stamp">2:05–2:34</div></div><div class="pad"><h5>Closing: "undiscovered country"</h5><div class="meta">29 sec · satisfying close · strong CTA potential</div><div style="display:flex;gap:6px"><button class="btn primary" style="flex:1;padding:8px;font-size:12px">→ Social Hub</button><button class="btn ghost" style="padding:8px;font-size:12px">Edit</button></div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer style="text-align:center;padding:60px 20px;color:var(--muted);border-top:1px solid var(--border);margin-top:40px">
+  <div style="font-family:Fraunces;font-size:22px;font-weight:700;color:var(--text);margin-bottom:10px">Vik Theatre Platform · v0.1</div>
+  <div>18 screens · desktop mockups · 2026-04-15</div>
+  <div style="margin-top:16px;font-size:13px">Open in any browser. Screenshot each section and drop into Figma, or paste into <b style="color:var(--primary)">v0.dev</b> to generate Next.js code.</div>
+</footer>
+
+</div>
+</body>
+</html>

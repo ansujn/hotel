@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Vik Theatre Platform — Visual Preview</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0B0B0F; --surface:#15151C; --surface2:#1f1f2b;
+    --primary:#E8C872; --accent:#8B5CF6; --text:#F5F5F7;
+    --muted:#9CA3AF; --success:#10B981; --danger:#EF4444;
+    --border:rgba(255,255,255,.08);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:Inter,sans-serif;line-height:1.5;padding:40px 24px}
+  h1,h2,h3,.serif{font-family:Fraunces,serif}
+  .wrap{max-width:1200px;margin:0 auto}
+
+  /* Hero */
+  .hero{text-align:center;padding:60px 20px 40px;border-bottom:1px solid var(--border);margin-bottom:60px}
+  .hero .eyebrow{color:var(--primary);letter-spacing:.2em;font-size:12px;text-transform:uppercase;margin-bottom:16px}
+  .hero h1{font-size:clamp(40px,6vw,72px);line-height:1.05;font-weight:900;background:linear-gradient(135deg,#fff 0%,var(--primary) 100%);-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:20px}
+  .hero p{color:var(--muted);font-size:18px;max-width:640px;margin:0 auto}
+  .hero .pills{display:flex;gap:10px;justify-content:center;margin-top:28px;flex-wrap:wrap}
+  .pill{background:var(--surface);border:1px solid var(--border);padding:8px 16px;border-radius:999px;font-size:13px}
+  .pill.gold{border-color:var(--primary);color:var(--primary)}
+
+  /* Section */
+  .section{margin-bottom:72px}
+  .section-head{margin-bottom:28px}
+  .section-head .num{color:var(--primary);font-family:Fraunces;font-size:14px;letter-spacing:.2em}
+  .section-head h2{font-size:34px;margin-top:6px}
+  .section-head p{color:var(--muted);margin-top:8px;max-width:720px}
+
+  /* Architecture diagram */
+  .arch{display:grid;grid-template-columns:1fr;gap:20px}
+  .layer{background:linear-gradient(180deg,var(--surface) 0%,var(--surface2) 100%);border:1px solid var(--border);border-radius:16px;padding:22px}
+  .layer-title{display:flex;align-items:center;gap:10px;margin-bottom:14px;font-weight:600}
+  .dot{width:10px;height:10px;border-radius:50%}
+  .row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+  .chip{background:#0b0b0f;border:1px solid var(--border);padding:12px;border-radius:10px;text-align:center;font-size:13px}
+  .chip b{display:block;color:var(--primary);font-size:12px;letter-spacing:.1em;margin-bottom:4px}
+  .arrow{text-align:center;color:var(--muted);font-size:22px}
+
+  /* Mockup devices */
+  .mocks{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:24px}
+  .device{background:var(--surface);border:1px solid var(--border);border-radius:18px;overflow:hidden}
+  .device-bar{display:flex;gap:6px;padding:10px 14px;background:#0b0b0f;border-bottom:1px solid var(--border)}
+  .device-bar span{width:10px;height:10px;border-radius:50%;background:#333}
+  .device-bar span:nth-child(1){background:#ff5f57}
+  .device-bar span:nth-child(2){background:#febc2e}
+  .device-bar span:nth-child(3){background:#28c840}
+  .device-body{padding:20px}
+  .banner{height:120px;border-radius:12px;background:linear-gradient(135deg,#8B5CF6 0%,#E8C872 100%);position:relative;overflow:hidden;margin-bottom:14px}
+  .banner::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 30% 50%,rgba(0,0,0,.3),transparent 60%)}
+  .avatar{width:64px;height:64px;border-radius:50%;background:var(--surface2);border:3px solid var(--surface);margin-top:-32px;position:relative;z-index:2;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--primary);font-size:22px}
+  .name{font-family:Fraunces;font-size:20px;font-weight:700;margin-top:8px}
+  .meta{color:var(--muted);font-size:13px}
+  .tabs{display:flex;gap:6px;margin:14px 0;overflow-x:auto}
+  .tab{padding:6px 12px;border-radius:999px;font-size:12px;background:var(--surface2);white-space:nowrap}
+  .tab.active{background:var(--primary);color:#000;font-weight:600}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .videoCard{background:var(--surface2);border-radius:10px;overflow:hidden}
+  .thumb{height:70px;background:linear-gradient(135deg,#333 0%,#555 100%);position:relative}
+  .thumb::after{content:"▶";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;opacity:.6}
+  .vmeta{padding:8px;font-size:11px}
+  .vmeta .t{font-weight:600;margin-bottom:2px}
+  .badge{display:inline-block;font-size:9px;padding:2px 6px;border-radius:4px;letter-spacing:.08em;font-weight:700}
+  .badge.priv{background:rgba(239,68,68,.15);color:var(--danger)}
+  .badge.pub{background:rgba(16,185,129,.15);color:var(--success)}
+  .badge.pend{background:rgba(232,200,114,.15);color:var(--primary)}
+
+  /* Radar-like progress */
+  .radar{background:var(--surface2);border-radius:12px;padding:16px;text-align:center}
+  .ring{width:120px;height:120px;border-radius:50%;background:conic-gradient(var(--primary) 0 72%,var(--surface) 72% 100%);display:flex;align-items:center;justify-content:center;margin:0 auto;position:relative}
+  .ring::before{content:"";position:absolute;inset:10px;border-radius:50%;background:var(--surface2)}
+  .ring span{position:relative;font-family:Fraunces;font-size:26px;font-weight:700}
+  .bars{margin-top:14px}
+  .bar{display:flex;align-items:center;gap:8px;font-size:11px;margin-bottom:6px}
+  .bar .l{width:90px;text-align:left;color:var(--muted)}
+  .bar .t{flex:1;height:6px;background:var(--surface);border-radius:3px;overflow:hidden}
+  .bar .f{height:100%;background:linear-gradient(90deg,var(--accent),var(--primary))}
+
+  /* Consent */
+  .consent{background:linear-gradient(180deg,rgba(232,200,114,.08),transparent);border:1px solid var(--primary);border-radius:14px;padding:18px}
+  .consent h4{font-family:Fraunces;margin-bottom:8px}
+  .toggle-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px}
+  .toggle-row:last-child{border-bottom:0}
+  .sw{width:36px;height:20px;background:var(--primary);border-radius:999px;position:relative}
+  .sw::after{content:"";position:absolute;top:2px;right:2px;width:16px;height:16px;background:#000;border-radius:50%}
+  .sw.off{background:var(--surface2)}
+  .sw.off::after{right:auto;left:2px;background:#888}
+
+  /* Roadmap */
+  .roadmap{position:relative;padding-left:28px}
+  .roadmap::before{content:"";position:absolute;left:8px;top:6px;bottom:6px;width:2px;background:linear-gradient(180deg,var(--primary),var(--accent))}
+  .phase{position:relative;margin-bottom:22px}
+  .phase::before{content:"";position:absolute;left:-26px;top:6px;width:14px;height:14px;background:var(--primary);border-radius:50%;box-shadow:0 0 0 4px var(--bg),0 0 0 5px var(--primary)}
+  .phase h4{font-family:Fraunces;font-size:18px}
+  .phase .wk{color:var(--primary);font-size:12px;letter-spacing:.15em;margin-bottom:4px}
+  .phase p{color:var(--muted);font-size:14px}
+
+  /* User flow */
+  .flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;align-items:stretch}
+  .step{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center;position:relative}
+  .step .icon{font-size:24px;margin-bottom:8px}
+  .step h5{font-size:13px;margin-bottom:4px}
+  .step p{color:var(--muted);font-size:11px}
+
+  /* Stats */
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px}
+  .stat{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px}
+  .stat .n{font-family:Fraunces;font-size:36px;font-weight:700;color:var(--primary)}
+  .stat .l{color:var(--muted);font-size:13px;margin-top:4px}
+
+  /* Budget */
+  .budget{display:grid;grid-template-columns:1fr;gap:10px}
+  .brow{display:grid;grid-template-columns:1fr auto;gap:10px;padding:12px 16px;background:var(--surface);border:1px solid var(--border);border-radius:10px;align-items:center}
+  .brow .amt{color:var(--primary);font-weight:600}
+
+  footer{text-align:center;color:var(--muted);padding:40px 0 10px;font-size:13px;border-top:1px solid var(--border);margin-top:40px}
+  .cta{display:inline-block;background:var(--primary);color:#000;padding:14px 28px;border-radius:10px;font-weight:600;margin-top:16px;text-decoration:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="eyebrow">Vik Prasad · Theatre & Public Speaking</div>
+    <h1>Where every voice<br/>finds its stage.</h1>
+    <p>A visual preview of the student channel platform + company social engine — built for India, piloting with 3 batches of 10 students.</p>
+    <div class="pills">
+      <span class="pill gold">India · DPDP-compliant</span>
+      <span class="pill">Next.js + Supabase + Mux</span>
+      <span class="pill">30 pilot students</span>
+      <span class="pill">10-week MVP</span>
+    </div>
+  </section>
+
+  <!-- 1. ARCHITECTURE -->
+  <section class="section">
+    <div class="section-head">
+      <div class="num">01 · SYSTEM AT A GLANCE</div>
+      <h2>Two products, one stack</h2>
+      <p>A private student platform (channels + progress) and a public company/social engine, sharing one content library.</p>
+    </div>
+
+    <div class="arch">
+      <div class="layer">
+        <div class="layer-title"><span class="dot" style="background:var(--primary)"></span>Users</div>
+        <div class="row">
+          <div class="chip"><b>STUDENT</b>views channel, progress</div>
+          <div class="chip"><b>PARENT</b>gives consent, tracks</div>
+          <div class="chip"><b>INSTRUCTOR</b>uploads, scores</div>
+          <div class="chip"><b>ADMIN</b>manages everything</div>
+          <div class="chip"><b>PUBLIC</b>consented content only</div>
+        </div>
+      </div>
+      <div class="arrow">↓</div>
+      <div class="layer">
+        <div class="layer-title"><span class="dot" style="background:var(--accent)"></span>Applications</div>
+        <div class="row">
+          <div class="chip"><b>STUDENT APP</b>channels, batches, consent</div>
+          <div class="chip"><b>COMPANY SITE</b>landing, enquiry, blog</div>
+          <div class="chip"><b>SOCIAL HUB</b>IG / YT / FB / LI scheduling</div>
+        </div>
+      </div>
+      <div class="arrow">↓</div>
+      <div class="layer">
+        <div class="layer-title"><span class="dot" style="background:var(--success)"></span>Platform Services</div>
+        <div class="row">
+          <div class="chip"><b>AUTH</b>Supabase + MSG91 OTP</div>
+          <div class="chip"><b>DB</b>Postgres (Supabase)</div>
+          <div class="chip"><b>VIDEO</b>Mux signed URLs</div>
+          <div class="chip"><b>STORAGE</b>Supabase Storage</div>
+          <div class="chip"><b>PAYMENTS</b>Razorpay</div>
+          <div class="chip"><b>SOCIAL</b>Buffer / Metricool</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. KEY SCREENS -->
+  <section class="section">
+    <div class="section-head">
+      <div class="num">02 · WHAT IT LOOKS LIKE</div>
+      <h2>Three signature screens</h2>
+      <p>Low-fidelity mockups showing the feel of the product. Final screens will be produced in Figma.</p>
+    </div>
+
+    <div class="mocks">
+
+      <!-- Student Channel -->
+      <div class="device">
+        <div class="device-bar"><span></span><span></span><span></span></div>
+        <div class="device-body">
+          <div class="banner"></div>
+          <div class="avatar">A</div>
+          <div class="name">Aarav Sharma</div>
+          <div class="meta">Batch · Thursday Evening · Instructor: Vik Prasad</div>
+          <div class="tabs">
+            <div class="tab active">Monologues</div>
+            <div class="tab">Scenes</div>
+            <div class="tab">Showcases</div>
+            <div class="tab">About</div>
+          </div>
+          <div class="grid2">
+            <div class="videoCard">
+              <div class="thumb"></div>
+              <div class="vmeta"><div class="t">Hamlet · Act III</div><span class="badge pub">PUBLIC</span></div>
+            </div>
+            <div class="videoCard">
+              <div class="thumb"></div>
+              <div class="vmeta"><div class="t">Intro Piece</div><span class="badge priv">PRIVATE</span></div>
+            </div>
+            <div class="videoCard">
+              <div class="thumb"></div>
+              <div class="vmeta"><div class="t">Diction Drill</div><span class="badge pend">PENDING</span></div>
+            </div>
+            <div class="videoCard">
+              <div class="thumb"></div>
+              <div class="vmeta"><div class="t">Showcase 2026</div><span class="badge pub">PUBLIC</span></div>
+            </div>
+          </div>
+          <div style="text-align:center;margin-top:12px;font-size:11px;color:var(--muted)">Screen 3 · Student Channel</div>
+        </div>
+      </div>
+
+      <!-- Progress -->
+      <div class="device">
+        <div class="device-bar"><span></span><span></span><span></span></div>
+        <div class="device-body">
+          <div style="font-family:Fraunces;font-size:18px;margin-bottom:12px">Progress Catalog</div>
+          <div class="radar">
+            <div class="ring"><span>72%</span></div>
+            <div style="font-size:12px;color:var(--muted);margin-top:8px">Overall Growth · Apr 2026</div>
+          </div>
+          <div class="bars" style="margin-top:16px">
+            <div class="bar"><div class="l">Diction</div><div class="t"><div class="f" style="width:80%"></div></div><div>80</div></div>
+            <div class="bar"><div class="l">Stage Presence</div><div class="t"><div class="f" style="width:65%"></div></div><div>65</div></div>
+            <div class="bar"><div class="l">Memorization</div><div class="t"><div class="f" style="width:72%"></div></div><div>72</div></div>
+            <div class="bar"><div class="l">Confidence</div><div class="t"><div class="f" style="width:78%"></div></div><div>78</div></div>
+            <div class="bar"><div class="l">Improvisation</div><div class="t"><div class="f" style="width:58%"></div></div><div>58</div></div>
+          </div>
+          <div style="text-align:center;margin-top:12px;font-size:11px;color:var(--muted)">Screen 6 · Progress</div>
+        </div>
+      </div>
+
+      <!-- Parent Consent -->
+      <div class="device">
+        <div class="device-bar"><span></span><span></span><span></span></div>
+        <div class="device-body">
+          <div class="consent">
+            <div style="font-size:11px;letter-spacing:.15em;color:var(--primary);margin-bottom:6px">DPDP-COMPLIANT</div>
+            <h4>Grant publishing consent</h4>
+            <p style="color:var(--muted);font-size:13px;margin:6px 0 12px">Aarav's monologue from the April 10 class. Choose where it can be shared.</p>
+            <div class="toggle-row">On Aarav's public channel<div class="sw"></div></div>
+            <div class="toggle-row">On company social (IG/YT/FB)<div class="sw"></div></div>
+            <div class="toggle-row">In brochures & print<div class="sw off"></div></div>
+            <div class="toggle-row">Valid for<b style="color:var(--primary)">12 months</b></div>
+          </div>
+          <div style="margin-top:14px;padding:10px;background:var(--surface2);border-radius:8px;font-size:11px;color:var(--muted);text-align:center">🔒 Signed with parent OTP · IP + timestamp logged</div>
+          <div style="text-align:center;margin-top:12px;font-size:11px;color:var(--muted)">Screen 8 · Parent Consent</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 3. USER FLOW -->
+  <section class="section">
+    <div class="section-head">
+      <div class="num">03 · THE UPLOAD JOURNEY</div>
+      <h2>From classroom to Instagram — in 5 steps</h2>
+      <p>Every piece of public content passes through parental consent. This is both ethical and legally required.</p>
+    </div>
+    <div class="flow">
+      <div class="step"><div class="icon">🎬</div><h5>1. Record</h5><p>Instructor films monologue in class</p></div>
+      <div class="step"><div class="icon">⬆️</div><h5>2. Upload</h5><p>Admin tags student, batch, rubric</p></div>
+      <div class="step"><div class="icon">✉️</div><h5>3. Consent</h5><p>Parent gets SMS + email link</p></div>
+      <div class="step"><div class="icon">✅</div><h5>4. Approve</h5><p>Parent toggles scope + signs</p></div>
+      <div class="step"><div class="icon">🚀</div><h5>5. Publish</h5><p>Appears on channel + social queue</p></div>
+    </div>
+  </section>
+
+  <!-- 4. ROADMAP -->
+  <section class="section">
+    <div class="section-head">
+      <div class="num">04 · 16-WEEK ROADMAP</div>
+      <h2>Pilot live in 10 weeks, scaling by week 16</h2>
+    </div>
+    <div class="roadmap">
+      <div class="phase"><div class="wk">WEEK 1</div><h4>Phase 0 — Discovery</h4><p>Brand lock · personas · content-type inventory · Figma kick-off</p></div>
+      <div class="phase"><div class="wk">WEEKS 2–6</div><h4>Phase 1 — Student Platform MVP</h4><p>Auth, student channel, admin upload, consent flow, batches. Onboard first 10 students.</p></div>
+      <div class="phase"><div class="wk">WEEKS 5–9 (parallel)</div><h4>Phase 2 — Company Site + Social</h4><p>Landing page, enquiry pipeline, Buffer/Metricool wiring, daily editorial calendar.</p></div>
+      <div class="phase"><div class="wk">WEEKS 10–16</div><h4>Phase 3 — Expand</h4><p>Progress rubric, certificates, parent dashboard, auto-clip reels, Razorpay enrollment.</p></div>
+      <div class="phase"><div class="wk">POST-LAUNCH</div><h4>Phase 4 — Scale</h4><p>Mobile app, SEO, public discovery, analytics for parents.</p></div>
+    </div>
+  </section>
+
+  <!-- 5. STATS -->
+  <section class="section">
+    <div class="section-head">
+      <div class="num">05 · PILOT BY THE NUMBERS</div>
+      <h2>The first 6 months</h2>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="n">30</div><div class="l">pilot students (3 × 10)</div></div>
+      <div class="stat"><div class="n">4</div><div class="l">user roles</div></div>
+      <div class="stat"><div class="n">18</div><div class="l">screens in v1</div></div>
+      <div class="stat"><div class="n">10 wk</div><div class="l">to live MVP</div></div>
+      <div class="stat"><div class="n">4</div><div class="l">social channels</div></div>
+      <div class="stat"><div class="n">1 / day</div><div class="l">public post cadence</div></div>
+    </div>
+  </section>
+
+  <!-- 6. BUDGET -->
+  <section class="section">
+    <div class="section-head">
+      <div class="num">06 · BUDGET SNAPSHOT</div>
+      <h2>First 6 months (₹, India)</h2>
+    </div>
+    <div class="budget">
+      <div class="brow"><div>Design (Figma · freelance)</div><div class="amt">₹60k–1.2L one-time</div></div>
+      <div class="brow"><div>Development (custom Next.js build)</div><div class="amt">₹6–12L</div></div>
+      <div class="brow"><div>Video hosting (Mux)</div><div class="amt">₹5–15k / month</div></div>
+      <div class="brow"><div>Tooling (Buffer, Resend, domain, Supabase)</div><div class="amt">₹5k / month</div></div>
+      <div class="brow"><div>Social media manager (part-time)</div><div class="amt">₹25–40k / month</div></div>
+      <div class="brow"><div>Legal review (DPDP compliance)</div><div class="amt">₹25–50k one-time</div></div>
+    </div>
+  </section>
+
+  <footer>
+    Vik Theatre Platform · Visual Preview · v0.1 · 2026-04-14<br/>
+    Open <code>visualization.html</code> in any browser. Best viewed in dark surroundings for full cinematic effect 🎭
+  </footer>
+</div>
+</body>
+</html>

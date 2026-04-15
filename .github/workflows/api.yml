@@ -1,0 +1,43 @@
+name: api
+
+on:
+  push:
+    branches: [main, staging]
+    paths: ["api/**", "openapi.yaml", ".github/workflows/api.yml"]
+  pull_request:
+    paths: ["api/**", "openapi.yaml"]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: vik
+          POSTGRES_PASSWORD: vik
+          POSTGRES_DB: vik
+        ports: ["5432:5432"]
+        options: --health-cmd="pg_isready" --health-interval=5s
+    defaults: { run: { working-directory: api } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with: { go-version: "1.23" }
+      - run: go mod download
+      - run: go vet ./...
+      - run: go test -race -cover ./...
+        env:
+          DATABASE_URL: postgres://vik:vik@localhost:5432/vik?sslmode=disable
+          JWT_SECRET: ci-test-secret
+
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - run: flyctl deploy --remote-only --config api/fly.toml
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}

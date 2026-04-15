@@ -1,0 +1,200 @@
+openapi: 3.1.0
+info:
+  title: Vik Theatre API
+  version: 0.1.0
+  description: Student platform API. Single source of truth — generates Go server, TS client, Dart client.
+servers:
+  - url: https://api.viktheatre.in/v1
+  - url: http://localhost:8080/v1
+
+security:
+  - bearerAuth: []
+
+paths:
+  /health:
+    get:
+      summary: Liveness probe
+      security: []
+      responses:
+        "200": { description: ok }
+
+  /auth/otp/send:
+    post:
+      summary: Send OTP to phone (MSG91)
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/OtpSendReq" }
+      responses:
+        "204": { description: sent }
+
+  /auth/otp/verify:
+    post:
+      summary: Verify OTP, return JWT
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/OtpVerifyReq" }
+      responses:
+        "200":
+          description: jwt pair
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/TokenPair" }
+
+  /me:
+    get:
+      summary: Current user
+      responses:
+        "200":
+          description: user
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/User" }
+
+  /students/{id}/channel:
+    get:
+      summary: Public/private student channel
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        "200":
+          description: channel
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Channel" }
+
+  /admin/assets:
+    post:
+      summary: Create asset, returns Mux direct-upload URL
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AssetCreateReq" }
+      responses:
+        "201":
+          description: created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AssetCreateRes" }
+
+  /consent/{token}:
+    post:
+      summary: Parent signs consent
+      security: []
+      parameters:
+        - { name: token, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ConsentSignReq" }
+      responses:
+        "200": { description: signed }
+
+  /webhooks/mux:
+    post:
+      summary: Mux webhook (asset.ready etc.)
+      security: []
+      responses: { "204": { description: ok } }
+
+  /webhooks/razorpay:
+    post:
+      summary: Razorpay webhook
+      security: []
+      responses: { "204": { description: ok } }
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    OtpSendReq:
+      type: object
+      required: [phone]
+      properties:
+        phone: { type: string, example: "+919876543210" }
+
+    OtpVerifyReq:
+      type: object
+      required: [phone, code]
+      properties:
+        phone: { type: string }
+        code:  { type: string, minLength: 4, maxLength: 8 }
+
+    TokenPair:
+      type: object
+      required: [access_token, refresh_token]
+      properties:
+        access_token:  { type: string }
+        refresh_token: { type: string }
+
+    User:
+      type: object
+      required: [id, role]
+      properties:
+        id:     { type: string, format: uuid }
+        name:   { type: string }
+        phone:  { type: string }
+        email:  { type: string }
+        role:   { type: string, enum: [student, parent, instructor, admin] }
+        locale: { type: string, example: en }
+
+    Channel:
+      type: object
+      properties:
+        student: { $ref: "#/components/schemas/User" }
+        assets:
+          type: array
+          items: { $ref: "#/components/schemas/Asset" }
+
+    Asset:
+      type: object
+      properties:
+        id:               { type: string, format: uuid }
+        title:            { type: string }
+        type:             { type: string, enum: [monologue, scene, showcase, catalog] }
+        mux_playback_id:  { type: string }
+        duration_s:       { type: integer }
+        privacy:          { type: string, enum: [private, pending_consent, public] }
+        created_at:       { type: string, format: date-time }
+
+    AssetCreateReq:
+      type: object
+      required: [student_id, type, title]
+      properties:
+        student_id: { type: string, format: uuid }
+        type:       { type: string, enum: [monologue, scene, showcase, catalog] }
+        title:      { type: string }
+        note:       { type: string }
+        rubric:
+          type: object
+          additionalProperties: { type: integer, minimum: 0, maximum: 100 }
+
+    AssetCreateRes:
+      type: object
+      properties:
+        asset_id:           { type: string, format: uuid }
+        mux_upload_url:     { type: string }
+
+    ConsentSignReq:
+      type: object
+      required: [scope]
+      properties:
+        otp:   { type: string }
+        signed_name: { type: string }
+        scope:
+          type: object
+          properties:
+            channel: { type: boolean }
+            social:  { type: boolean }
+            print:   { type: boolean }
+            valid_months: { type: integer, enum: [6, 12, 24] }
