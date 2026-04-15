@@ -3,7 +3,9 @@ package httpx
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
+	"github.com/viktheatre/api/internal/auth"
 	"github.com/viktheatre/api/internal/platform/config"
 
 	"github.com/go-chi/chi/v5"
@@ -17,6 +19,7 @@ type Deps struct {
 	Log    *zap.Logger
 	DB     *pgxpool.Pool
 	Config *config.Config
+	Auth   *auth.Service
 }
 
 func NewRouter(d Deps) http.Handler {
@@ -24,7 +27,7 @@ func NewRouter(d Deps) http.Handler {
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Recoverer)
-	r.Use(middleware.Timeout(30_000_000_000)) // 30s
+	r.Use(middleware.Timeout(30 * time.Second))
 	r.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   []string{"*"},
 		AllowedMethods:   []string{"GET", "POST", "PATCH", "DELETE", "OPTIONS"},
@@ -35,13 +38,23 @@ func NewRouter(d Deps) http.Handler {
 
 	r.Route("/v1", func(r chi.Router) {
 		r.Get("/health", health)
-		r.Post("/auth/otp/send", stub("otp send"))
-		r.Post("/auth/otp/verify", stub("otp verify"))
-		r.Get("/me", stub("me"))
+
+		// auth (public)
+		r.Post("/auth/otp/send", d.Auth.HandleOTPSend)
+		r.Post("/auth/otp/verify", d.Auth.HandleOTPVerify)
+		r.Post("/auth/refresh", d.Auth.HandleRefresh)
+
+		// authenticated
+		r.Group(func(r chi.Router) {
+			r.Use(d.Auth.RequireAuth)
+			r.Get("/me", d.Auth.HandleMe)
+		})
+
 		r.Get("/students/{id}/channel", stub("channel"))
 
-		// admin
+		// admin (authenticated)
 		r.Route("/admin", func(r chi.Router) {
+			r.Use(d.Auth.RequireAuth)
 			r.Post("/assets", stub("admin create asset"))
 		})
 

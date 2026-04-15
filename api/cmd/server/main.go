@@ -8,6 +8,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/viktheatre/api/internal/auth"
 	"github.com/viktheatre/api/internal/platform/config"
 	"github.com/viktheatre/api/internal/platform/db"
 	"github.com/viktheatre/api/internal/platform/httpx"
@@ -33,10 +34,17 @@ func main() {
 	}
 	defer pool.Close()
 
+	var msg91 auth.MSG91Client
+	if cfg.AppEnv != "local" && cfg.MSG91AuthKey != "" {
+		msg91 = auth.NewMSG91Client(cfg.MSG91AuthKey, cfg.MSG91TemplateID, cfg.MSG91SenderID)
+	}
+	authSvc := auth.New(pool, cfg, msg91)
+
 	router := httpx.NewRouter(httpx.Deps{
 		Log:    logger,
 		DB:     pool,
 		Config: cfg,
+		Auth:   authSvc,
 	})
 
 	srv := &http.Server{

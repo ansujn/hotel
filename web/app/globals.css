@@ -3,7 +3,44 @@
 @theme {
   --color-bg: #0B0B0F;
   --color-surface: #15151C;
+  --color-surface-2: #1C1C26;
+  --color-border: #2A2A36;
   --color-primary: #E8C872;
   --color-accent: #8B5CF6;
-  --font-serif: "Fraunces", serif;
+  --color-muted: #8A8A96;
+  --color-fg: #F5F5F7;
+  --font-serif: "Fraunces", ui-serif, Georgia, serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+html, body {
+  background: #0B0B0F;
+  color: #F5F5F7;
+}
+
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, .serif {
+  font-family: var(--font-serif);
+}
+
+.grad-hero {
+  background:
+    radial-gradient(1200px 600px at 20% 10%, rgba(139,92,246,0.25), transparent 60%),
+    radial-gradient(900px 500px at 90% 90%, rgba(232,200,114,0.18), transparent 60%),
+    linear-gradient(180deg, #0B0B0F 0%, #0B0B0F 100%);
+}
+
+.grad-login {
+  background:
+    radial-gradient(800px 500px at 30% 20%, rgba(139,92,246,0.55), transparent 60%),
+    radial-gradient(700px 500px at 80% 80%, rgba(232,200,114,0.35), transparent 60%),
+    linear-gradient(135deg, #1a1030 0%, #0B0B0F 100%);
+}
+
+.ring-gradient {
+  background: conic-gradient(#E8C872 0% var(--p, 72%), #2A2A36 var(--p, 72%) 100%);
 }

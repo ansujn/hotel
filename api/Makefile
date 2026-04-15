@@ -1,4 +1,4 @@
-.PHONY: dev build test lint migrate-up migrate-down docker
+.PHONY: dev build test lint migrate-up migrate-down docker sqlc-gen db-up db-down seed
 
 dev:
 	go run ./cmd/server
@@ -20,3 +20,15 @@ migrate-down:
 
 docker:
 	docker build -t viktheatre/api:dev .
+
+sqlc-gen:
+	sqlc generate
+
+db-up:
+	docker compose up -d db
+
+db-down:
+	docker compose down
+
+seed:
+	psql "$$DATABASE_URL" -f migrations/seed_dev.sql

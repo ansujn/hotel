@@ -1,62 +1,74 @@
 # Vik Theatre — Mobile (Flutter)
 
-Run this once to scaffold the Flutter project *inside* this folder:
+Single Flutter app for students and parents (role-based routing).
+
+## Prerequisites
+
+- Flutter 3.22+ (Dart 3.4+)
+- Xcode 15+ for iOS, Android Studio / SDK 34+ for Android
+
+## First-time setup
+
+The app source (`lib/`, `test/`, `pubspec.yaml`, `analysis_options.yaml`) is
+already committed. The native platform folders (`ios/`, `android/`) are **not**
+checked in — run `flutter create` once to generate them:
 
 ```bash
 cd mobile
 flutter create --org in.viktheatre --project-name vik_theatre \
   --platforms=ios,android --empty .
+flutter pub get
 ```
 
-Then add core deps to `pubspec.yaml`:
+`flutter create` will leave our existing `lib/`, `test/`, and `pubspec.yaml`
+alone (it only fills in missing files).
 
-```yaml
-dependencies:
-  flutter:
-    sdk: flutter
-  flutter_riverpod: ^2.5.1
-  go_router: ^14.2.7
-  dio: ^5.6.0
-  flutter_secure_storage: ^9.2.2
-  chewie: ^1.8.5
-  video_player: ^2.9.1
-  reactive_forms: ^17.0.1
-  sentry_flutter: ^8.9.0
-  posthog_flutter: ^4.8.0
-  intl: ^0.19.0
-```
+## Running against a local Go API
 
-Then:
+The API base URL is read from the `API_BASE_URL` dart-define at build time.
 
 ```bash
-flutter pub get
-flutter run
+# Android emulator (localhost of the host machine = 10.0.2.2)
+flutter run --dart-define=API_BASE_URL=http://10.0.2.2:8080
+
+# iOS simulator
+flutter run --dart-define=API_BASE_URL=http://localhost:8080
 ```
+
+Default (no define) is `http://10.0.2.2:8080`.
+
+## Dev OTP
+
+The Go API accepts the bypass code `000000` in development for any phone
+number. Use it to skip SMS provider setup.
 
 ## Architecture
 
-- **State**: Riverpod providers (`lib/providers/`)
-- **Routing**: go_router (`lib/routes/`)
-- **API client**: generated from `../openapi.yaml`
+- **State**: Riverpod providers (`lib/features/*/‹feature›_providers.dart`)
+- **Routing**: go_router (`lib/routes/app_router.dart`)
+- **API client**: centralized Dio in `lib/api/api_client.dart` with bearer +
+  refresh-on-401 interceptors
+- **Auth**: JWT in `flutter_secure_storage` via `TokenStorage`
+- **Theme**: `lib/theme/app_theme.dart` — dark, Fraunces + Inter via
+  `google_fonts` (no bundled TTFs)
+- **Models**: plain Dart classes in `lib/models/` (no `freezed`/build_runner)
 
-  ```bash
-  dart pub global activate openapi_generator_cli
-  openapi-generator-cli generate \
-    -i ../openapi.yaml \
-    -g dart-dio \
-    -o lib/api
-  ```
+## Screens
 
-- **Auth**: JWT in `flutter_secure_storage`
-- **Video**: Mux HLS via `chewie`
-- **Build**: Codemagic or `fastlane`
+1. `/login` — phone → OTP (Screen 01)
+2. `/home` — dashboard (Screen 02)
+3. `/channel` — placeholder (my channel)
+4. `/consent/:token` — parent consent (public)
 
-## Screens (match web)
+## Tests
 
-1. Login (OTP)
-2. Home / Dashboard
-3. My Channel
-4. Video player
-5. Progress
-6. Parent dashboard + consent
-7. Notifications
+```bash
+flutter test
+```
+
+## Release build (later)
+
+```bash
+flutter build apk --release --dart-define=API_BASE_URL=https://api.viktheatre.in
+flutter build ipa --release --dart-define=API_BASE_URL=https://api.viktheatre.in
+```
