@@ -23,7 +23,7 @@ export default async function HomePage() {
         <nav className="hidden md:flex gap-8 text-sm text-[#C9C9D1]">
           <Link href="/home" className="text-white">Home</Link>
           <a>Channel</a>
-          <a>Progress</a>
+          <Link href="/progress">Progress</Link>
           <a>Library</a>
         </nav>
         <LogoutButton />

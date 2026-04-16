@@ -504,3 +504,14 @@ pnpm e2e                          # landing test (no API needed)
 ```
 
 **CI behavior**: Only `landing.spec.ts` runs in GitHub Actions (no Go API dependency). API-dependent tests (`auth-flow`, `public-channel`) are for local dev and auto-skip when the API is unreachable.
+
+---
+
+## 2026-04-16 · Phase 4 — Progress, Social Hub, Payments (3 parallel agents)
+**Status:** in progress
+
+| Agent | Scope | Screens |
+|---|---|---|
+| H — Progress + Rubric | Go endpoints + Web Screen 6 + Flutter progress | Radar chart, timeline, PDF report |
+| I — Social Hub + Auto-Clip | Go Buffer integration + Web Screens 17-18 + Claude clip AI | Social composer, calendar, auto-clip studio |
+| J — Payments | Go Razorpay + Web enrollment + Flutter fee screen | Order creation, webhook, parent fee view |

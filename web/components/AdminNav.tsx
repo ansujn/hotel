@@ -6,6 +6,7 @@ const TABS = [
   { href: "/batches", label: "Batches" },
   { href: "/upload", label: "Upload" },
   { href: "/social", label: "Social Hub" },
+  { href: "/clips", label: "Auto-Clip" },
 ] as const;
 
 export function AdminNav({ user, active }: { user: User; active?: string }) {

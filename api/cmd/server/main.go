@@ -12,10 +12,14 @@ import (
 	"github.com/viktheatre/api/internal/asset"
 	"github.com/viktheatre/api/internal/auth"
 	"github.com/viktheatre/api/internal/consent"
+	"github.com/viktheatre/api/internal/payment"
 	"github.com/viktheatre/api/internal/platform/config"
 	"github.com/viktheatre/api/internal/platform/db"
 	"github.com/viktheatre/api/internal/platform/httpx"
 	muxpkg "github.com/viktheatre/api/internal/platform/mux"
+	razorpaypkg "github.com/viktheatre/api/internal/platform/razorpay"
+	"github.com/viktheatre/api/internal/progress"
+	"github.com/viktheatre/api/internal/social"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"go.uber.org/zap"
@@ -65,9 +69,20 @@ func main() {
 
 	// When pool is nil (SKIP_DB), asset and consent services are left nil.
 	// The router handles nil gracefully by returning 501 stubs.
+	// Razorpay client: stub when RAZORPAY_KEY_ID is empty.
+	rpClient := razorpaypkg.New(razorpaypkg.Config{
+		KeyID:         cfg.RazorpayKeyID,
+		KeySecret:     cfg.RazorpayKeySecret,
+		WebhookSecret: cfg.RazorpayWebhookSecret,
+	})
+
 	var assetSvc *asset.Service
 	var consentSvc *consent.Service
+	var progressSvc *progress.Service
+	var socialSvc *social.Service
+	var paymentSvc *payment.Service
 	if pool != nil {
+		progressSvc = progress.New(progress.NewPGStore(pool))
 		assetSvc = asset.New(asset.NewPGStore(pool), muxClient, cfg)
 		consentSvc = consent.New(
 			consent.NewPGStore(pool),
@@ -77,6 +92,10 @@ func main() {
 			consent.LogNotifier{Prefix: "consent"},
 		)
 		assetSvc.WireConsent(consentSvc)
+
+		bufferClient := &social.StubBufferClient{Log: logger}
+		socialSvc = social.New(social.NewPGStore(pool), bufferClient, logger)
+		paymentSvc = payment.New(payment.NewPGStore(pool), rpClient)
 	}
 
 	router := httpx.NewRouter(httpx.Deps{
@@ -85,7 +104,10 @@ func main() {
 		Config:  cfg,
 		Auth:    authSvc,
 		Asset:   assetSvc,
-		Consent: consentSvc,
+		Consent:  consentSvc,
+		Progress: progressSvc,
+		Social:   socialSvc,
+		Payment:  paymentSvc,
 	})
 
 	srv := &http.Server{

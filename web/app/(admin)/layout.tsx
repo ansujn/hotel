@@ -22,7 +22,9 @@ export default async function AdminLayout({
       ? "/batches"
       : path.startsWith("/social")
         ? "/social"
-        : "/students";
+        : path.startsWith("/clips")
+          ? "/clips"
+          : "/students";
 
   return (
     <div className="min-h-screen">

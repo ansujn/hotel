@@ -8,7 +8,10 @@ import (
 	"github.com/viktheatre/api/internal/asset"
 	"github.com/viktheatre/api/internal/auth"
 	"github.com/viktheatre/api/internal/consent"
+	"github.com/viktheatre/api/internal/payment"
 	"github.com/viktheatre/api/internal/platform/config"
+	"github.com/viktheatre/api/internal/progress"
+	"github.com/viktheatre/api/internal/social"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -23,7 +26,10 @@ type Deps struct {
 	Config  *config.Config
 	Auth    *auth.Service
 	Asset   *asset.Service
-	Consent *consent.Service
+	Consent  *consent.Service
+	Progress *progress.Service
+	Social   *social.Service
+	Payment  *payment.Service
 }
 
 func NewRouter(d Deps) http.Handler {
@@ -64,6 +70,22 @@ func NewRouter(d Deps) http.Handler {
 			}
 		})
 
+		// progress + rubric + notes (auth required)
+		r.Group(func(r chi.Router) {
+			r.Use(d.Auth.RequireAuth)
+			if d.Progress != nil {
+				r.Get("/students/{id}/progress", d.Progress.HandleGetProgress)
+				r.Get("/assets/{id}/rubric", d.Progress.HandleGetRubric)
+				r.Post("/assets/{id}/notes", d.Progress.HandleAddNote)
+				r.Get("/assets/{id}/notes", d.Progress.HandleGetNotes)
+			} else {
+				r.Get("/students/{id}/progress", stub("student progress"))
+				r.Get("/assets/{id}/rubric", stub("asset rubric"))
+				r.Post("/assets/{id}/notes", stub("add note"))
+				r.Get("/assets/{id}/notes", stub("list notes"))
+			}
+		})
+
 		// admin (admin|instructor)
 		r.Route("/admin", func(r chi.Router) {
 			r.Use(d.Auth.RequireAuth)
@@ -71,8 +93,43 @@ func NewRouter(d Deps) http.Handler {
 			if d.Asset != nil {
 				r.Post("/assets", d.Asset.HandleCreate)
 				r.Post("/assets/{id}/publish", d.Asset.HandlePublish)
+			}
+			if d.Progress != nil {
+				r.Post("/assets/{id}/rubric", d.Progress.HandleScoreAsset)
 			} else {
+				r.Post("/assets/{id}/rubric", stub("score asset"))
+			}
+			if d.Asset == nil {
 				r.Post("/assets", stub("admin create asset"))
+			}
+
+			// Social hub
+			if d.Social != nil {
+				r.Get("/social/library", d.Social.HandleLibrary)
+				r.Post("/social/posts", d.Social.HandleCreatePost)
+				r.Get("/social/posts", d.Social.HandleListPosts)
+				r.Post("/social/posts/{id}/schedule", d.Social.HandleSchedulePost)
+				r.Get("/assets/{id}/clips", d.Social.HandleSuggestClips)
+			} else {
+				r.Get("/social/library", stub("social library"))
+				r.Post("/social/posts", stub("social create post"))
+				r.Get("/social/posts", stub("social list posts"))
+				r.Post("/social/posts/{id}/schedule", stub("social schedule"))
+				r.Get("/assets/{id}/clips", stub("clip suggestions"))
+			}
+		})
+
+		// payments (auth required, parent role)
+		r.Group(func(r chi.Router) {
+			r.Use(d.Auth.RequireAuth)
+			if d.Payment != nil {
+				r.Post("/payments/order", d.Payment.HandleCreateOrder)
+				r.Get("/payments", d.Payment.HandleListPayments)
+				r.Get("/payments/dues", d.Payment.HandleGetDues)
+			} else {
+				r.Post("/payments/order", stub("create payment order"))
+				r.Get("/payments", stub("list payments"))
+				r.Get("/payments/dues", stub("get dues"))
 			}
 		})
 
@@ -89,7 +146,11 @@ func NewRouter(d Deps) http.Handler {
 		} else {
 			r.Post("/webhooks/mux", stub("mux webhook"))
 		}
-		r.Post("/webhooks/razorpay", stub("razorpay webhook"))
+		if d.Payment != nil {
+			r.Post("/webhooks/razorpay", d.Payment.HandleWebhookHTTP)
+		} else {
+			r.Post("/webhooks/razorpay", stub("razorpay webhook"))
+		}
 	})
 
 	return r

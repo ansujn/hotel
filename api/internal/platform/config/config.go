@@ -20,6 +20,10 @@ type Config struct {
 
 	ResendAPIKey string `envconfig:"RESEND_API_KEY"`
 	AppBaseURL   string `envconfig:"APP_BASE_URL" default:"http://localhost:3000"`
+
+	RazorpayKeyID         string `envconfig:"RAZORPAY_KEY_ID"`
+	RazorpayKeySecret     string `envconfig:"RAZORPAY_KEY_SECRET"`
+	RazorpayWebhookSecret string `envconfig:"RAZORPAY_WEBHOOK_SECRET"`
 }
 
 func Load() (*Config, error) {
