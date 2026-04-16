@@ -48,3 +48,56 @@ export interface TokenPair {
   access_token: string;
   refresh_token: string;
 }
+
+export type AssetType = "monologue" | "scene" | "showcase" | "catalog";
+export type AssetPrivacy = "private" | "pending_consent" | "public";
+
+export interface Asset {
+  id: string;
+  title: string;
+  type: AssetType;
+  mux_playback_id?: string;
+  duration_s?: number;
+  privacy: AssetPrivacy;
+  created_at: string;
+}
+
+export interface StudentSummary {
+  id: string;
+  name?: string;
+  role: string;
+  locale: string;
+}
+
+export interface Channel {
+  student: StudentSummary;
+  assets: Asset[];
+}
+
+export interface RubricScore {
+  dimension: string;
+  score: number;
+}
+
+export type ConsentStatus = "pending" | "signed" | "revoked";
+
+export interface ConsentItem {
+  id: string;
+  asset_id: string;
+  scope_channel?: boolean;
+  scope_social?: boolean;
+  scope_print?: boolean;
+  scope_valid_months?: 6 | 12 | 24;
+  status: ConsentStatus;
+  signed_at?: string;
+  pdf_url?: string;
+}
+
+export interface StudentListItem {
+  id: string;
+  name?: string;
+  phone?: string;
+  batch_name?: string;
+  asset_count?: number;
+  consent_status?: "none" | "pending" | "signed";
+}

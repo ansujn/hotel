@@ -415,3 +415,92 @@ curl -s localhost:8080/v1/students/$STU/channel
 - Language toggle is a `role="group"` with `aria-pressed` on each option.
 - Focus rings preserved (`focus-visible:ring-[#E8C872]/60`).
 - Success/error messages use `role="alert"`.
+
+---
+
+## 2026-04-15 · Phase 3 — Hardening (3 parallel agents)
+**Status:** in progress
+
+Goal: prove everything compiles, sync contract, add e2e smoke test.
+
+| Agent | Folder | Task |
+|---|---|---|
+| E — Go build fix | `api/` | `go mod tidy`, fix Phase 2 compile errors, stub mode runnable without sqlc, integration smoke test |
+| F — Contract sync | `openapi.yaml` + `web/lib/` | Update openapi.yaml for Phase 2 additions; regenerate TS types; add missing Go route stubs |
+| G — e2e smoke | `web/tests/` + `.github/` | Playwright happy path + wire into CI |
+
+### Agent E report (Phase 3)
+
+**What broke:**
+- `api/internal/db/store.go` imported a non-existent `dbq` package (sqlc was never run). This was the only compile error.
+- No `go.sum` existed (never ran `go mod tidy`).
+
+**What was fixed:**
+1. Rewrote `internal/db/store.go` to remove `dbq` import; `Store` now wraps `*pgxpool.Pool` only with a TODO for sqlc.
+2. Ran `go mod tidy` to generate `go.sum` with all transitive deps.
+3. Added `SKIP_DB=true` support in `cmd/server/main.go`: skips DB connection, leaves `asset` and `consent` services nil (router handles nil with 501 stubs).
+4. Updated `api/README.md` env var table with `SKIP_DB`.
+
+**Final output:**
+- `go build ./...` — clean
+- `go vet ./...` — clean
+- `go test ./...` — 4/4 test packages pass (asset, auth, consent, mux)
+- `SKIP_DB=true` server boots, logs warn, serves health + auth routes, stubs DB-dependent endpoints.
+
+### Agent F report (Phase 3)
+
+**Scope:** Contract sync — `openapi.yaml` + `web/lib/api.ts`.
+
+**Endpoints added to openapi.yaml:**
+- `POST /admin/assets/{id}/publish` — triggers consent flow (202 Accepted)
+- `GET /consent/{token}` — fetch consent context for parent preview UI
+- `GET /parent/consents` — list all consents for logged-in parent
+- `GET /parent/consents/pending` — pending consent count
+- `GET /admin/students` — list students for admin table
+
+**Schemas added to openapi components:**
+- `RubricScore` (dimension + score)
+- `ConsentItem` (id, asset_id, scope fields, status, signed_at, pdf_url)
+- `StudentListItem` (id, name, phone, batch_name, asset_count, consent_status)
+- `Channel.student` expanded inline with id/name/role/locale (matches Go `StudentSummary`)
+
+**TypeScript types added to `web/lib/api.ts`:**
+- `Asset`, `AssetType`, `AssetPrivacy`
+- `StudentSummary`, `Channel`
+- `RubricScore`
+- `ConsentItem`, `ConsentStatus`
+- `StudentListItem`
+
+**What web/mobile devs can now consume:**
+- Web devs can import `Asset`, `Channel`, `ConsentItem`, `StudentListItem`, `RubricScore` from `@/lib/api` and type all Phase 2 API calls.
+- Mobile (Dart) devs can regenerate types from `openapi.yaml` using any OpenAPI-to-Dart generator; all Phase 2 endpoints are now documented.
+- The existing `User`, `TokenPair`, `UserRole` types are preserved.
+
+### Agent G report (Phase 3)
+**Status:** done
+
+Added Playwright e2e smoke tests for the web app happy path and wired into CI.
+
+**Files created**
+- `web/playwright.config.ts` — Chromium-only, baseURL `localhost:3000`, webServer `pnpm dev`, 1 retry on CI
+- `web/tests/landing.spec.ts` — Headline, 4 class cards, login link (no API needed)
+- `web/tests/auth-flow.spec.ts` — Middleware redirect, OTP login flow, logout (`@requires-api`, auto-skips)
+- `web/tests/public-channel.spec.ts` — Channel page loads without crash (`@requires-api`, auto-skips)
+- `web/tests/README.md` — How to run locally and with API
+
+**Files modified**
+- `web/package.json` — Added `@playwright/test ^1.47.0` devDep, `e2e` and `e2e:ui` scripts
+- `.github/workflows/web.yml` — Added `e2e` job after `check`: installs Playwright browsers, runs `landing.spec.ts` only, uploads HTML report artifact
+
+**How to run**
+```bash
+cd web
+npx playwright install chromium   # one-time
+pnpm e2e                          # landing test (no API needed)
+
+# With API for full suite:
+# Terminal 1: cd api && make dev
+# Terminal 2: cd web && pnpm e2e
+```
+
+**CI behavior**: Only `landing.spec.ts` runs in GitHub Actions (no Go API dependency). API-dependent tests (`auth-flow`, `public-channel`) are for local dev and auto-skip when the API is unreachable.

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"net/http"
+	"os"
 	"os/signal"
 	"syscall"
 	"time"
@@ -16,6 +17,7 @@ import (
 	"github.com/viktheatre/api/internal/platform/httpx"
 	muxpkg "github.com/viktheatre/api/internal/platform/mux"
 
+	"github.com/jackc/pgx/v5/pgxpool"
 	"go.uber.org/zap"
 )
 
@@ -31,11 +33,19 @@ func main() {
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
 
-	pool, err := db.Connect(ctx, cfg.DatabaseURL)
-	if err != nil {
-		logger.Fatal("db connect", zap.Error(err))
+	skipDB := os.Getenv("SKIP_DB") == "true"
+
+	var pool *pgxpool.Pool
+	if skipDB {
+		logger.Warn("SKIP_DB=true: running without a database connection; DB-dependent endpoints will return 503")
+	} else {
+		p, err := db.Connect(ctx, cfg.DatabaseURL)
+		if err != nil {
+			logger.Fatal("db connect", zap.Error(err))
+		}
+		pool = p
+		defer pool.Close()
 	}
-	defer pool.Close()
 
 	var msg91 auth.MSG91Client
 	if cfg.AppEnv != "local" && cfg.MSG91AuthKey != "" {
@@ -53,15 +63,21 @@ func main() {
 		StubBaseURL:       "http://localhost:" + cfg.Port,
 	})
 
-	assetSvc := asset.New(asset.NewPGStore(pool), muxClient, cfg)
-	consentSvc := consent.New(
-		consent.NewPGStore(pool),
-		cfg,
-		authSvc.Issuer(),
-		authSvc,
-		consent.LogNotifier{Prefix: "consent"},
-	)
-	assetSvc.WireConsent(consentSvc)
+	// When pool is nil (SKIP_DB), asset and consent services are left nil.
+	// The router handles nil gracefully by returning 501 stubs.
+	var assetSvc *asset.Service
+	var consentSvc *consent.Service
+	if pool != nil {
+		assetSvc = asset.New(asset.NewPGStore(pool), muxClient, cfg)
+		consentSvc = consent.New(
+			consent.NewPGStore(pool),
+			cfg,
+			authSvc.Issuer(),
+			authSvc,
+			consent.LogNotifier{Prefix: "consent"},
+		)
+		assetSvc.WireConsent(consentSvc)
+	}
 
 	router := httpx.NewRouter(httpx.Deps{
 		Log:     logger,

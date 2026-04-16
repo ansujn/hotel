@@ -97,6 +97,71 @@ paths:
       responses:
         "200": { description: signed }
 
+  /admin/assets/{id}/publish:
+    post:
+      summary: Request publish / trigger consent flow for an asset
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        "202": { description: accepted — consent request dispatched }
+        "404": { description: asset not found }
+
+  /consent/{token}:
+    get:
+      summary: Fetch consent context (preview) for the parent consent UI
+      security: []
+      parameters:
+        - { name: token, in: path, required: true, schema: { type: string } }
+      responses:
+        "200":
+          description: consent context
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  asset: { $ref: "#/components/schemas/Asset" }
+                  student: { $ref: "#/components/schemas/User" }
+                  batch_name: { type: string }
+        "404": { description: invalid or expired token }
+
+  /parent/consents:
+    get:
+      summary: List all consents for the logged-in parent
+      responses:
+        "200":
+          description: consent list
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/ConsentItem" }
+
+  /parent/consents/pending:
+    get:
+      summary: Pending consent count for the logged-in parent
+      responses:
+        "200":
+          description: pending count
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count: { type: integer }
+
+  /admin/students:
+    get:
+      summary: List students for admin table
+      responses:
+        "200":
+          description: student list
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/StudentListItem" }
+
   /webhooks/mux:
     post:
       summary: Mux webhook (asset.ready etc.)
@@ -151,7 +216,13 @@ components:
     Channel:
       type: object
       properties:
-        student: { $ref: "#/components/schemas/User" }
+        student:
+          type: object
+          properties:
+            id: { type: string, format: uuid }
+            name: { type: string }
+            role: { type: string }
+            locale: { type: string }
         assets:
           type: array
           items: { $ref: "#/components/schemas/Asset" }
@@ -184,6 +255,37 @@ components:
       properties:
         asset_id:           { type: string, format: uuid }
         mux_upload_url:     { type: string }
+
+    RubricScore:
+      type: object
+      required: [dimension, score]
+      properties:
+        dimension: { type: string, example: voice_projection }
+        score: { type: integer, minimum: 0, maximum: 100 }
+
+    ConsentItem:
+      type: object
+      required: [id, asset_id, status]
+      properties:
+        id: { type: string, format: uuid }
+        asset_id: { type: string, format: uuid }
+        scope_channel: { type: boolean }
+        scope_social: { type: boolean }
+        scope_print: { type: boolean }
+        scope_valid_months: { type: integer, enum: [6, 12, 24] }
+        status: { type: string, enum: [pending, signed, revoked] }
+        signed_at: { type: string, format: date-time }
+        pdf_url: { type: string }
+
+    StudentListItem:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        phone: { type: string }
+        batch_name: { type: string }
+        asset_count: { type: integer }
+        consent_status: { type: string, enum: [none, pending, signed] }
 
     ConsentSignReq:
       type: object

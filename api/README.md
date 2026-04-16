@@ -15,6 +15,7 @@ Requires env (set via `.env` or shell):
 | `APP_ENV` | no (default `local`) | `local` bypasses MSG91 |
 | `API_PORT` | no (default `8080`) | |
 | `DATABASE_URL` | yes | Postgres DSN |
+| `SKIP_DB` | no | Set `true` to boot without DB; DB-dependent endpoints return 501 |
 | `JWT_SECRET` | yes | HS256 signing key |
 | `MSG91_AUTH_KEY` | prod only | MSG91 REST auth key |
 | `MSG91_TEMPLATE_ID` | prod only | OTP template |
