@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { User } from "@/lib/api";
+import { NotificationBell } from "@/components/NotificationBell";
 
 const TABS = [
   { href: "/students", label: "Students" },
@@ -46,6 +47,8 @@ export function AdminNav({ user, active }: { user: User; active?: string }) {
           })}
         </nav>
         <div className="flex items-center gap-3">
+          {/* TODO: replace 0 with real unread count from API */}
+          <NotificationBell unreadCount={2} />
           <div className="text-right text-xs hidden md:block">
             <div className="text-white font-medium">{user.name ?? "Admin"}</div>
             <div className="text-[#8A8A96] capitalize">{user.role}</div>

@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { requireSession } from "@/lib/auth";
+import { NotificationBell } from "@/components/NotificationBell";
 import { LogoutButton } from "./logout-button";
 
 const announcements = [
@@ -12,6 +14,15 @@ const progress = 72;
 
 export default async function HomePage() {
   const { user } = await requireSession();
+
+  // Role-aware post-login routing. The /home route is the canonical landing
+  // after login; parents and staff should be kicked to their own dashboards.
+  if (user.role === "parent") redirect("/parent");
+  if (user.role === "admin" || user.role === "instructor") {
+    redirect("/admin/students");
+  }
+  // Students (and any other roles) stay on this dashboard.
+
   const firstName = user.name?.split(" ")[0] ?? "friend";
 
   return (
@@ -26,7 +37,11 @@ export default async function HomePage() {
           <Link href="/progress">Progress</Link>
           <a>Library</a>
         </nav>
-        <LogoutButton />
+        <div className="flex items-center gap-3">
+          {/* TODO: replace 0 with real unread count from API */}
+          <NotificationBell unreadCount={3} />
+          <LogoutButton />
+        </div>
       </header>
 
       <section className="max-w-6xl mx-auto px-8 pt-6 pb-10">

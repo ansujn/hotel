@@ -515,3 +515,130 @@ pnpm e2e                          # landing test (no API needed)
 | H — Progress + Rubric | Go endpoints + Web Screen 6 + Flutter progress | Radar chart, timeline, PDF report |
 | I — Social Hub + Auto-Clip | Go Buffer integration + Web Screens 17-18 + Claude clip AI | Social composer, calendar, auto-clip studio |
 | J — Payments | Go Razorpay + Web enrollment + Flutter fee screen | Order creation, webhook, parent fee view |
+
+---
+
+## 2026-04-16 · Phase 5 — Contract sync + Deploy prep + Remaining screens (3 parallel agents)
+**Status:** in progress
+
+| Agent | Scope |
+|---|---|
+| K — Contract sync | openapi.yaml + web TS types (10+ new Phase 4 endpoints); add missing social_posts migration if needed |
+| L — Deploy prep | Fly.io secrets script, Vercel config, Neon setup doc, one-command deploy, DEPLOY.md |
+| M — Remaining screens | Screen 11 (Batches Kanban) + Screen 12 (Notifications) + role-based post-login routing |
+
+### Agent L report (Phase 5)
+
+**Artifacts shipped:**
+- `docs/DEPLOY.md` — 8-step production runbook (Neon -> goose -> Fly -> Vercel -> DNS -> webhooks -> smoke -> rollback/monitoring).
+- `docs/OPERATIONS.md` — day-2 ops: log tail, ssh, prod migrations, dual-key JWT rotation, on-call runbook for DB/Mux/MSG91/Razorpay alerts.
+- `api/fly.toml` — hardened: `min_machines_running=1`, `auto_stop_machines="stop"`, HTTP `/v1/health` check (15s interval, 10s grace), TCP liveness, `[metrics]` on :9091, release-command TODO stub.
+- `web/vercel.json` — framework=nextjs, region `bom1` (iad1 fallback noted), full security headers incl. CSP whitelisting `stream.mux.com`/`image.mux.com`/`api.viktheatre.in`/PostHog/Sentry.
+- `.env.production.example` — prod-shaped mirror of `.env.example` with provider hints (Neon pooled URL format, Razorpay LIVE reminder, DLT note).
+- `scripts/set-fly-secrets.sh` — parses `.env.production`, filters `NEXT_PUBLIC_*`, stages + deploys in one restart. Idempotent.
+- `scripts/set-vercel-env.sh` — pushes `NEXT_PUBLIC_*` to production/preview/development; rm-then-add for idempotency.
+- `scripts/deploy-all.sh` — orchestrates migrate -> fly deploy -> vercel --prod -> curl smoke. Confirm prompt per stage.
+- Root `README.md` — new Deploy section + Production URLs table.
+- `.gitignore` — adds `.env.production`, `.env.staging`.
+
+**Ready now (no live creds required):** all configs lint-clean; shell scripts use `set -euo pipefail` and portable bash (no GNU-only flags); fly.toml and vercel.json validate against their schemas.
+
+**Blocks on live credentials:**
+- Neon project creation + `DATABASE_URL`.
+- Fly org token, `viktheatre-api` app creation (`fly launch`).
+- Vercel project link (`vercel link` in `web/`).
+- Mux/MSG91/Razorpay/Resend/Anthropic/Sentry/PostHog keys.
+- Cloudflare zone + `api.viktheatre.in` certificate issuance.
+- Future: `./server --migrate` flag (Phase 6) so `[deploy].release_command` can be uncommented.
+
+**First-deploy quickstart (10 lines):**
+```bash
+cp .env.production.example .env.production            # fill in all values
+chmod +x scripts/*.sh
+fly auth login && (cd web && vercel login && vercel link)
+export DATABASE_URL=$(grep ^DATABASE_URL= .env.production | cut -d= -f2-)
+goose -dir api/migrations postgres "$DATABASE_URL" up
+(cd api && fly launch --no-deploy --copy-config --name viktheatre-api --region bom)
+./scripts/set-fly-secrets.sh viktheatre-api
+(cd api && fly deploy --remote-only)
+./scripts/set-vercel-env.sh production && (cd web && vercel --prod)
+curl -fsS https://api.viktheatre.in/v1/health && echo OK
+```
+
+### Agent K report (Phase 5)
+
+**Contract sync — openapi.yaml + web/lib/api.ts + migrations**
+
+Endpoints added to `openapi.yaml`:
+- `GET /students/{id}/progress`
+- `GET /assets/{id}/rubric`
+- `GET /assets/{id}/notes`, `POST /assets/{id}/notes`
+- `POST /admin/assets/{id}/rubric`
+- `GET /admin/social/library`
+- `GET /admin/social/posts`, `POST /admin/social/posts`
+- `POST /admin/social/posts/{id}/schedule`
+- `GET /admin/assets/{id}/clips`
+- `POST /payments/order`, `GET /payments`, `GET /payments/dues`
+
+Fixes:
+- Merged duplicate `/consent/{token}` path key (get + post now nested under one path, OpenAPI 3.1-compliant).
+
+Schemas added to `components.schemas`:
+- `Progress`, `ProgressDimension`, `ProgressTimelineEntry`
+- `Note`
+- `SocialPlatform` (enum), `SocialLibraryItem`, `SocialPost`
+- `ClipSuggestion`
+- `Payment`, `PaymentOrder`, `Dues`
+
+TS types added to `web/lib/api.ts` (preserving all existing interfaces):
+- `Progress`, `ProgressDimension`, `ProgressTimelineEntry`
+- `Note`
+- `SocialPlatform`, `SocialLibraryItem`, `SocialPost`, `SocialPostStatus`
+- `ClipSuggestion`
+- `Payment`, `PaymentStatus`, `PaymentOrder`, `Dues`
+
+Migration: `api/migrations/20260416000001_phase4.sql`
+- NO-OP (explanatory comments + `SELECT 1` on Up/Down).
+- Audit against Go code: `rubric_scores`, `notes`, `social_posts`, `payments`, `consents` all already present in `20260415000001_init.sql`. Consent tokens are JWT-only. Clip suggestions and social library are computed live (no persistence). Nothing to add.
+
+**Phase 6 should cover:**
+- sqlc-generated queries for Phase 4 tables (currently raw pgx in `social/store_pg.go`).
+- Server-side codegen from `openapi.yaml` (oapi-codegen) so handler signatures are contract-checked.
+- Mobile Dart client regeneration from updated openapi.
+- Payment reconciliation migration (indexes on `payments(user_id, period)`, unique constraint on `razorpay_order_id`).
+- Social post lifecycle indexes (`social_posts(scheduled_at)`, `social_posts(status)`).
+
+### Agent M report (Phase 5)
+
+**Files created**
+- `web/app/(admin)/batches/page.tsx` — server component, admin/instructor gate, 3-column kanban from stub data.
+- `web/app/(admin)/batches/actions.ts` — `moveStudentAction` server action (stub; logs + returns ok).
+- `web/components/BatchesBoard.tsx` — client island; HTML5 drag-and-drop between columns, per-card `<select>` fallback for a11y, calls `moveStudentAction` in a transition.
+- `web/app/(app)/notifications/page.tsx` — server component, 5-notification stub (gold/green/purple/blue/red tiers matching Screen 12).
+- `web/components/NotificationsList.tsx` — client island; per-item and mark-all-read, empty state with 🎭.
+- `web/app/api/notifications/mark-read/route.ts` — stub route handler returning `{ ok: true }`.
+- `web/components/NotificationBell.tsx` — server component bell with unread dot; embedded in `AdminNav` and the student `/home` header.
+- `mobile/lib/features/notifications/{notifications_repository.dart,notifications_providers.dart,notifications_screen.dart}` — Riverpod + screen, tries `GET /v1/notifications` and falls back to the same 5-item stub.
+
+**Files modified**
+- `web/app/(app)/home/page.tsx` — role-aware redirect + bell in header.
+- `web/components/AdminNav.tsx` — NotificationBell added next to profile chip.
+- `web/middleware.ts` — `/notifications` and `/admin/batches` added to protected list and matcher.
+- `mobile/lib/routes/app_router.dart` — `/notifications` route.
+- `mobile/lib/features/home/home_screen.dart` — bell icon navigating to `/notifications`.
+
+**Role-aware post-login routing (end-to-end)**
+1. User submits `/login` → API returns session cookies → middleware lets them through.
+2. Login redirect lands on `/home` (gated by `requireSession`).
+3. `/home` inspects `user.role`:
+   - `parent` → `redirect('/parent')`
+   - `admin` | `instructor` → `redirect('/admin/students')`
+   - `student` → existing dashboard renders.
+4. Admin layout (`(admin)/layout.tsx`) still re-checks role and bounces non-staff back to `/home`, so deep-links to `/admin/**` stay safe.
+5. Flutter `app_router.dart` already performs the same split (parent → `/parent`, else `/home`) so the two clients agree.
+
+**Known gaps (endpoints TBD)**
+- `POST /v1/notifications/mark-read` and `GET /v1/notifications` — mobile repo + web route handler currently stub success.
+- `GET /v1/notifications/unread-count` — bell unread count is hardcoded in both top navs.
+- `GET/POST /v1/admin/batches` and `POST /v1/admin/batches/{id}/students/{studentId}` — batch list and move action are stubs; Add Batch button is a TODO placeholder.
+- Channel/progress mobile screens do not yet embed a bell (progress screen doesn't exist yet; channel screen has no AppBar surface).

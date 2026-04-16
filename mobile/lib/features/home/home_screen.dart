@@ -23,6 +23,11 @@ class HomeScreen extends ConsumerWidget {
         elevation: 0,
         actions: <Widget>[
           IconButton(
+            tooltip: 'Notifications',
+            onPressed: () => context.push('/notifications'),
+            icon: const Icon(Icons.notifications_outlined),
+          ),
+          IconButton(
             onPressed: () => ref.read(authStateProvider.notifier).logout(),
             icon: const Icon(Icons.logout),
           ),

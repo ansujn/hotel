@@ -49,4 +49,24 @@ flutter run
 - [`docs/PROJECT_PLAN.md`](docs/PROJECT_PLAN.md)
 - [`docs/TECH_PIPELINE.md`](docs/TECH_PIPELINE.md)
 - [`docs/FIGMA_WIREFRAMES.md`](docs/FIGMA_WIREFRAMES.md)
+- [`docs/DEPLOY.md`](docs/DEPLOY.md) — production deploy runbook
+- [`docs/OPERATIONS.md`](docs/OPERATIONS.md) — day-2 ops cheatsheet
 - [`docs/mockups.html`](docs/mockups.html) — visual preview
+
+## Deploy
+
+See [`docs/DEPLOY.md`](docs/DEPLOY.md) for the full runbook. TL;DR once credentials are in `.env.production`:
+
+```bash
+chmod +x scripts/*.sh           # first time only
+./scripts/deploy-all.sh         # migrations -> API -> web -> smoke test
+```
+
+### Production URLs
+
+| Surface | URL                              | Hosted on       |
+| ------- | -------------------------------- | --------------- |
+| Web     | https://viktheatre.in            | Vercel (`bom1`) |
+| API     | https://api.viktheatre.in        | Fly.io (`bom`)  |
+| DB      | (Neon internal)                  | Neon (`ap-south-1`) |
+| Status  | https://status.viktheatre.in     | BetterStack     |

@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 
 // `/channel/**` is intentionally public — the API filters private assets per viewer.
-const PROTECTED = ["/home", "/progress", "/admin", "/upload", "/students", "/batches", "/social", "/parent"];
+const PROTECTED = ["/home", "/progress", "/admin", "/upload", "/students", "/batches", "/social", "/parent", "/notifications"];
 
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
@@ -30,5 +30,6 @@ export const config = {
     "/batches/:path*",
     "/social/:path*",
     "/parent/:path*",
+    "/notifications/:path*",
   ],
 };

@@ -84,6 +84,23 @@ paths:
               schema: { $ref: "#/components/schemas/AssetCreateRes" }
 
   /consent/{token}:
+    get:
+      summary: Fetch consent context (preview) for the parent consent UI
+      security: []
+      parameters:
+        - { name: token, in: path, required: true, schema: { type: string } }
+      responses:
+        "200":
+          description: consent context
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  asset: { $ref: "#/components/schemas/Asset" }
+                  student: { $ref: "#/components/schemas/User" }
+                  batch_name: { type: string }
+        "404": { description: invalid or expired token }
     post:
       summary: Parent signs consent
       security: []
@@ -106,24 +123,188 @@ paths:
         "202": { description: accepted — consent request dispatched }
         "404": { description: asset not found }
 
-  /consent/{token}:
+  /students/{id}/progress:
     get:
-      summary: Fetch consent context (preview) for the parent consent UI
-      security: []
+      summary: Student progress report — rubric averages + timeline
       parameters:
-        - { name: token, in: path, required: true, schema: { type: string } }
+        - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
       responses:
         "200":
-          description: consent context
+          description: progress report
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Progress" }
+
+  /assets/{id}/rubric:
+    get:
+      summary: Rubric scores for a single asset
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        "200":
+          description: rubric scores
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  asset: { $ref: "#/components/schemas/Asset" }
-                  student: { $ref: "#/components/schemas/User" }
-                  batch_name: { type: string }
-        "404": { description: invalid or expired token }
+                type: array
+                items: { $ref: "#/components/schemas/RubricScore" }
+
+  /assets/{id}/notes:
+    get:
+      summary: List notes on an asset
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        "200":
+          description: notes
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Note" }
+    post:
+      summary: Add a note to an asset
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [body]
+              properties:
+                body: { type: string }
+                private: { type: boolean }
+      responses:
+        "201":
+          description: created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Note" }
+
+  /admin/assets/{id}/rubric:
+    post:
+      summary: Score an asset on one rubric dimension (admin/instructor)
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/RubricScore" }
+      responses:
+        "201": { description: scored }
+
+  /admin/social/library:
+    get:
+      summary: List assets eligible for social posting (consented + public)
+      responses:
+        "200":
+          description: library
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/SocialLibraryItem" }
+
+  /admin/social/posts:
+    get:
+      summary: List social posts for the current week
+      responses:
+        "200":
+          description: posts
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/SocialPost" }
+    post:
+      summary: Create a social post (queued)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [asset_id, platforms, caption, scheduled_at]
+              properties:
+                asset_id: { type: string, format: uuid }
+                platforms:
+                  type: array
+                  items: { $ref: "#/components/schemas/SocialPlatform" }
+                caption: { type: string }
+                scheduled_at: { type: string, format: date-time }
+      responses:
+        "201":
+          description: created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SocialPost" }
+
+  /admin/social/posts/{id}/schedule:
+    post:
+      summary: Push a queued post to Buffer for scheduling
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        "200": { description: scheduled }
+
+  /admin/assets/{id}/clips:
+    get:
+      summary: AI-suggested clips for a longer video asset
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        "200":
+          description: clip suggestions
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/ClipSuggestion" }
+
+  /payments/order:
+    post:
+      summary: Create a Razorpay order for a fee period
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [period, amount_paise]
+              properties:
+                period: { type: string, example: "2026-05" }
+                amount_paise: { type: integer, format: int64 }
+      responses:
+        "200":
+          description: order created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/PaymentOrder" }
+
+  /payments:
+    get:
+      summary: List payments for the authenticated parent
+      responses:
+        "200":
+          description: payments
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Payment" }
+
+  /payments/dues:
+    get:
+      summary: Pending due for the authenticated parent
+      responses:
+        "200":
+          description: pending due
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Dues" }
 
   /parent/consents:
     get:
@@ -286,6 +467,116 @@ components:
         batch_name: { type: string }
         asset_count: { type: integer }
         consent_status: { type: string, enum: [none, pending, signed] }
+
+    ProgressDimension:
+      type: object
+      required: [dimension, score]
+      properties:
+        dimension: { type: string }
+        score: { type: integer, minimum: 0, maximum: 100 }
+
+    ProgressTimelineEntry:
+      type: object
+      required: [date, asset_id, asset_title, scores]
+      properties:
+        date: { type: string, format: date-time }
+        asset_id: { type: string, format: uuid }
+        asset_title: { type: string }
+        scores:
+          type: array
+          items: { $ref: "#/components/schemas/ProgressDimension" }
+        note: { type: string }
+
+    Progress:
+      type: object
+      required: [averages, timeline]
+      properties:
+        averages:
+          type: array
+          items: { $ref: "#/components/schemas/ProgressDimension" }
+        timeline:
+          type: array
+          items: { $ref: "#/components/schemas/ProgressTimelineEntry" }
+
+    Note:
+      type: object
+      required: [id, asset_id, author_id, body, private, created_at]
+      properties:
+        id: { type: string, format: uuid }
+        asset_id: { type: string, format: uuid }
+        author_id: { type: string, format: uuid }
+        body: { type: string }
+        private: { type: boolean }
+        created_at: { type: string, format: date-time }
+
+    SocialPlatform:
+      type: string
+      enum: [ig_reel, yt_short, fb, linkedin]
+
+    SocialLibraryItem:
+      type: object
+      required: [id, title]
+      properties:
+        id: { type: string, format: uuid }
+        title: { type: string }
+        student_name: { type: string }
+        mux_playback_id: { type: string }
+        duration_s: { type: integer }
+        thumbnail: { type: string }
+
+    SocialPost:
+      type: object
+      required: [id, platforms, caption, status, created_at]
+      properties:
+        id: { type: string, format: uuid }
+        asset_id: { type: string, format: uuid }
+        platforms:
+          type: array
+          items: { $ref: "#/components/schemas/SocialPlatform" }
+        caption: { type: string }
+        scheduled_at: { type: string, format: date-time }
+        buffer_id: { type: string }
+        status: { type: string, enum: [queued, scheduled, posted, failed] }
+        created_at: { type: string, format: date-time }
+        asset_title: { type: string }
+        student_name: { type: string }
+        thumbnail: { type: string }
+
+    ClipSuggestion:
+      type: object
+      required: [start_s, end_s, title, reason]
+      properties:
+        start_s: { type: integer }
+        end_s: { type: integer }
+        title: { type: string }
+        reason: { type: string }
+
+    Payment:
+      type: object
+      required: [id, user_id, amount_paise, status, created_at]
+      properties:
+        id: { type: string, format: uuid }
+        user_id: { type: string, format: uuid }
+        razorpay_order_id: { type: string }
+        amount_paise: { type: integer, format: int64 }
+        status: { type: string, enum: [created, paid, failed] }
+        period: { type: string, example: "2026-05" }
+        created_at: { type: string, format: date-time }
+
+    PaymentOrder:
+      type: object
+      required: [order_id, razorpay_key_id, amount_paise]
+      properties:
+        order_id: { type: string }
+        razorpay_key_id: { type: string }
+        amount_paise: { type: integer, format: int64 }
+
+    Dues:
+      type: object
+      required: [period, amount_paise]
+      properties:
+        period: { type: string, example: "2026-05" }
+        amount_paise: { type: integer, format: int64 }
 
     ConsentSignReq:
       type: object

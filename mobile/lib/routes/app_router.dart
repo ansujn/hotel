@@ -8,6 +8,7 @@ import '../features/channel/channel_screen.dart';
 import '../features/channel/video_detail_screen.dart';
 import '../features/consent/consent_screen.dart';
 import '../features/home/home_screen.dart';
+import '../features/notifications/notifications_screen.dart';
 import '../features/parent/parent_home_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
@@ -74,6 +75,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             builder: (_, __) => const ParentHomeScreen(),
           ),
         ],
+      ),
+      GoRoute(
+        path: '/notifications',
+        builder: (_, __) => const NotificationsScreen(),
       ),
       GoRoute(
         path: '/consent/:token',

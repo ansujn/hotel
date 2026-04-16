@@ -101,3 +101,89 @@ export interface StudentListItem {
   asset_count?: number;
   consent_status?: "none" | "pending" | "signed";
 }
+
+// --- Phase 4: progress, notes, social, payments ---
+
+export interface ProgressDimension {
+  dimension: string;
+  score: number;
+}
+
+export interface ProgressTimelineEntry {
+  date: string;
+  asset_id: string;
+  asset_title: string;
+  scores: ProgressDimension[];
+  note?: string;
+}
+
+export interface Progress {
+  averages: ProgressDimension[];
+  timeline: ProgressTimelineEntry[];
+}
+
+export interface Note {
+  id: string;
+  asset_id: string;
+  author_id: string;
+  body: string;
+  private: boolean;
+  created_at: string;
+}
+
+export type SocialPlatform = "ig_reel" | "yt_short" | "fb" | "linkedin";
+
+export interface SocialLibraryItem {
+  id: string;
+  title: string;
+  student_name?: string;
+  mux_playback_id?: string;
+  duration_s?: number;
+  thumbnail?: string;
+}
+
+export type SocialPostStatus = "queued" | "scheduled" | "posted" | "failed";
+
+export interface SocialPost {
+  id: string;
+  asset_id?: string;
+  platforms: SocialPlatform[];
+  caption: string;
+  scheduled_at?: string;
+  buffer_id?: string;
+  status: SocialPostStatus;
+  created_at: string;
+  asset_title?: string;
+  student_name?: string;
+  thumbnail?: string;
+}
+
+export interface ClipSuggestion {
+  start_s: number;
+  end_s: number;
+  title: string;
+  reason: string;
+}
+
+export type PaymentStatus = "created" | "paid" | "failed";
+
+export interface Payment {
+  id: string;
+  user_id: string;
+  razorpay_order_id?: string;
+  amount_paise: number;
+  status: PaymentStatus;
+  period?: string;
+  created_at: string;
+}
+
+export interface PaymentOrder {
+  order_id: string;
+  razorpay_key_id: string;
+  amount_paise: number;
+}
+
+export interface Dues {
+  period: string;
+  amount_paise: number;
+}

@@ -1,26 +1,68 @@
-app = "viktheatre-api"
-primary_region = "bom"  # Mumbai
+# Fly.io config — viktheatre-api
+# Secrets managed via `fly secrets set` (never in this file).
+# Set secrets with: scripts/set-fly-secrets.sh
+
+app            = "viktheatre-api"
+primary_region = "bom"  # Mumbai — closest to Neon ap-south-1 + Indian user base
+kill_signal    = "SIGINT"
+kill_timeout   = "30s"
 
 [build]
   dockerfile = "Dockerfile"
 
+# TODO(phase-6): enable once `./server --migrate` flag is implemented in cmd/server.
+# [deploy]
+#   release_command = "/app/server --migrate"
+#   strategy        = "rolling"
+
 [env]
-  APP_ENV = "production"
-  API_PORT = "8080"
+  APP_ENV   = "production"
+  API_PORT  = "8080"
+  LOG_LEVEL = "info"
+  # NOTE: non-secrets only. DATABASE_URL, JWT_SECRET, MUX_*, MSG91_*, RAZORPAY_*,
+  # RESEND_API_KEY, ANTHROPIC_API_KEY, SENTRY_DSN, POSTHOG_KEY live in fly secrets.
 
 [http_service]
-  internal_port = 8080
-  force_https = true
-  auto_stop_machines = true
-  auto_start_machines = true
+  internal_port        = 8080
+  force_https          = true
+  auto_stop_machines   = "stop"
+  auto_start_machines  = true
   min_machines_running = 1
+  processes            = ["app"]
 
   [http_service.concurrency]
-    type = "requests"
+    type       = "requests"
     hard_limit = 200
     soft_limit = 150
 
+  # HTTP health check — hits the real handler so we catch DB/router regressions.
+  [[http_service.checks]]
+    method        = "GET"
+    path          = "/v1/health"
+    interval      = "15s"
+    timeout       = "3s"
+    grace_period  = "10s"
+    protocol      = "http"
+    tls_skip_verify = false
+    [http_service.checks.headers]
+      User-Agent = "fly-healthcheck"
+
+# TCP-level liveness — detects a fully wedged process even if HTTP stack is stuck.
+[[services]]
+  internal_port = 8080
+  protocol      = "tcp"
+  processes     = ["app"]
+
+  [[services.tcp_checks]]
+    interval      = "15s"
+    timeout       = "2s"
+    grace_period  = "10s"
+
 [[vm]]
   cpu_kind = "shared"
-  cpus = 1
+  cpus     = 1
   memory_mb = 512
+
+[metrics]
+  port = 9091
+  path = "/metrics"
