@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Route } from "next";
 import { PrivacyBadge } from "@/components/PrivacyBadge";
 import { formatDuration, type Asset } from "@/lib/channel";
 
@@ -64,7 +65,7 @@ export function VideoCard({ asset, href, className = "" }: VideoCardProps) {
   );
 
   return href ? (
-    <Link href={href} className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-[#E8C872]/60 rounded-xl">
+    <Link href={href as Route} className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-[#E8C872]/60 rounded-xl">
       {body}
     </Link>
   ) : body;

@@ -64,10 +64,19 @@ export function SocialHubClient({ token }: { token: string }) {
                         src={a.thumbnail}
                         alt={a.title}
                         className="w-full h-20 object-cover rounded mb-2"
+                        onError={(e) => {
+                          const img = e.currentTarget;
+                          img.style.display = "none";
+                          const ph = img.nextElementSibling as HTMLElement | null;
+                          if (ph) ph.style.display = "block";
+                        }}
                       />
-                    ) : (
-                      <div className="w-full h-20 rounded mb-2 bg-gradient-to-br from-[#8B5CF6]/30 to-[#E8C872]/20" />
-                    )}
+                    ) : null}
+                    <div
+                      className="w-full h-20 rounded mb-2 bg-gradient-to-br from-[#8B5CF6]/30 to-[#E8C872]/20"
+                      style={{ display: a.thumbnail ? "none" : "block" }}
+                    />
+
                     <div className="text-sm text-white font-medium truncate">
                       {a.title}
                     </div>

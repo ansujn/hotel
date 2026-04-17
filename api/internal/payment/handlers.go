@@ -11,8 +11,8 @@ import (
 
 // HandleCreateOrder handles POST /v1/payments/order.
 func (s *Service) HandleCreateOrder(w http.ResponseWriter, r *http.Request) {
-	userID := auth.UserIDFromCtx(r.Context())
-	if userID == uuid.Nil {
+	userID, ok := userUUID(r)
+	if !ok {
 		writeJSON(w, http.StatusUnauthorized, map[string]string{"error": "unauthorized"})
 		return
 	}
@@ -70,8 +70,8 @@ func (s *Service) HandleWebhookHTTP(w http.ResponseWriter, r *http.Request) {
 
 // HandleListPayments handles GET /v1/payments.
 func (s *Service) HandleListPayments(w http.ResponseWriter, r *http.Request) {
-	userID := auth.UserIDFromCtx(r.Context())
-	if userID == uuid.Nil {
+	userID, ok := userUUID(r)
+	if !ok {
 		writeJSON(w, http.StatusUnauthorized, map[string]string{"error": "unauthorized"})
 		return
 	}
@@ -89,8 +89,8 @@ func (s *Service) HandleListPayments(w http.ResponseWriter, r *http.Request) {
 
 // HandleGetDues handles GET /v1/payments/dues.
 func (s *Service) HandleGetDues(w http.ResponseWriter, r *http.Request) {
-	userID := auth.UserIDFromCtx(r.Context())
-	if userID == uuid.Nil {
+	userID, ok := userUUID(r)
+	if !ok {
 		writeJSON(w, http.StatusUnauthorized, map[string]string{"error": "unauthorized"})
 		return
 	}
@@ -115,4 +115,16 @@ func writeJSON(w http.ResponseWriter, status int, v any) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	_ = json.NewEncoder(w).Encode(v)
+}
+
+func userUUID(r *http.Request) (uuid.UUID, bool) {
+	s, ok := auth.UserIDFromCtx(r)
+	if !ok {
+		return uuid.Nil, false
+	}
+	id, err := uuid.Parse(s)
+	if err != nil {
+		return uuid.Nil, false
+	}
+	return id, true
 }

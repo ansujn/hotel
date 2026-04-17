@@ -16,7 +16,7 @@ export default async function VideoDetailPage({ params }: PageProps) {
   const { channel, asset } = res;
 
   const rubric = Object.entries(asset.rubric ?? {});
-  const related = channel.assets
+  const related = (channel.assets ?? [])
     .filter((a) => a.id !== asset.id && a.type === asset.type)
     .slice(0, 3);
   const created = asset.created_at
@@ -34,7 +34,7 @@ export default async function VideoDetailPage({ params }: PageProps) {
           Vik<span className="text-[#E8C872]">.</span> Theatre
         </Link>
         <nav className="hidden md:flex gap-8 text-sm text-[#C9C9D1]">
-          <Link href="/home">Home</Link>
+          <Link href="/home" className="hover:text-white">Home</Link>
           <Link href={`/channel/${id}`} className="text-white">
             Channel
           </Link>
@@ -46,7 +46,7 @@ export default async function VideoDetailPage({ params }: PageProps) {
           href={`/channel/${id}?tab=${asset.type}`}
           className="text-xs tracking-[0.28em] uppercase text-[#8A8A96] hover:text-[#E8C872]"
         >
-          &larr; {channel.student.name ?? "Channel"}
+          &larr; {channel.student?.name ?? "Channel"}
         </Link>
       </section>
 

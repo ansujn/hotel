@@ -12,6 +12,7 @@ import (
 	"github.com/viktheatre/api/internal/asset"
 	"github.com/viktheatre/api/internal/auth"
 	"github.com/viktheatre/api/internal/consent"
+	"github.com/viktheatre/api/internal/notification"
 	"github.com/viktheatre/api/internal/payment"
 	"github.com/viktheatre/api/internal/platform/config"
 	"github.com/viktheatre/api/internal/platform/db"
@@ -81,6 +82,7 @@ func main() {
 	var progressSvc *progress.Service
 	var socialSvc *social.Service
 	var paymentSvc *payment.Service
+	var notificationSvc *notification.Service
 	if pool != nil {
 		progressSvc = progress.New(progress.NewPGStore(pool))
 		assetSvc = asset.New(asset.NewPGStore(pool), muxClient, cfg)
@@ -96,6 +98,7 @@ func main() {
 		bufferClient := &social.StubBufferClient{Log: logger}
 		socialSvc = social.New(social.NewPGStore(pool), bufferClient, logger)
 		paymentSvc = payment.New(payment.NewPGStore(pool), rpClient)
+		notificationSvc = notification.New(notification.NewPGStore(pool))
 	}
 
 	router := httpx.NewRouter(httpx.Deps{
@@ -108,6 +111,7 @@ func main() {
 		Progress: progressSvc,
 		Social:   socialSvc,
 		Payment:  paymentSvc,
+		Notification: notificationSvc,
 	})
 
 	srv := &http.Server{

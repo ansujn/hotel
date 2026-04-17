@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import type { Route } from "next";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -69,8 +70,25 @@ export function LoginForm() {
         body: JSON.stringify(tokens),
       });
       if (!res.ok) throw new Error("Failed to create session");
-      router.replace(next);
-      router.refresh();
+
+      // Fetch /me so we can route based on role — avoids a brittle
+      // server-component redirect hop through /home.
+      let dest: string = next;
+      try {
+        const me = await api<{ role?: string }>("/me", {
+          token: tokens.access_token,
+        });
+        console.log("[login] /me role=", me.role);
+        if (me.role === "parent") dest = "/parent";
+        else if (me.role === "admin" || me.role === "instructor") dest = "/students";
+        else dest = "/home";
+      } catch (e) {
+        console.log("[login] /me failed:", e);
+      }
+      console.log("[login] navigating to", dest);
+
+      // Hard navigate to defeat any RSC/client-router cache showing the old /home.
+      window.location.assign(dest);
     } catch (e) {
       setApiError(e instanceof Error ? e.message : "Invalid code");
     } finally {

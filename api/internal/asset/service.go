@@ -95,6 +95,9 @@ func (s *Service) GetChannel(ctx context.Context, studentID uuid.UUID, v Viewer)
 	if err != nil {
 		return nil, fmt.Errorf("list assets: %w", err)
 	}
+	if assets == nil {
+		assets = []Asset{}
+	}
 	return &Channel{Student: *stu, Assets: assets}, nil
 }
 

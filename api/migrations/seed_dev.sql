@@ -67,4 +67,54 @@ INSERT INTO rubric_scores (id, asset_id, dimension, score, instructor_id) VALUES
    'presence', 75, '11111111-1111-1111-1111-111111111112')
 ON CONFLICT (id) DO NOTHING;
 
+-- Notifications ------------------------------------------------------
+-- Admin inbox (matches the original stub UI).
+INSERT INTO notifications (id, user_id, kind, title, body, created_at) VALUES
+  ('88888888-8888-8888-8888-888888888801', '11111111-1111-1111-1111-111111111111',
+   'consent_pending',  'Consent pending: Diction Drill #4',
+   'Your parent hasn''t approved this for public sharing yet.', NOW() - INTERVAL '2 hours'),
+  ('88888888-8888-8888-8888-888888888802', '11111111-1111-1111-1111-111111111111',
+   'asset_ready',      'New upload on your channel',
+   '"Hamlet · Act III, Scene I" is now live.', NOW() - INTERVAL '5 hours'),
+  ('88888888-8888-8888-8888-888888888803', '11111111-1111-1111-1111-111111111111',
+   'feedback',         'Vik left feedback on "Intro Piece"',
+   'Watch pacing at line 47 — beat-work exercise before next take.', NOW() - INTERVAL '1 day'),
+  ('88888888-8888-8888-8888-888888888804', '11111111-1111-1111-1111-111111111111',
+   'class_reminder',   'Class reminder: Thursday 6:30 PM',
+   'Showcase rehearsal for Act III.', NOW() - INTERVAL '1 day 2 hours'),
+  ('88888888-8888-8888-8888-888888888805', '11111111-1111-1111-1111-111111111111',
+   'fee_due',          'Fees due on 1 May',
+   'Invoice ₹4,500 will be generated for May term.', NOW() - INTERVAL '3 days')
+ON CONFLICT (id) DO NOTHING;
+
+-- Student One inbox
+INSERT INTO notifications (id, user_id, kind, title, body, created_at) VALUES
+  ('88888888-8888-8888-8888-888888888811', '33333333-3333-3333-3333-333333333301',
+   'asset_ready',      'Your clip is live', 'Hamlet Soliloquy is now on your channel.', NOW() - INTERVAL '3 hours'),
+  ('88888888-8888-8888-8888-888888888812', '33333333-3333-3333-3333-333333333301',
+   'feedback',         'Feedback from Vik', 'Great diction — watch the pause before line 12.', NOW() - INTERVAL '1 day'),
+  ('88888888-8888-8888-8888-888888888813', '33333333-3333-3333-3333-333333333301',
+   'class_reminder',   'Thursday 6:30 PM',  'Rehearsal for Act III.', NOW() - INTERVAL '2 days')
+ON CONFLICT (id) DO NOTHING;
+
+-- Student Two inbox
+INSERT INTO notifications (id, user_id, kind, title, body, created_at) VALUES
+  ('88888888-8888-8888-8888-888888888821', '33333333-3333-3333-3333-333333333302',
+   'consent_pending',  'Consent pending', 'Scene Study needs parent approval.', NOW() - INTERVAL '6 hours'),
+  ('88888888-8888-8888-8888-888888888822', '33333333-3333-3333-3333-333333333302',
+   'feedback',         'Feedback from Vik', 'Strong presence work this week.', NOW() - INTERVAL '1 day'),
+  ('88888888-8888-8888-8888-888888888823', '33333333-3333-3333-3333-333333333302',
+   'class_reminder',   'Thursday 6:30 PM',  'Rehearsal for Act III.', NOW() - INTERVAL '2 days')
+ON CONFLICT (id) DO NOTHING;
+
+-- Student Three inbox
+INSERT INTO notifications (id, user_id, kind, title, body, created_at) VALUES
+  ('88888888-8888-8888-8888-888888888831', '33333333-3333-3333-3333-333333333303',
+   'asset_ready',      'Your clip is live', 'New upload on your channel.', NOW() - INTERVAL '4 hours'),
+  ('88888888-8888-8888-8888-888888888832', '33333333-3333-3333-3333-333333333303',
+   'class_reminder',   'Thursday 6:30 PM',  'Rehearsal for Act III.', NOW() - INTERVAL '1 day'),
+  ('88888888-8888-8888-8888-888888888833', '33333333-3333-3333-3333-333333333303',
+   'fee_due',          'Fees due on 1 May',  'Invoice will be generated soon.', NOW() - INTERVAL '3 days')
+ON CONFLICT (id) DO NOTHING;
+
 COMMIT;

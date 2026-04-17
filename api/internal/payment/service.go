@@ -69,7 +69,14 @@ func (s *Service) HandleWebhook(ctx context.Context, event RazorpayEvent) error 
 
 // ListPayments returns payment history for a user.
 func (s *Service) ListPayments(ctx context.Context, userID uuid.UUID) ([]Payment, error) {
-	return s.store.ListByUser(ctx, userID)
+	out, err := s.store.ListByUser(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+	if out == nil {
+		out = []Payment{}
+	}
+	return out, nil
 }
 
 // GetPendingDues returns the next pending due for a user, or nil.

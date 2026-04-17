@@ -14,6 +14,7 @@ import {
   submitConsent,
   type ConsentContext,
   type ConsentScope,
+  type ConsentStrings,
   type Lang,
 } from "@/lib/consent";
 import { ApiError } from "@/lib/api";
@@ -212,7 +213,7 @@ function Header({
 }: {
   lang: Lang;
   onLang: (l: Lang) => void;
-  t: (typeof consentStrings)["en"];
+  t: ConsentStrings;
 }) {
   return (
     <header className="flex items-center justify-between">
@@ -229,7 +230,7 @@ function StepReview({
   t,
   context,
 }: {
-  t: (typeof consentStrings)["en"];
+  t: ConsentStrings;
   context: ConsentContext;
 }) {
   return (
@@ -291,7 +292,7 @@ function StepScope({
   setValue,
   values,
 }: {
-  t: (typeof consentStrings)["en"];
+  t: ConsentStrings;
   control: ReturnType<typeof useForm<FormValues>>["control"];
   setValue: (name: keyof FormValues, value: FormValues[keyof FormValues]) => void;
   values: FormValues;
@@ -389,7 +390,7 @@ function StepSign({
   onOtpChange,
   onNameChange,
 }: {
-  t: (typeof consentStrings)["en"];
+  t: ConsentStrings;
   values: FormValues;
   error: string | null;
   onOtpChange: (v: string) => void;

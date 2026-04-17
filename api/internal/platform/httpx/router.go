@@ -8,6 +8,7 @@ import (
 	"github.com/viktheatre/api/internal/asset"
 	"github.com/viktheatre/api/internal/auth"
 	"github.com/viktheatre/api/internal/consent"
+	"github.com/viktheatre/api/internal/notification"
 	"github.com/viktheatre/api/internal/payment"
 	"github.com/viktheatre/api/internal/platform/config"
 	"github.com/viktheatre/api/internal/progress"
@@ -30,6 +31,7 @@ type Deps struct {
 	Progress *progress.Service
 	Social   *social.Service
 	Payment  *payment.Service
+	Notification *notification.Service
 }
 
 func NewRouter(d Deps) http.Handler {
@@ -40,7 +42,7 @@ func NewRouter(d Deps) http.Handler {
 	r.Use(middleware.Timeout(30 * time.Second))
 	r.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   []string{"*"},
-		AllowedMethods:   []string{"GET", "POST", "PATCH", "DELETE", "OPTIONS"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Authorization", "Content-Type"},
 		AllowCredentials: true,
 		MaxAge:           300,
@@ -93,6 +95,7 @@ func NewRouter(d Deps) http.Handler {
 			if d.Asset != nil {
 				r.Post("/assets", d.Asset.HandleCreate)
 				r.Post("/assets/{id}/publish", d.Asset.HandlePublish)
+				r.Get("/students", asset.AdminListStudentsHandler(d.DB))
 			}
 			if d.Progress != nil {
 				r.Post("/assets/{id}/rubric", d.Progress.HandleScoreAsset)
@@ -119,6 +122,22 @@ func NewRouter(d Deps) http.Handler {
 			}
 		})
 
+		// notifications (auth required)
+		r.Group(func(r chi.Router) {
+			r.Use(d.Auth.RequireAuth)
+			if d.Notification != nil {
+				r.Get("/notifications", d.Notification.HandleList)
+				r.Get("/notifications/unread-count", d.Notification.HandleUnreadCount)
+				r.Post("/notifications/{id}/read", d.Notification.HandleMarkRead)
+				r.Post("/notifications/mark-all-read", d.Notification.HandleMarkAllRead)
+			} else {
+				r.Get("/notifications", stub("list notifications"))
+				r.Get("/notifications/unread-count", stub("unread count"))
+				r.Post("/notifications/{id}/read", stub("mark read"))
+				r.Post("/notifications/mark-all-read", stub("mark all read"))
+			}
+		})
+
 		// payments (auth required, parent role)
 		r.Group(func(r chi.Router) {
 			r.Use(d.Auth.RequireAuth)
@@ -138,6 +157,14 @@ func NewRouter(d Deps) http.Handler {
 			r.Post("/consent/{token}", d.Consent.HandleSign)
 		} else {
 			r.Post("/consent/{token}", stub("consent sign"))
+		}
+
+		// dev-only: local fake Mux upload receiver. When APP_ENV=local and
+		// MUX_TOKEN_ID is empty, the stub mux client hands back a URL pointing
+		// here. We accept the bytes (and discard), then mark the asset ready
+		// with a fake playback_id so the UI flow completes end-to-end.
+		if d.Config.AppEnv == "local" && d.Asset != nil {
+			r.Put("/dev/mux-upload/{uploadID}", d.Asset.HandleStubUpload)
 		}
 
 		// webhooks (no auth; HMAC-verified inside the handler)

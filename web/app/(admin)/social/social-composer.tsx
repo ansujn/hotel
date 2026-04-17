@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { api, API_BASE } from "@/lib/api";
+import { api } from "@/lib/api";
 
 interface ConsentedAsset {
   id: string;
@@ -95,13 +95,22 @@ export function SocialComposer({
       </div>
 
       {/* Preview thumbnail */}
-      {selectedAsset?.thumbnail && (
+      {selectedAsset && (
         <div className="rounded-lg overflow-hidden border border-[#2A2A36]">
-          <img
-            src={selectedAsset.thumbnail}
-            alt={selectedAsset.title}
-            className="w-full h-32 object-cover"
-          />
+          {selectedAsset.thumbnail ? (
+            <img
+              src={selectedAsset.thumbnail}
+              alt={selectedAsset.title}
+              className="w-full h-32 object-cover"
+              onError={(e) => {
+                e.currentTarget.style.display = "none";
+              }}
+            />
+          ) : (
+            <div className="w-full h-32 bg-gradient-to-br from-[#8B5CF6]/40 to-[#E8C872]/30 grid place-items-center">
+              <span className="serif text-sm text-white/70">{selectedAsset.title}</span>
+            </div>
+          )}
         </div>
       )}
 

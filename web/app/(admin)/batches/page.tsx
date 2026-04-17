@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { requireSession } from "@/lib/auth";
 import { Button } from "@/components/Button";
@@ -58,7 +59,9 @@ export default async function AdminBatchesPage() {
           </p>
         </div>
         {/* TODO: open an Add Batch modal + POST /v1/admin/batches */}
-        <Button variant="primary" size="md">+ Add Batch</Button>
+        <Link href="/students">
+          <Button variant="primary" size="md">+ Add Batch</Button>
+        </Link>
       </div>
 
       <BatchesBoard batches={STUB_BATCHES} />

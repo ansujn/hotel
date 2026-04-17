@@ -2,6 +2,7 @@ package social
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -52,7 +53,7 @@ func (s *PGStore) ListConsentedAssets(ctx context.Context) ([]ConsentedAsset, er
 			return nil, err
 		}
 		a.MuxPlaybackID = pbID
-		if pbID != nil {
+		if pbID != nil && !strings.HasPrefix(*pbID, "stub_") && !strings.HasPrefix(*pbID, "demo_") {
 			t := "https://image.mux.com/" + *pbID + "/thumbnail.jpg"
 			a.Thumbnail = &t
 		}

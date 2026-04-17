@@ -23,7 +23,14 @@ func New(store Store, buffer BufferClient, log *zap.Logger) *Service {
 
 // ListConsentedAssets returns assets with public privacy and social consent.
 func (s *Service) ListConsentedAssets(ctx context.Context) ([]ConsentedAsset, error) {
-	return s.store.ListConsentedAssets(ctx)
+	out, err := s.store.ListConsentedAssets(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if out == nil {
+		out = []ConsentedAsset{}
+	}
+	return out, nil
 }
 
 // CreatePost inserts a new social post.
@@ -39,7 +46,14 @@ func (s *Service) CreatePost(ctx context.Context, req CreatePostReq) (*SocialPos
 
 // ListPosts returns posts for a given week.
 func (s *Service) ListPosts(ctx context.Context, week time.Time) ([]SocialPost, error) {
-	return s.store.ListPosts(ctx, week)
+	out, err := s.store.ListPosts(ctx, week)
+	if err != nil {
+		return nil, err
+	}
+	if out == nil {
+		out = []SocialPost{}
+	}
+	return out, nil
 }
 
 // SchedulePost pushes a post to Buffer.

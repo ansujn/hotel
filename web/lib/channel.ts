@@ -54,7 +54,7 @@ export async function getAsset(
 ): Promise<{ channel: Channel; asset: Asset } | null> {
   const channel = await getChannel(channelId);
   if (!channel) return null;
-  const asset = channel.assets.find((a) => a.id === assetId);
+  const asset = (channel.assets ?? []).find((a) => a.id === assetId);
   if (!asset) return null;
   return { channel, asset };
 }

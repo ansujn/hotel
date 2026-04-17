@@ -642,3 +642,78 @@ Migration: `api/migrations/20260416000001_phase4.sql`
 - `GET /v1/notifications/unread-count` — bell unread count is hardcoded in both top navs.
 - `GET/POST /v1/admin/batches` and `POST /v1/admin/batches/{id}/students/{studentId}` — batch list and move action are stubs; Add Batch button is a TODO placeholder.
 - Channel/progress mobile screens do not yet embed a bell (progress screen doesn't exist yet; channel screen has no AppBar surface).
+
+### Phase 5.1 — real notifications
+
+Replaced the hardcoded stubs with a real persisted notifications pipeline end-to-end.
+
+**Migration** `api/migrations/20260416120000_notifications.sql`
+- `notification_kind` enum (`consent_pending`, `asset_ready`, `feedback`, `class_reminder`, `fee_due`).
+- `notifications` table (id, user_id fk users ON DELETE CASCADE, kind, title, body, meta jsonb, read_at, created_at).
+- Composite index on `(user_id, read_at, created_at DESC)` so the inbox list + unread count are a single index scan.
+
+**Seed** `api/migrations/seed_dev.sql`
+- 5 notifications for admin (mirror the original stub UI: consent pending / asset ready / feedback / class reminder / fee due).
+- 3 notifications for each of the three seeded students. Idempotent via deterministic `88888888-...` uuids + `ON CONFLICT (id) DO NOTHING`.
+
+**Go** `api/internal/notification/`
+- `types.go` — `Notification` struct with JSON tags.
+- `store_pg.go` — `Store` interface + `PGStore` (pgx): `List`, `UnreadCount`, `MarkRead`, `MarkAllRead`, `Create`.
+- `service.go` — thin Service wrapper, `New(store)` constructor.
+- `handlers.go` — `HandleList`, `HandleUnreadCount`, `HandleMarkRead` (chi `{id}` param), `HandleMarkAllRead`. Uses `auth.UserIDFromCtx` and parses to `uuid.UUID`.
+- `service_test.go` — in-memory fake store, `TestMarkAllRead_FlipsEverything`.
+
+**Wiring**
+- `api/internal/platform/httpx/router.go` — added `Notification *notification.Service` to `Deps`, mounted 4 routes under `RequireAuth`, nil-guarded with `stub()` fallback.
+- `api/cmd/server/main.go` — constructs `notification.New(notification.NewPGStore(pool))` when `pool != nil`.
+
+**Web** (strict TS, no `any`, uses existing `api<T>()` helper)
+- `web/lib/api.ts` — added `NotificationKind` + `AppNotification` types.
+- `web/app/(app)/notifications/page.tsx` — server component; fetches `GET /v1/notifications` with the session token.
+- `web/components/NotificationsList.tsx` — client component; optimistic `markOne` / `markAll` with rollback on failure. Kind → icon/color map matches spec (gold/green/purple/blue/red).
+- `web/app/api/notifications/mark-read/route.ts` — POST proxy: `?all=true` → `mark-all-read`, `?id=...` → `/{id}/read`. Pulls `access_token` cookie and adds `Authorization: Bearer`.
+- `web/app/api/notifications/unread-count/route.ts` — GET proxy returning `{count}`.
+- `web/components/NotificationBell.tsx` — now a client component with optional `fetchFromApi` mode that self-fetches the unread count; existing `unreadCount` prop still works (AdminNav, home page unchanged).
+
+**OpenAPI** — added 4 endpoints + `Notification` schema (enum + nullable read_at).
+
+**Apply one-liner**
+```bash
+export PGPASSWORD=password
+psql -h localhost -U postgres -d vik -f api/migrations/20260416120000_notifications.sql && \
+psql -h localhost -U postgres -d vik -f api/migrations/seed_dev.sql && \
+cd api && go build -o /tmp/viksrv ./cmd/server && pkill -f /tmp/viksrv; sleep 1; \
+DATABASE_URL="postgres://postgres:password@localhost:5432/vik?sslmode=disable" JWT_SECRET=devdevdevdevdevdevdevdevdevdevdev APP_ENV=local /tmp/viksrv &
+```
+
+### QA sweep — 2026-04-16
+
+Systematic QA pass on the web app.
+
+**Files modified:**
+- `web/next.config.ts` — moved `experimental.typedRoutes` to top-level `typedRoutes` (Next 15 API).
+- `web/app/(app)/parent/page.tsx` — cast `href` string prop as `Route` so the `Card` helper compiles under typed routes.
+- `web/app/(auth)/login/login-form.tsx` — cast `next` (read from query-string) as `Route` before `router.replace`.
+- `web/app/(auth)/login/page.tsx` — wrapped `<LoginForm>` in a `Suspense` boundary (prod build fails otherwise because `useSearchParams` bails out of CSR).
+- `web/components/video/VideoCard.tsx` — cast `href` prop as `Route`.
+- `web/app/(app)/channel/[id]/page.tsx` — fully null-safe on `channel.student` (was crashing when API returned student as null); guarded `.name`, `.batch`, `.bio`.
+- `web/app/(app)/channel/[id]/v/[assetId]/page.tsx` — `channel.student?.name` in back-link.
+
+**Bugs fixed:**
+1. `pnpm typecheck` failing on 3 `Link href={string}` callsites (parent/page, login-form, VideoCard) under `typedRoutes: true`.
+2. Deprecated `experimental.typedRoutes` config surfaced a Next 15 warning; moved to top-level `typedRoutes`.
+3. `/login` prerender crashed in prod build (useSearchParams not wrapped in Suspense).
+4. Channel page crashed when Go API returned a null/missing `student` on the channel payload (non-optional in TS, nullable in practice).
+5. Video-detail back-link would throw if student was null.
+
+**Not fixed (deliberate):**
+- Landing page uses `<a href="#classes">` / `<a href="mailto:…">` — these are valid HTML anchors (hash nav + mailto), not broken links, so left as-is.
+- AdminNav hrefs and `(admin)/layout.tsx` path detection use bare `/students`, `/batches`, `/upload`, `/social`, `/clips` — this matches the actual Next route-group output (the `(admin)` folder does not add a URL segment). The QA brief listed `/admin/*` paths but those routes do not exist on disk; trusted the filesystem.
+- Social-hub / clip-studio client components already handle empty arrays via `.catch(() => setAssets([]))`, and their list renders guard `.length === 0`. No change needed.
+- Parent consent page uses a local stub (`getConsentsStub`), not the API, so null-safety is N/A.
+- Parent fees, progress, notifications, channel already wrap API calls in try/catch with sensible fallbacks.
+
+**Final state:**
+- `pnpm typecheck` → clean (0 errors).
+- `pnpm build` → green (19 routes compiled, static + dynamic mix).
+- Smoke test on the running dev server returned 500 for every route including the known-good ones; this is because `next.config.ts` changed and the dev process needs to be restarted to pick up the new `typedRoutes` top-level field. Prod build confirms the code itself is healthy; a `pnpm dev` restart will return the dev server to 200.

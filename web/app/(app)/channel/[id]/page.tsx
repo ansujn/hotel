@@ -25,22 +25,23 @@ export default async function ChannelPage({ params, searchParams }: PageProps) {
   const channel = await getChannel(id);
   if (!channel) notFound();
 
+  const assets = channel.assets ?? [];
   const activeTab = isTabKey(rawTab) ? rawTab : "monologue";
   const filtered =
     activeTab === "about"
       ? []
-      : channel.assets.filter((a) => a.type === activeTab);
+      : assets.filter((a) => a.type === activeTab);
 
-  const student = channel.student;
+  const student = channel.student ?? null;
   const initials =
-    student.name
+    student?.name
       ?.split(" ")
       .map((p) => p[0])
       .slice(0, 2)
       .join("")
       .toUpperCase() ?? "ST";
 
-  const counts = channel.assets.reduce<Record<string, number>>((acc, a) => {
+  const counts = assets.reduce<Record<string, number>>((acc, a) => {
     acc[a.type] = (acc[a.type] ?? 0) + 1;
     return acc;
   }, {});
@@ -52,9 +53,9 @@ export default async function ChannelPage({ params, searchParams }: PageProps) {
           Vik<span className="text-[#E8C872]">.</span> Theatre
         </Link>
         <nav className="hidden md:flex gap-8 text-sm text-[#C9C9D1]">
-          <Link href="/home">Home</Link>
+          <Link href="/home" className="hover:text-white">Home</Link>
           <span className="text-white">Channel</span>
-          <Link href="/progress">Progress</Link>
+          <Link href="/progress" className="hover:text-white">Progress</Link>
         </nav>
       </header>
 
@@ -69,17 +70,17 @@ export default async function ChannelPage({ params, searchParams }: PageProps) {
                 Student Channel
               </div>
               <h1 className="serif text-3xl md:text-5xl font-black">
-                {student.name ?? "Student"}
+                {student?.name ?? "Student"}
               </h1>
               <div className="mt-2 text-sm text-[#C9C9D1]">
-                {student.batch ?? "Thursday Evening batch"}
+                {student?.batch ?? "Thursday Evening batch"}
               </div>
             </div>
           </div>
         </BannerGradient>
 
         <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-3">
-          <Stat label="Videos" value={channel.assets.length.toString()} />
+          <Stat label="Videos" value={assets.length.toString()} />
           <Stat label="Monologues" value={(counts.monologue ?? 0).toString()} />
           <Stat label="Scenes" value={(counts.scene ?? 0).toString()} />
           <Stat label="Showcases" value={(counts.showcase ?? 0).toString()} />
@@ -110,9 +111,9 @@ export default async function ChannelPage({ params, searchParams }: PageProps) {
       <section className="max-w-6xl mx-auto px-8 py-8">
         {activeTab === "about" ? (
           <div className="bg-[#15151C] border border-[#2A2A36] rounded-2xl p-8">
-            <h2 className="serif text-xl font-bold mb-3">About {student.name}</h2>
+            <h2 className="serif text-xl font-bold mb-3">About {student?.name ?? "Student"}</h2>
             <p className="text-[#C9C9D1] leading-relaxed">
-              {student.bio ??
+              {student?.bio ??
                 "A working artist-in-training at Vik Theatre. Monologues, scenes, and showcase work appear on this channel as consent is granted by parents."}
             </p>
           </div>

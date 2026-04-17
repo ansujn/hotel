@@ -187,3 +187,21 @@ export interface Dues {
   period: string;
   amount_paise: number;
 }
+
+// --- Phase 5.1: notifications ---
+
+export type NotificationKind =
+  | "consent_pending"
+  | "asset_ready"
+  | "feedback"
+  | "class_reminder"
+  | "fee_due";
+
+export interface AppNotification {
+  id: string;
+  kind: NotificationKind;
+  title: string;
+  body?: string;
+  read_at?: string | null;
+  created_at: string;
+}

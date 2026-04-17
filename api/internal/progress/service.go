@@ -57,7 +57,14 @@ func (s *Service) ScoreAsset(ctx context.Context, assetID, instructorID string, 
 
 // GetAssetRubric returns all rubric scores for an asset.
 func (s *Service) GetAssetRubric(ctx context.Context, assetID string) ([]RubricScore, error) {
-	return s.store.RubricForAsset(ctx, assetID)
+	out, err := s.store.RubricForAsset(ctx, assetID)
+	if err != nil {
+		return nil, err
+	}
+	if out == nil {
+		out = []RubricScore{}
+	}
+	return out, nil
 }
 
 // AddNote creates a note on an asset.
@@ -67,7 +74,14 @@ func (s *Service) AddNote(ctx context.Context, assetID, authorID, body string, p
 
 // GetNotes returns notes for an asset. Private notes are only included for admin/instructor.
 func (s *Service) GetNotes(ctx context.Context, assetID string, includePrivate bool) ([]Note, error) {
-	return s.store.ListNotes(ctx, assetID, includePrivate)
+	out, err := s.store.ListNotes(ctx, assetID, includePrivate)
+	if err != nil {
+		return nil, err
+	}
+	if out == nil {
+		out = []Note{}
+	}
+	return out, nil
 }
 
 // ComputeAverages is a helper for tests — given raw dimension->scores, returns rounded averages.

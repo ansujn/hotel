@@ -19,7 +19,7 @@ export default async function HomePage() {
   // after login; parents and staff should be kicked to their own dashboards.
   if (user.role === "parent") redirect("/parent");
   if (user.role === "admin" || user.role === "instructor") {
-    redirect("/admin/students");
+    redirect("/students");
   }
   // Students (and any other roles) stay on this dashboard.
 
@@ -33,9 +33,9 @@ export default async function HomePage() {
         </Link>
         <nav className="hidden md:flex gap-8 text-sm text-[#C9C9D1]">
           <Link href="/home" className="text-white">Home</Link>
-          <a>Channel</a>
-          <Link href="/progress">Progress</Link>
-          <a>Library</a>
+          <Link href={`/channel/${user.id}`} className="hover:text-white">Channel</Link>
+          <Link href="/progress" className="hover:text-white">Progress</Link>
+          <Link href="/notifications" className="hover:text-white">Inbox</Link>
         </nav>
         <div className="flex items-center gap-3">
           {/* TODO: replace 0 with real unread count from API */}
@@ -91,20 +91,21 @@ export default async function HomePage() {
       <section className="max-w-6xl mx-auto px-8 py-10">
         <div className="flex items-center justify-between mb-4">
           <h4 className="serif text-base font-bold">Announcements</h4>
-          <a className="text-xs tracking-widest text-[#8A8A96]">VIEW ALL</a>
+          <Link href="/notifications" className="text-xs tracking-widest text-[#8A8A96] hover:text-[#E8C872]">VIEW ALL →</Link>
         </div>
         <div className="space-y-3">
           {announcements.map((a) => (
-            <div
+            <Link
               key={a.title}
-              className="bg-[#15151C] border border-[#2A2A36] rounded-xl p-5 flex items-center justify-between hover:border-[#E8C872]/40 transition-colors"
+              href="/notifications"
+              className="block bg-[#15151C] border border-[#2A2A36] rounded-xl p-5 flex items-center justify-between hover:border-[#E8C872]/40 transition-colors"
             >
               <div>
                 <div className="text-[10px] tracking-[0.3em] text-[#E8C872] mb-1">{a.tag}</div>
                 <div className="serif text-lg font-bold">{a.title}</div>
               </div>
               <div className="text-sm text-[#8A8A96]">{a.when}</div>
-            </div>
+            </Link>
           ))}
         </div>
       </section>

@@ -66,6 +66,7 @@ export function UploadForm({ students }: { students: StudentOption[] }) {
   const [progress, setProgress] = useState(0);
   const [stage, setStage] = useState<Stage>("idle");
   const [message, setMessage] = useState<string | null>(null);
+  const [uploadedStudent, setUploadedStudent] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const pickFile = useCallback((f: File | null) => {
@@ -152,6 +153,7 @@ export function UploadForm({ students }: { students: StudentOption[] }) {
         ? "Uploaded. Parent consent email queued."
         : "Uploaded. Kept private."
     );
+    setUploadedStudent(studentId);
   };
 
   const busy = stage === "creating" || stage === "uploading" || stage === "publishing";
@@ -370,6 +372,17 @@ export function UploadForm({ students }: { students: StudentOption[] }) {
             }`}
           >
             {message}
+            {stage === "done" && uploadedStudent && (
+              <>
+                {" · "}
+                <a
+                  href={`/channel/${uploadedStudent}`}
+                  className="underline font-medium hover:text-white"
+                >
+                  View on student channel →
+                </a>
+              </>
+            )}
           </div>
         )}
 

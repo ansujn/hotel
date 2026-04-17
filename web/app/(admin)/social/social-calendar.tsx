@@ -125,7 +125,7 @@ export function SocialCalendar({ token, refreshKey }: { token: string; refreshKe
                       {p.asset_title || p.caption.slice(0, 30)}
                     </div>
                     <div className="flex gap-0.5 mt-0.5">
-                      {p.platforms.map((pl) => (
+                      {(p.platforms ?? []).map((pl) => (
                         <span
                           key={pl}
                           className="w-2 h-2 rounded-full inline-block"

@@ -7,8 +7,7 @@ const tabs = [
   { href: "/parent", label: "Overview" },
   { href: "/parent/consent", label: "Consent Center" },
   { href: "/parent/fees", label: "Fees" },
-  { href: "/parent/messages", label: "Messages" },
-];
+] as const;
 
 export default async function ParentLayout({
   children,

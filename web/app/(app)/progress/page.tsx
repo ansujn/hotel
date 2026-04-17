@@ -70,7 +70,9 @@ export default async function ProgressPage() {
     report = FALLBACK_REPORT;
   }
 
-  const radarDimensions = report.averages.map((a) => ({
+  const averages = report.averages ?? [];
+  const timeline = report.timeline ?? [];
+  const radarDimensions = averages.map((a) => ({
     name: a.dimension,
     score: a.score,
   }));
@@ -82,10 +84,10 @@ export default async function ProgressPage() {
           Vik<span className="text-[#E8C872]">.</span> Theatre
         </Link>
         <nav className="hidden md:flex gap-8 text-sm text-[#C9C9D1]">
-          <Link href="/home">Home</Link>
-          <a>Channel</a>
+          <Link href="/home" className="hover:text-white">Home</Link>
+          <Link href={`/channel/${user.id}`} className="hover:text-white">Channel</Link>
           <Link href="/progress" className="text-white">Progress</Link>
-          <a>Library</a>
+          <Link href="/notifications" className="hover:text-white">Inbox</Link>
         </nav>
       </header>
 
@@ -105,7 +107,7 @@ export default async function ProgressPage() {
           <h3 className="serif text-lg font-bold mb-6 self-start">Skill Radar</h3>
           <RadarChart dimensions={radarDimensions} size={340} />
           <div className="flex flex-wrap gap-4 mt-6 justify-center">
-            {report.averages.map((a) => (
+            {averages.map((a) => (
               <div key={a.dimension} className="text-center">
                 <div className="text-[#E8C872] serif text-lg font-bold">{a.score}</div>
                 <div className="text-[#8A8A96] text-xs">{a.dimension}</div>
@@ -119,16 +121,9 @@ export default async function ProgressPage() {
       <section className="max-w-6xl mx-auto px-8 py-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="serif text-lg font-bold">Assessment Timeline</h3>
-          <button
-            className="text-xs tracking-widest text-[#8A8A96] border border-[#2A2A36] rounded-lg px-4 py-2 hover:border-[#E8C872]/40 transition-colors"
-            onClick={undefined}
-          >
-            {/* TODO: implement PDF download */}
-            DOWNLOAD PDF
-          </button>
         </div>
         <div className="space-y-4">
-          {report.timeline.map((assess) => (
+          {timeline.map((assess) => (
             <div
               key={assess.asset_id}
               className="bg-[#15151C] border border-[#2A2A36] rounded-xl p-6 hover:border-[#E8C872]/30 transition-colors"
@@ -147,7 +142,7 @@ export default async function ProgressPage() {
               </div>
               {/* Score bars */}
               <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-3">
-                {assess.scores.map((s) => (
+                {(assess.scores ?? []).map((s) => (
                   <div key={s.dimension}>
                     <div className="flex justify-between text-xs mb-1">
                       <span className="text-[#8A8A96]">{s.dimension}</span>
@@ -170,7 +165,7 @@ export default async function ProgressPage() {
               )}
             </div>
           ))}
-          {report.timeline.length === 0 && (
+          {timeline.length === 0 && (
             <div className="bg-[#15151C] border border-[#2A2A36] rounded-xl p-8 text-center">
               <p className="text-[#8A8A96]">No assessments yet. Your instructor will score your performances here.</p>
             </div>

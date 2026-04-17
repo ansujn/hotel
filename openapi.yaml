@@ -343,6 +343,49 @@ paths:
                 type: array
                 items: { $ref: "#/components/schemas/StudentListItem" }
 
+  /notifications:
+    get:
+      summary: List current user's notifications (newest first, max 100)
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Notification' }
+
+  /notifications/unread-count:
+    get:
+      summary: Get current user's unread notification count
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [count]
+                properties:
+                  count: { type: integer }
+
+  /notifications/{id}/read:
+    post:
+      summary: Mark a single notification as read
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200": { description: ok }
+
+  /notifications/mark-all-read:
+    post:
+      summary: Mark all of the current user's notifications as read
+      responses:
+        "200": { description: ok }
+
   /webhooks/mux:
     post:
       summary: Mux webhook (asset.ready etc.)
@@ -577,6 +620,21 @@ components:
       properties:
         period: { type: string, example: "2026-05" }
         amount_paise: { type: integer, format: int64 }
+
+    Notification:
+      type: object
+      required: [id, user_id, kind, title, meta, created_at]
+      properties:
+        id:         { type: string, format: uuid }
+        user_id:    { type: string, format: uuid }
+        kind:
+          type: string
+          enum: [consent_pending, asset_ready, feedback, class_reminder, fee_due]
+        title:      { type: string }
+        body:       { type: string, nullable: true }
+        meta:       { type: object, additionalProperties: true }
+        read_at:    { type: string, format: date-time, nullable: true }
+        created_at: { type: string, format: date-time }
 
     ConsentSignReq:
       type: object

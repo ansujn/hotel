@@ -36,17 +36,19 @@ export default function LandingPage() {
           Vik<span className="text-[#E8C872]">.</span> Theatre
         </Link>
         <div className="hidden md:flex items-center gap-8 text-sm text-[#C9C9D1]">
-          <a className="hover:text-white">Classes</a>
-          <a className="hover:text-white">Batches</a>
-          <a className="hover:text-white">Students</a>
-          <a className="hover:text-white">About</a>
-          <a className="hover:text-white">Blog</a>
+          <a href="#classes" className="hover:text-white cursor-pointer">Classes</a>
+          <a href="#classes" className="hover:text-white cursor-pointer">Batches</a>
+          <Link href="/login" className="hover:text-white cursor-pointer">Students</Link>
+          <a href="#about" className="hover:text-white cursor-pointer">About</a>
+          <a href="mailto:hello@viktheatre.in" className="hover:text-white cursor-pointer">Contact</a>
         </div>
         <div className="flex items-center gap-3">
           <Link href="/login">
             <Button variant="ghost" size="md">Login</Button>
           </Link>
-          <Button variant="primary" size="md">Book Trial</Button>
+          <Link href="/login">
+            <Button variant="primary" size="md">Book Trial</Button>
+          </Link>
         </div>
       </nav>
 
@@ -63,14 +65,16 @@ export default function LandingPage() {
           fright to standing ovation.
         </p>
         <div className="mt-10 flex flex-wrap gap-4">
-          <Button size="lg" variant="primary">Book a Trial Class</Button>
+          <Link href="/login">
+            <Button size="lg" variant="primary">Book a Trial Class</Button>
+          </Link>
           <Link href="/login">
             <Button size="lg" variant="ghost">Login</Button>
           </Link>
         </div>
       </section>
 
-      <section className="max-w-7xl mx-auto px-8 pb-24">
+      <section id="classes" className="max-w-7xl mx-auto px-8 pb-24 scroll-mt-24">
         <h2 className="serif text-4xl font-black text-center mb-12">
           Find your <em className="text-[#E8C872] not-italic">class</em>
         </h2>
@@ -90,6 +94,16 @@ export default function LandingPage() {
             </div>
           ))}
         </div>
+      </section>
+
+      <section id="about" className="max-w-4xl mx-auto px-8 pb-24 scroll-mt-24 text-center">
+        <h2 className="serif text-3xl font-black mb-4">
+          About <em className="text-[#E8C872] not-italic">Vik Theatre</em>
+        </h2>
+        <p className="text-[#B0B0BA] leading-relaxed">
+          Vik Theatre is a Bangalore-based studio for young performers — classes,
+          coaching, and a term-end public showcase. Founded 2019.
+        </p>
       </section>
 
       <footer className="border-t border-[#2A2A36] py-8 text-center text-sm text-[#8A8A96]">

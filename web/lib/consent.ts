@@ -60,7 +60,51 @@ export async function submitConsent(
 // ---------- Bilingual strings ----------
 export type Lang = "en" | "hi";
 
-export const consentStrings = {
+export interface ConsentStringBundle {
+  brand: string;
+  pageTitle: string;
+  intro: string;
+  step1: string;
+  step2: string;
+  step3: string;
+  reviewHeading: string;
+  reviewHint: string;
+  scopeHeading: string;
+  scopeSub: string;
+  channelTitle: string;
+  channelHint: string;
+  socialTitle: string;
+  socialHint: string;
+  printTitle: string;
+  printHint: string;
+  validityTitle: string;
+  validityHint: string;
+  months6: string;
+  months12: string;
+  months24: string;
+  verifyHeading: string;
+  otpLabel: string;
+  nameLabel: string;
+  namePlaceholder: string;
+  nameHint: string;
+  signButton: string;
+  signingButton: string;
+  back: string;
+  next: string;
+  revoke: string;
+  successTitle: string;
+  successBody: string;
+  successLink: string;
+  invalidTitle: string;
+  invalidBody: string;
+  errorGeneric: string;
+  errorOtp: string;
+  errorName: string;
+  errorScope: string;
+  langToggle: string;
+}
+
+export const consentStrings: Record<Lang, ConsentStringBundle> = {
   en: {
     brand: "Vik Theatre",
     pageTitle: "Parental Consent",
@@ -158,6 +202,6 @@ export const consentStrings = {
     errorScope: "कृपया वैधता चुनें।",
     langToggle: "EN",
   },
-} as const;
+};
 
-export type ConsentStrings = (typeof consentStrings)["en"];
+export type ConsentStrings = ConsentStringBundle;

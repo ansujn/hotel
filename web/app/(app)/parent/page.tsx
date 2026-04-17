@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Route } from "next";
 import { requireSession } from "@/lib/auth";
 
 // TODO(backend): replace stub with `GET /v1/parent/consents/pending`
@@ -154,7 +155,7 @@ function Card({
   const cls =
     "rounded-2xl border border-[#2A2A36] bg-[#15151C] p-6 hover:border-[#E8C872]/40 transition-colors block";
   return href ? (
-    <Link href={href} className={cls}>
+    <Link href={href as Route} className={cls}>
       {body}
     </Link>
   ) : (

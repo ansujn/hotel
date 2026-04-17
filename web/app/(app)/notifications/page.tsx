@@ -1,61 +1,17 @@
 import Link from "next/link";
 import { requireSession } from "@/lib/auth";
-import {
-  NotificationsList,
-  type Notification,
-} from "@/components/NotificationsList";
-
-// TODO: replace with `GET /v1/notifications` once the endpoint exists.
-const STUB_NOTIFS: Notification[] = [
-  {
-    id: "n1",
-    tier: "gold",
-    icon: "✉️",
-    title: "Consent pending: Diction Drill #4",
-    body: "Your parent hasn't approved this for public sharing yet.",
-    time: "2h",
-    read: false,
-  },
-  {
-    id: "n2",
-    tier: "green",
-    icon: "🎬",
-    title: "New upload on your channel",
-    body: "\"Hamlet · Act III, Scene I\" is now live.",
-    time: "5h",
-    read: false,
-  },
-  {
-    id: "n3",
-    tier: "purple",
-    icon: "💬",
-    title: "Vik left feedback on \"Intro Piece\"",
-    body: "Watch pacing at line 47 — beat-work exercise before next take.",
-    time: "1d",
-    read: false,
-  },
-  {
-    id: "n4",
-    tier: "blue",
-    icon: "📅",
-    title: "Class reminder: Thursday 6:30 PM",
-    body: "Showcase rehearsal for Act III.",
-    time: "1d",
-    read: true,
-  },
-  {
-    id: "n5",
-    tier: "red",
-    icon: "💳",
-    title: "Fees due on 1 May",
-    body: "Invoice ₹4,500 will be generated for May term.",
-    time: "3d",
-    read: true,
-  },
-];
+import { api, type AppNotification } from "@/lib/api";
+import { NotificationsList } from "@/components/NotificationsList";
 
 export default async function NotificationsPage() {
-  await requireSession();
+  const { token } = await requireSession();
+
+  let items: AppNotification[] = [];
+  try {
+    items = await api<AppNotification[]>("/notifications", { token });
+  } catch {
+    items = [];
+  }
 
   return (
     <main className="max-w-3xl mx-auto px-6 py-10">
@@ -74,7 +30,7 @@ export default async function NotificationsPage() {
         </Link>
       </header>
 
-      <NotificationsList initial={STUB_NOTIFS} />
+      <NotificationsList initial={items} />
     </main>
   );
 }

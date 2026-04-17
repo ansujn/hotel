@@ -1,24 +1,47 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 interface Props {
   unreadCount?: number;
   className?: string;
+  /** When true, the bell fetches its own unread count from /api/notifications/unread-count. */
+  fetchFromApi?: boolean;
 }
 
-// Server component; safe to embed anywhere. If unreadCount is provided and > 0
-// we render a small gold dot indicator in the top-right corner of the bell.
-// TODO: fetch unread count from `GET /v1/notifications/unread-count` when it
-// exists; for now callers can pass a stub value or omit.
-export function NotificationBell({ unreadCount = 0, className = "" }: Props) {
-  const hasUnread = unreadCount > 0;
+export function NotificationBell({
+  unreadCount = 0,
+  className = "",
+  fetchFromApi = false,
+}: Props) {
+  const [liveCount, setLiveCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (!fetchFromApi) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch("/api/notifications/unread-count", { cache: "no-store" });
+        if (!res.ok) return;
+        const data = (await res.json()) as { count?: number };
+        if (!cancelled) setLiveCount(data.count ?? 0);
+      } catch {
+        // ignore
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [fetchFromApi]);
+
+  const effective = fetchFromApi && liveCount !== null ? liveCount : unreadCount;
+  const hasUnread = effective > 0;
+
   return (
     <Link
       href="/notifications"
-      aria-label={
-        hasUnread
-          ? `Notifications, ${unreadCount} unread`
-          : "Notifications"
-      }
+      aria-label={hasUnread ? `Notifications, ${effective} unread` : "Notifications"}
       className={`relative inline-flex items-center justify-center w-9 h-9 rounded-full border border-[#2A2A36] bg-[#15151C] text-[#C9C9D1] hover:text-white hover:border-[#E8C872]/50 transition-colors ${className}`}
     >
       <span aria-hidden className="text-sm">🔔</span>

@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { LoginForm } from "./login-form";
 
 export default function LoginPage() {
@@ -33,7 +34,9 @@ export default function LoginPage() {
 
       <section className="flex items-center justify-center p-8 md:p-16">
         <div className="w-full max-w-md">
-          <LoginForm />
+          <Suspense fallback={<div className="text-sm text-[#8A8A96]">Loading…</div>}>
+            <LoginForm />
+          </Suspense>
         </div>
       </section>
     </main>
