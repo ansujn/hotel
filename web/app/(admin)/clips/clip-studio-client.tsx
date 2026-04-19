@@ -62,8 +62,8 @@ export function ClipStudioClient({ token }: { token: string }) {
   ];
 
   return (
-    <div className="max-w-5xl mx-auto px-8 py-8">
-      <div className="mb-8">
+    <div className="max-w-5xl mx-auto px-4 md:px-8 py-6 md:py-8">
+      <div className="mb-6 md:mb-8">
         <h1 className="serif text-2xl font-bold text-white">Auto-Clip Studio</h1>
         <p className="text-sm text-[#8A8A96] mt-1">
           AI-powered clip suggestions for social media — pick a video and get 3 high-impact clips
@@ -99,7 +99,7 @@ export function ClipStudioClient({ token }: { token: string }) {
 
       {/* Clip cards */}
       {!loading && clips.length > 0 && (
-        <div className="grid grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
           {clips.map((clip, i) => (
             <div
               key={i}
@@ -134,7 +134,7 @@ export function ClipStudioClient({ token }: { token: string }) {
                     // Navigate to social hub with this asset pre-selected.
                     window.location.href = "/social";
                   }}
-                  className="mt-4 w-full py-2 rounded-lg bg-[#E8C872]/10 text-[#E8C872] text-xs font-medium border border-[#E8C872]/30 hover:bg-[#E8C872]/20 transition-colors"
+                  className="mt-4 w-full min-h-[44px] py-2 rounded-lg bg-[#E8C872]/10 text-[#E8C872] text-sm font-medium border border-[#E8C872]/30 hover:bg-[#E8C872]/20 transition-colors"
                 >
                   Send to Social Hub
                 </button>

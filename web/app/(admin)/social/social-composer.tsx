@@ -133,7 +133,7 @@ export function SocialComposer({
         <label className="text-xs text-[#8A8A96] uppercase tracking-wider mb-2 block">
           Platforms
         </label>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           {PLATFORMS.map((p) => {
             const active = platforms.includes(p.id);
             return (
@@ -141,7 +141,7 @@ export function SocialComposer({
                 key={p.id}
                 type="button"
                 onClick={() => togglePlatform(p.id)}
-                className={`px-3 py-2 rounded-lg text-xs font-medium transition-all ${
+                className={`min-h-[44px] px-3 py-2 rounded-lg text-sm font-medium transition-all ${
                   active
                     ? "bg-[#E8C872]/20 text-[#E8C872] border border-[#E8C872]/50"
                     : "bg-[#15151C] text-[#8A8A96] border border-[#2A2A36] hover:border-[#444]"

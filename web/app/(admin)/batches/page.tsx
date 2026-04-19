@@ -47,13 +47,13 @@ export default async function AdminBatchesPage() {
   }
 
   return (
-    <main className="max-w-7xl mx-auto px-8 py-10">
-      <div className="flex items-end justify-between mb-8 gap-4 flex-wrap">
+    <main className="max-w-7xl mx-auto px-4 md:px-8 py-6 md:py-10">
+      <div className="flex items-end justify-between mb-6 md:mb-8 gap-4 flex-wrap">
         <div>
           <div className="text-[10px] tracking-[0.35em] text-[#E8C872] uppercase mb-2">
             Admin
           </div>
-          <h1 className="serif text-3xl md:text-4xl font-black">Batches</h1>
+          <h1 className="serif text-2xl md:text-4xl font-black">Batches</h1>
           <p className="text-sm text-[#8A8A96] mt-1">
             Drag students between batches, or use the per-card dropdown.
           </p>

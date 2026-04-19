@@ -14,6 +14,7 @@ import (
 	"github.com/viktheatre/api/internal/consent"
 	"github.com/viktheatre/api/internal/notification"
 	"github.com/viktheatre/api/internal/payment"
+	brevopkg "github.com/viktheatre/api/internal/platform/brevo"
 	"github.com/viktheatre/api/internal/platform/config"
 	"github.com/viktheatre/api/internal/platform/db"
 	"github.com/viktheatre/api/internal/platform/httpx"
@@ -52,11 +53,18 @@ func main() {
 		defer pool.Close()
 	}
 
-	var msg91 auth.MSG91Client
-	if cfg.AppEnv != "local" && cfg.MSG91AuthKey != "" {
-		msg91 = auth.NewMSG91Client(cfg.MSG91AuthKey, cfg.MSG91TemplateID, cfg.MSG91SenderID)
+	// Brevo mailer for auth emails (welcome + password reset).
+	// Returns nil when BREVO_API_KEY is empty; auth service falls back to
+	// logging the reset link to stdout.
+	var mailer auth.Mailer
+	if brevo := brevopkg.New(brevopkg.Config{
+		APIKey:    cfg.BrevoAPIKey,
+		FromEmail: cfg.MailFromEmail,
+		FromName:  cfg.MailFromName,
+	}); brevo != nil {
+		mailer = brevo
 	}
-	authSvc := auth.New(pool, cfg, msg91)
+	authSvc := auth.New(pool, cfg, mailer)
 
 	// Mux client: stub in local mode when MUX_TOKEN_ID is empty.
 	muxClient := muxpkg.New(muxpkg.Config{
@@ -90,7 +98,6 @@ func main() {
 			consent.NewPGStore(pool),
 			cfg,
 			authSvc.Issuer(),
-			authSvc,
 			consent.LogNotifier{Prefix: "consent"},
 		)
 		assetSvc.WireConsent(consentSvc)

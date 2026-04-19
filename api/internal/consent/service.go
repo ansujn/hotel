@@ -50,13 +50,7 @@ type SignedConsent struct {
 	SignedAt   time.Time `json:"signed_at"`
 }
 
-// OTPVerifier is the subset of auth.Service used for OTP re-verification
-// when a parent signs. Satisfied by *auth.Service.
-type OTPVerifier interface {
-	VerifyOTP(ctx context.Context, phone, code string) (userID, role string, err error)
-}
-
-// Notifier sends email/SMS. Real impls are Resend + MSG91; local mode just logs.
+// Notifier sends email/SMS. Real impls are Brevo; local mode just logs.
 type Notifier interface {
 	Send(ctx context.Context, n Notification) error
 }
@@ -73,17 +67,15 @@ type Service struct {
 	store    Store
 	cfg      *config.Config
 	issuer   *auth.TokenIssuer
-	otp      OTPVerifier
 	notify   Notifier
 	pdfWrite func(data []byte, filename string) (string, error)
 }
 
-func New(store Store, cfg *config.Config, issuer *auth.TokenIssuer, otp OTPVerifier, notify Notifier) *Service {
+func New(store Store, cfg *config.Config, issuer *auth.TokenIssuer, notify Notifier) *Service {
 	return &Service{
 		store:    store,
 		cfg:      cfg,
 		issuer:   issuer,
-		otp:      otp,
 		notify:   notify,
 		pdfWrite: defaultPDFWrite,
 	}
@@ -143,10 +135,11 @@ func (s *Service) mintConsentToken(assetID, parentID uuid.UUID, phone string) (s
 }
 
 // SignReq is the body of POST /consent/{token}.
+// Authentication is entirely via the one-time JWT token in the URL — the token
+// is emailed to the parent, so possession proves identity. No OTP challenge.
 type SignReq struct {
-	OTP         string `json:"otp"`
-	SignedName  string `json:"signed_name"`
-	Scope       Scope  `json:"scope"`
+	SignedName string `json:"signed_name"`
+	Scope      Scope  `json:"scope"`
 }
 
 type Scope struct {
@@ -176,13 +169,6 @@ func (s *Service) VerifyAndSign(ctx context.Context, tokenStr string, req SignRe
 	validMonths := req.Scope.ValidMonths
 	if validMonths == 0 {
 		validMonths = 12
-	}
-
-	// OTP re-verification (skipped if no OTP supplied and env=local bypass).
-	if req.OTP != "" && s.otp != nil {
-		if _, _, err := s.otp.VerifyOTP(ctx, claims.ParentPh, req.OTP); err != nil {
-			return nil, fmt.Errorf("otp: %w", err)
-		}
 	}
 
 	assetID, err := uuid.Parse(claims.AssetID)

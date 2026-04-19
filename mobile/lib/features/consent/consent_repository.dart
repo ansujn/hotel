@@ -23,7 +23,7 @@ class ConsentRepository {
   /// and let the parent still attempt to sign.
   Future<ConsentContext?> getContext(String token) async {
     try {
-      final response = await _dio.get<Map<String, dynamic>>('/consent/$token');
+      final response = await _dio.get<Map<String, dynamic>>('/v1/consent/$token');
       final data = response.data;
       if (data == null) return null;
       return ConsentContext.fromJson(data);
@@ -36,7 +36,7 @@ class ConsentRepository {
 
   Future<void> submit(String token, ConsentSignReq req) async {
     try {
-      await _dio.post<dynamic>('/consent/$token', data: req.toJson());
+      await _dio.post<dynamic>('/v1/consent/$token', data: req.toJson());
     } on DioException catch (e) {
       final data = e.response?.data;
       final msg = (data is Map && data['message'] is String)

@@ -70,15 +70,15 @@ export default async function AdminStudentsPage({ searchParams }: PageProps) {
   const batches = Array.from(new Set(rows.map((s) => s.batch_name).filter((b) => b && b !== "—")));
 
   return (
-    <main className="max-w-7xl mx-auto px-8 py-10">
-      <div className="flex items-end justify-between mb-8 gap-4 flex-wrap">
+    <main className="max-w-7xl mx-auto px-4 md:px-8 py-6 md:py-10">
+      <div className="flex items-end justify-between mb-6 md:mb-8 gap-4 flex-wrap">
         <div>
           <div className="text-[10px] tracking-[0.35em] text-[#E8C872] uppercase mb-2">
             Admin
           </div>
-          <h1 className="serif text-3xl md:text-4xl font-black">Students</h1>
+          <h1 className="serif text-2xl md:text-4xl font-black">Students</h1>
           <p className="text-sm text-[#8A8A96] mt-1">
-            {rows.length} on roster · click any row to open their channel.
+            {rows.length} on roster · tap a row to open their channel.
           </p>
         </div>
         <Link href="/upload">
@@ -93,7 +93,7 @@ export default async function AdminStudentsPage({ searchParams }: PageProps) {
       )}
 
       <form className="bg-[#15151C] border border-[#2A2A36] rounded-2xl p-4 mb-6 flex gap-3 flex-wrap items-end">
-        <div className="flex-1 min-w-[240px]">
+        <div className="flex-1 min-w-[200px] md:min-w-[240px] w-full md:w-auto">
           <Input
             name="q"
             label="Search"
@@ -101,7 +101,7 @@ export default async function AdminStudentsPage({ searchParams }: PageProps) {
             defaultValue={q ?? ""}
           />
         </div>
-        <div className="min-w-[200px]">
+        <div className="min-w-[180px] md:min-w-[200px] w-full md:w-auto">
           <label htmlFor="batch-filter" className="text-xs uppercase tracking-[0.2em] text-[#8A8A96] mb-1.5 block">
             Batch
           </label>
@@ -117,10 +117,56 @@ export default async function AdminStudentsPage({ searchParams }: PageProps) {
             ))}
           </select>
         </div>
-        <Button variant="ghost" size="md" type="submit">Apply</Button>
+        <Button variant="ghost" size="md" type="submit" className="w-full md:w-auto">Apply</Button>
       </form>
 
-      <div className="bg-[#15151C] border border-[#2A2A36] rounded-2xl overflow-hidden">
+      {/* Mobile: stacked cards */}
+      <div className="md:hidden space-y-3">
+        {rows.map((s) => (
+          <Link
+            key={s.id}
+            href={`/channel/${s.id}`}
+            className="block bg-[#15151C] border border-[#2A2A36] rounded-2xl p-4 active:bg-[#1C1C26] transition-colors"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-full bg-gradient-to-br from-[#8B5CF6] to-[#E8C872] grid place-items-center text-black text-sm font-bold shrink-0">
+                {initials(s.name)}
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="font-semibold text-white truncate">{s.name}</div>
+                <div className="text-xs text-[#8A8A96] truncate">{s.phone}</div>
+              </div>
+              <PrivacyBadge privacy={consentBadge(s.consent_status)} />
+            </div>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-2 mt-4 pt-3 border-t border-[#2A2A36]/60 text-sm">
+              <div>
+                <div className="text-[10px] uppercase tracking-[0.2em] text-[#8A8A96] mb-0.5">Batch</div>
+                <div className="text-[#C9C9D1] truncate">{s.batch_name}</div>
+              </div>
+              <div>
+                <div className="text-[10px] uppercase tracking-[0.2em] text-[#8A8A96] mb-0.5">Parent</div>
+                <div className="text-[#C9C9D1] truncate">{s.parent_name}</div>
+              </div>
+              <div>
+                <div className="text-[10px] uppercase tracking-[0.2em] text-[#8A8A96] mb-0.5">Videos</div>
+                <div className="text-[#E8C872] font-mono">{s.asset_count}</div>
+              </div>
+              <div>
+                <div className="text-[10px] uppercase tracking-[0.2em] text-[#8A8A96] mb-0.5">Last active</div>
+                <div className="text-[#8A8A96]">{timeAgo(s.last_active)}</div>
+              </div>
+            </div>
+          </Link>
+        ))}
+        {rows.length === 0 && !fetchError && (
+          <div className="bg-[#15151C] border border-[#2A2A36] rounded-2xl p-8 text-center text-sm text-[#8A8A96]">
+            No students match your filters.
+          </div>
+        )}
+      </div>
+
+      {/* Desktop: table */}
+      <div className="hidden md:block bg-[#15151C] border border-[#2A2A36] rounded-2xl overflow-hidden">
         <table className="w-full text-sm">
           <thead className="bg-[#1C1C26] text-[#8A8A96]">
             <tr className="text-left">

@@ -8,18 +8,18 @@ type Config struct {
 	DatabaseURL string `envconfig:"DATABASE_URL" required:"true"`
 	JWTSecret   string `envconfig:"JWT_SECRET" required:"true"`
 
-	MSG91AuthKey    string `envconfig:"MSG91_AUTH_KEY"`
-	MSG91TemplateID string `envconfig:"MSG91_TEMPLATE_ID"`
-	MSG91SenderID   string `envconfig:"MSG91_SENDER_ID"`
-
 	MuxTokenID           string `envconfig:"MUX_TOKEN_ID"`
 	MuxSecret            string `envconfig:"MUX_TOKEN_SECRET"`
 	MuxSigningKeyID      string `envconfig:"MUX_SIGNING_KEY_ID"`
 	MuxSigningKeyPrivate string `envconfig:"MUX_SIGNING_KEY_PRIVATE"`
 	MuxWebhookSecret     string `envconfig:"MUX_WEBHOOK_SECRET"`
 
-	ResendAPIKey string `envconfig:"RESEND_API_KEY"`
-	AppBaseURL   string `envconfig:"APP_BASE_URL" default:"http://localhost:3000"`
+	// Transactional email (Brevo). Free tier: 300/day.
+	BrevoAPIKey  string `envconfig:"BREVO_API_KEY"`
+	MailFromEmail string `envconfig:"MAIL_FROM_EMAIL" default:"no-reply@victor.saudagars.org"`
+	MailFromName  string `envconfig:"MAIL_FROM_NAME"  default:"Vik Theatre"`
+
+	AppBaseURL string `envconfig:"APP_BASE_URL" default:"http://localhost:3000"`
 
 	RazorpayKeyID         string `envconfig:"RAZORPAY_KEY_ID"`
 	RazorpayKeySecret     string `envconfig:"RAZORPAY_KEY_SECRET"`

@@ -67,7 +67,7 @@ func newTestService(t *testing.T) (*Service, *fakeStore) {
 	store := newFakeStore(parent)
 	cfg := &config.Config{AppEnv: "local", JWTSecret: "test-secret", AppBaseURL: "http://localhost:3000"}
 	issuer := auth.NewTokenIssuer(cfg.JWTSecret)
-	svc := New(store, cfg, issuer, nil, LogNotifier{Prefix: "test"})
+	svc := New(store, cfg, issuer, LogNotifier{Prefix: "test"})
 	// Override pdf write to avoid touching disk across test sandboxes.
 	svc.pdfWrite = func(_ []byte, filename string) (string, error) {
 		return "memory://" + filename, nil

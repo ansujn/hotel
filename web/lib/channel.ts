@@ -1,6 +1,7 @@
-import { cookies } from "next/headers";
-import { api } from "./api";
-import { ACCESS_COOKIE } from "./auth";
+// Client-safe types and utilities for channel data.
+// Server helpers (cookies, API fetch) live in `lib/channel-server.ts` so this
+// module can be imported from client components without dragging next/headers
+// into the browser bundle.
 
 export type AssetType = "monologue" | "scene" | "showcase" | "catalog";
 export type AssetPrivacy = "private" | "pending_consent" | "public";
@@ -10,7 +11,7 @@ export interface Asset {
   title: string;
   type: AssetType;
   mux_playback_id?: string;
-  mux_playback_token?: string; // optional signed token if API returns one
+  mux_playback_token?: string;
   duration_s?: number;
   privacy: AssetPrivacy;
   created_at?: string;
@@ -32,31 +33,6 @@ export interface ChannelStudent {
 export interface Channel {
   student: ChannelStudent;
   assets: Asset[];
-}
-
-async function readToken(): Promise<string | undefined> {
-  const store = await cookies();
-  return store.get(ACCESS_COOKIE)?.value;
-}
-
-export async function getChannel(id: string): Promise<Channel | null> {
-  const token = await readToken();
-  try {
-    return await api<Channel>(`/students/${id}/channel`, { token });
-  } catch {
-    return null;
-  }
-}
-
-export async function getAsset(
-  channelId: string,
-  assetId: string
-): Promise<{ channel: Channel; asset: Asset } | null> {
-  const channel = await getChannel(channelId);
-  if (!channel) return null;
-  const asset = (channel.assets ?? []).find((a) => a.id === assetId);
-  if (!asset) return null;
-  return { channel, asset };
 }
 
 export const ASSET_TABS: readonly { key: AssetType | "about"; label: string }[] = [

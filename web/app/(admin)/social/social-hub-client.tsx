@@ -32,17 +32,17 @@ export function SocialHubClient({ token }: { token: string }) {
   }, [token]);
 
   return (
-    <div className="max-w-7xl mx-auto px-8 py-8">
-      <div className="mb-8">
+    <div className="max-w-7xl mx-auto px-4 md:px-8 py-6 md:py-8">
+      <div className="mb-6 md:mb-8">
         <h1 className="serif text-2xl font-bold text-white">Social Hub</h1>
         <p className="text-sm text-[#8A8A96] mt-1">
           Publish student performances to Instagram, YouTube, Facebook, and LinkedIn
         </p>
       </div>
 
-      <div className="grid grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-6">
         {/* Left: Consented Library */}
-        <div className="col-span-3">
+        <div className="lg:col-span-3">
           <div className="bg-[#0F0F17] border border-[#2A2A36] rounded-xl p-4">
             <h2 className="text-lg font-semibold text-white mb-4">Library</h2>
             <p className="text-[10px] text-[#8A8A96] uppercase tracking-wider mb-3">
@@ -96,7 +96,7 @@ export function SocialHubClient({ token }: { token: string }) {
         </div>
 
         {/* Center: Composer */}
-        <div className="col-span-4">
+        <div className="lg:col-span-4">
           <div className="bg-[#0F0F17] border border-[#2A2A36] rounded-xl p-5">
             <SocialComposer
               assets={assets}
@@ -107,7 +107,7 @@ export function SocialHubClient({ token }: { token: string }) {
         </div>
 
         {/* Right: Calendar */}
-        <div className="col-span-5">
+        <div className="lg:col-span-5">
           <div className="bg-[#0F0F17] border border-[#2A2A36] rounded-xl p-4">
             <SocialCalendar token={token} refreshKey={refreshKey} />
           </div>

@@ -52,14 +52,16 @@ func NewRouter(d Deps) http.Handler {
 		r.Get("/health", health)
 
 		// auth (public)
-		r.Post("/auth/otp/send", d.Auth.HandleOTPSend)
-		r.Post("/auth/otp/verify", d.Auth.HandleOTPVerify)
+		r.Post("/auth/password/login", d.Auth.HandlePasswordLogin)
+		r.Post("/auth/password/reset/request", d.Auth.HandleResetRequest)
+		r.Post("/auth/password/reset/confirm", d.Auth.HandleResetConfirm)
 		r.Post("/auth/refresh", d.Auth.HandleRefresh)
 
 		// authenticated
 		r.Group(func(r chi.Router) {
 			r.Use(d.Auth.RequireAuth)
 			r.Get("/me", d.Auth.HandleMe)
+			r.Post("/auth/password/change", d.Auth.HandleChangePassword)
 		})
 
 		// public/private channel — optional auth so caller's role can unlock private assets
@@ -92,6 +94,8 @@ func NewRouter(d Deps) http.Handler {
 		r.Route("/admin", func(r chi.Router) {
 			r.Use(d.Auth.RequireAuth)
 			r.Use(d.Auth.RequireRole("admin", "instructor"))
+			// Admin creates users (student/parent/instructor) with a default password.
+			r.Post("/users", d.Auth.HandleAdminCreateUser)
 			if d.Asset != nil {
 				r.Post("/assets", d.Asset.HandleCreate)
 				r.Post("/assets/{id}/publish", d.Asset.HandlePublish)

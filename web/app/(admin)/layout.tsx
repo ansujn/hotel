@@ -24,7 +24,9 @@ export default async function AdminLayout({
         ? "/social"
         : path.startsWith("/clips")
           ? "/clips"
-          : "/students";
+          : path.startsWith("/users")
+            ? "/users/new"
+            : "/students";
 
   return (
     <div className="min-h-screen">

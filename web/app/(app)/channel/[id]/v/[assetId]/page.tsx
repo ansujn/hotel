@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { MuxPlayer } from "@/components/video/MuxPlayer";
 import { PrivacyBadge } from "@/components/PrivacyBadge";
 import { VideoCard } from "@/components/video/VideoCard";
-import { getAsset } from "@/lib/channel";
+import { getAsset } from "@/lib/channel-server";
 
 interface PageProps {
   params: Promise<{ id: string; assetId: string }>;

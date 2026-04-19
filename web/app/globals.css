@@ -44,3 +44,15 @@ h1, h2, h3, h4, .serif {
 .ring-gradient {
   background: conic-gradient(#E8C872 0% var(--p, 72%), #2A2A36 var(--p, 72%) 100%);
 }
+
+/*
+ * iOS Safari auto-zooms when focusing an input whose computed font-size is
+ * < 16px. Force ≥16px on touch viewports so admin pages don't jolt around.
+ */
+@media (max-width: 767px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}

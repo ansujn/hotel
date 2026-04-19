@@ -68,13 +68,13 @@ export function SocialCalendar({ token, refreshKey }: { token: string; refreshKe
               d.setDate(d.getDate() - 7);
               setWeekStart(d);
             }}
-            className="px-2 py-1 text-xs text-[#8A8A96] hover:text-white bg-[#15151C] border border-[#2A2A36] rounded"
+            className="min-h-[44px] min-w-[44px] px-3 py-2 text-sm text-[#8A8A96] hover:text-white bg-[#15151C] border border-[#2A2A36] rounded-lg"
           >
             Prev
           </button>
           <button
             onClick={() => setWeekStart(getMonday(new Date()))}
-            className="px-2 py-1 text-xs text-[#E8C872] bg-[#15151C] border border-[#E8C872]/30 rounded"
+            className="min-h-[44px] min-w-[44px] px-3 py-2 text-sm text-[#E8C872] bg-[#15151C] border border-[#E8C872]/30 rounded-lg"
           >
             Today
           </button>
@@ -84,21 +84,21 @@ export function SocialCalendar({ token, refreshKey }: { token: string; refreshKe
               d.setDate(d.getDate() + 7);
               setWeekStart(d);
             }}
-            className="px-2 py-1 text-xs text-[#8A8A96] hover:text-white bg-[#15151C] border border-[#2A2A36] rounded"
+            className="min-h-[44px] min-w-[44px] px-3 py-2 text-sm text-[#8A8A96] hover:text-white bg-[#15151C] border border-[#2A2A36] rounded-lg"
           >
             Next
           </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-7 gap-1">
+      <div className="grid grid-cols-7 gap-1 -mx-1 px-1 overflow-x-auto md:overflow-visible">
         {days.map((day, i) => {
           const dayPosts = postsByDay(day);
           const isToday = formatDate(day) === formatDate(new Date());
           return (
             <div
               key={i}
-              className={`rounded-lg p-2 min-h-[140px] ${
+              className={`rounded-lg p-2 min-h-[140px] min-w-0 ${
                 isToday
                   ? "bg-[#1A1A2E] border border-[#E8C872]/30"
                   : "bg-[#12121A] border border-[#2A2A36]/50"

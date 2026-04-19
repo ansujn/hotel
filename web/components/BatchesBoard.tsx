@@ -137,7 +137,7 @@ export function BatchesBoard({ batches: initial }: Props) {
                       onChange={(e) =>
                         moveStudent(s.id, batch.id, e.target.value)
                       }
-                      className="text-xs bg-[#15151C] border border-[#2A2A36] rounded px-2 py-1 text-[#C9C9D1] focus:outline-none focus:border-[#E8C872]/70"
+                      className="text-xs bg-[#15151C] border border-[#2A2A36] rounded px-2 py-1 min-h-[44px] md:min-h-0 text-[#C9C9D1] focus:outline-none focus:border-[#E8C872]/70"
                     >
                       {batchOptions.map((b) => (
                         <option key={b.id} value={b.id}>

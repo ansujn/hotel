@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/viktheatre/api/internal/platform/config"
 
@@ -13,94 +14,52 @@ import (
 
 // User is the DTO returned by /me.
 type User struct {
-	ID     string  `json:"id"`
-	Phone  string  `json:"phone"`
-	Role   string  `json:"role"`
-	Name   *string `json:"name,omitempty"`
-	Email  *string `json:"email,omitempty"`
-	Locale string  `json:"locale"`
+	ID                 string  `json:"id"`
+	Phone              string  `json:"phone"`
+	Role               string  `json:"role"`
+	Name               *string `json:"name,omitempty"`
+	Email              *string `json:"email,omitempty"`
+	Locale             string  `json:"locale"`
+	MustChangePassword bool    `json:"must_change_password"`
+}
+
+// Mailer delivers transactional emails. Injected so tests and local dev can
+// use a no-op implementation while prod uses Brevo.
+type Mailer interface {
+	SendPasswordReset(ctx context.Context, toEmail, toName, resetURL string) error
+	SendWelcome(ctx context.Context, toEmail, toName, loginURL, defaultPassword string) error
 }
 
 // Service holds auth dependencies and exposes auth use-cases.
 type Service struct {
 	pool   *pgxpool.Pool
 	cfg    *config.Config
-	msg91  MSG91Client
+	mailer Mailer
 	issuer *TokenIssuer
 }
 
-func New(pool *pgxpool.Pool, cfg *config.Config, msg91 MSG91Client) *Service {
+func New(pool *pgxpool.Pool, cfg *config.Config, mailer Mailer) *Service {
 	return &Service{
 		pool:   pool,
 		cfg:    cfg,
-		msg91:  msg91,
+		mailer: mailer,
 		issuer: NewTokenIssuer(cfg.JWTSecret),
 	}
 }
 
-// Issuer exposes the token issuer for refresh flows.
+// Issuer exposes the token issuer for refresh flows and signed links.
 func (s *Service) Issuer() *TokenIssuer { return s.issuer }
-
-// SendOTP dispatches an OTP. In local mode it's a no-op.
-func (s *Service) SendOTP(ctx context.Context, phone string) error {
-	if phone == "" {
-		return errors.New("phone required")
-	}
-	if s.cfg.AppEnv == "local" {
-		return nil
-	}
-	if s.msg91 == nil {
-		return errors.New("msg91 client not configured")
-	}
-	return s.msg91.SendOTP(ctx, phone)
-}
-
-// VerifyOTP validates the code, upserts the user, and returns id + role.
-func (s *Service) VerifyOTP(ctx context.Context, phone, code string) (userID, role string, err error) {
-	if phone == "" || code == "" {
-		return "", "", errors.New("phone and code required")
-	}
-
-	if s.cfg.AppEnv == "local" {
-		if code != DevBypassCode {
-			return "", "", ErrInvalidOTP
-		}
-	} else {
-		if s.msg91 == nil {
-			return "", "", errors.New("msg91 client not configured")
-		}
-		if err := s.msg91.VerifyOTP(ctx, phone, code); err != nil {
-			return "", "", err
-		}
-	}
-
-	return s.upsertUser(ctx, phone)
-}
-
-// upsertUser inserts a new student if phone is unknown, else returns existing.
-func (s *Service) upsertUser(ctx context.Context, phone string) (string, string, error) {
-	const q = `
-		INSERT INTO users (phone, role)
-		VALUES ($1, 'student')
-		ON CONFLICT (phone) DO UPDATE SET phone = EXCLUDED.phone
-		RETURNING id::text, role::text
-	`
-	var id, role string
-	err := s.pool.QueryRow(ctx, q, phone).Scan(&id, &role)
-	if err != nil {
-		return "", "", fmt.Errorf("upsert user: %w", err)
-	}
-	return id, role, nil
-}
 
 // LoadUser fetches the user row for /me.
 func (s *Service) LoadUser(ctx context.Context, userID string) (*User, error) {
 	const q = `
-		SELECT id::text, phone, role::text, name, email, locale
+		SELECT id::text, phone, role::text, name, email, locale, must_change_password
 		FROM users WHERE id = $1::uuid
 	`
 	u := &User{}
-	err := s.pool.QueryRow(ctx, q, userID).Scan(&u.ID, &u.Phone, &u.Role, &u.Name, &u.Email, &u.Locale)
+	err := s.pool.QueryRow(ctx, q, userID).Scan(
+		&u.ID, &u.Phone, &u.Role, &u.Name, &u.Email, &u.Locale, &u.MustChangePassword,
+	)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, fmt.Errorf("user not found: %w", err)
@@ -108,4 +67,85 @@ func (s *Service) LoadUser(ctx context.Context, userID string) (*User, error) {
 		return nil, fmt.Errorf("load user: %w", err)
 	}
 	return u, nil
+}
+
+// --- Admin user creation ---
+
+type CreateUserInput struct {
+	Name  string
+	Email string
+	Phone string
+	Role  string // student | parent | instructor | admin
+}
+
+type CreateUserResult struct {
+	ID              string `json:"id"`
+	Name            string `json:"name"`
+	Email           string `json:"email"`
+	Phone           string `json:"phone"`
+	Role            string `json:"role"`
+	DefaultPassword string `json:"default_password"`
+}
+
+var validRoles = map[string]struct{}{
+	"student":    {},
+	"parent":     {},
+	"instructor": {},
+	"admin":      {},
+}
+
+// CreateUserWithDefaultPassword is called from the admin dashboard.
+// Generates a human-readable default password, bcrypts it, and returns the
+// plaintext ONCE so the admin can share it with the user.
+func (s *Service) CreateUserWithDefaultPassword(ctx context.Context, in CreateUserInput) (*CreateUserResult, error) {
+	name := strings.TrimSpace(in.Name)
+	email, emailKind := normalizeIdentifier(in.Email)
+	phone, phoneKind := normalizeIdentifier(in.Phone)
+	role := strings.ToLower(strings.TrimSpace(in.Role))
+
+	if name == "" {
+		return nil, errors.New("name required")
+	}
+	if emailKind != identEmail {
+		return nil, errors.New("valid email required")
+	}
+	if phoneKind != identPhone {
+		return nil, errors.New("valid phone required")
+	}
+	if _, ok := validRoles[role]; !ok {
+		return nil, fmt.Errorf("invalid role %q", role)
+	}
+
+	defaultPwd := GenerateDefaultPassword(name)
+	hash, err := hashPassword(defaultPwd)
+	if err != nil {
+		return nil, err
+	}
+
+	const q = `
+		INSERT INTO users (name, email, phone, role, password_hash, must_change_password)
+		VALUES ($1, $2, $3, $4::user_role, $5, TRUE)
+		RETURNING id::text
+	`
+	var id string
+	if err := s.pool.QueryRow(ctx, q, name, email, phone, role, hash).Scan(&id); err != nil {
+		return nil, fmt.Errorf("insert user: %w", err)
+	}
+
+	// Best-effort welcome email. Do not fail the whole request on mailer issues.
+	if s.mailer != nil {
+		loginURL := strings.TrimRight(s.cfg.AppBaseURL, "/") + "/login"
+		if err := s.mailer.SendWelcome(ctx, email, name, loginURL, defaultPwd); err != nil {
+			fmt.Printf("[auth] welcome email failed for %s: %v\n", email, err)
+		}
+	}
+
+	return &CreateUserResult{
+		ID:              id,
+		Name:            name,
+		Email:           email,
+		Phone:           phone,
+		Role:            role,
+		DefaultPassword: defaultPwd,
+	}, nil
 }

@@ -42,6 +42,7 @@ export interface User {
   email?: string;
   role: UserRole;
   locale?: string;
+  must_change_password?: boolean;
 }
 
 export interface TokenPair {

@@ -62,7 +62,7 @@ class ApiClient {
     if (refresh == null || refresh.isEmpty) return false;
     try {
       final response = await Dio(BaseOptions(baseUrl: kApiBaseUrl)).post(
-        '/auth/refresh',
+        '/v1/auth/refresh',
         data: <String, String>{'refresh_token': refresh},
       );
       final data = response.data as Map<String, dynamic>;

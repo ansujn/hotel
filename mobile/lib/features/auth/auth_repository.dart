@@ -25,7 +25,7 @@ class AuthRepository {
   Future<void> sendOtp(String phone) async {
     try {
       await _dio.post<dynamic>(
-        '/auth/otp/send',
+        '/v1/auth/otp/send',
         data: <String, String>{'phone': phone},
       );
     } on DioException catch (e) {
@@ -36,7 +36,7 @@ class AuthRepository {
   Future<TokenPair> verifyOtp(String phone, String code) async {
     try {
       final response = await _dio.post<Map<String, dynamic>>(
-        '/auth/otp/verify',
+        '/v1/auth/otp/verify',
         data: <String, String>{'phone': phone, 'code': code},
       );
       final pair = TokenPair.fromJson(response.data!);
@@ -49,7 +49,7 @@ class AuthRepository {
 
   Future<User> me() async {
     try {
-      final response = await _dio.get<Map<String, dynamic>>('/me');
+      final response = await _dio.get<Map<String, dynamic>>('/v1/me');
       return User.fromJson(response.data!);
     } on DioException catch (e) {
       throw AuthException(_extractMessage(e, 'Failed to fetch profile'));

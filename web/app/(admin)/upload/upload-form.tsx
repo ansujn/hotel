@@ -176,7 +176,7 @@ export function UploadForm({ students }: { students: StudentOption[] }) {
             if (e.key === "Enter" || e.key === " ") inputRef.current?.click();
           }}
           aria-label="Drop video file or click to browse"
-          className={`h-[420px] rounded-2xl border-2 border-dashed flex flex-col items-center justify-center text-center p-10 cursor-pointer transition-colors ${
+          className={`h-[260px] md:h-[420px] rounded-2xl border-2 border-dashed flex flex-col items-center justify-center text-center p-6 md:p-10 cursor-pointer transition-colors ${
             dragging
               ? "border-[#E8C872] bg-[#E8C872]/5"
               : "border-[#2A2A36] bg-[#15151C] hover:border-[#E8C872]/50"
@@ -386,8 +386,11 @@ export function UploadForm({ students }: { students: StudentOption[] }) {
           </div>
         )}
 
-        <div className="flex gap-3">
-          <Button type="submit" variant="primary" size="lg" disabled={busy || !file}>
+        <div className="flex flex-col-reverse sm:flex-row gap-3">
+          <Button type="button" variant="ghost" size="lg" onClick={reset} disabled={busy} className="sm:w-auto w-full">
+            Reset
+          </Button>
+          <Button type="submit" variant="primary" size="lg" disabled={busy || !file} className="sm:w-auto w-full">
             {stage === "creating"
               ? "Creating…"
               : stage === "uploading"
@@ -395,9 +398,6 @@ export function UploadForm({ students }: { students: StudentOption[] }) {
                 : stage === "publishing"
                   ? "Requesting consent…"
                   : "Upload video"}
-          </Button>
-          <Button type="button" variant="ghost" size="lg" onClick={reset} disabled={busy}>
-            Reset
           </Button>
         </div>
       </div>
