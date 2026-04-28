@@ -24,6 +24,10 @@ type Config struct {
 	RazorpayKeyID         string `envconfig:"RAZORPAY_KEY_ID"`
 	RazorpayKeySecret     string `envconfig:"RAZORPAY_KEY_SECRET"`
 	RazorpayWebhookSecret string `envconfig:"RAZORPAY_WEBHOOK_SECRET"`
+
+	// Restaurant platform (Phase 1) — shared admin password for upload
+	// endpoints. Empty disables /v1/admin/restaurants/{id}/* routes.
+	AdminPassword string `envconfig:"ADMIN_PASSWORD"`
 }
 
 func Load() (*Config, error) {

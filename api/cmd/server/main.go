@@ -21,6 +21,7 @@ import (
 	muxpkg "github.com/viktheatre/api/internal/platform/mux"
 	razorpaypkg "github.com/viktheatre/api/internal/platform/razorpay"
 	"github.com/viktheatre/api/internal/progress"
+	"github.com/viktheatre/api/internal/restaurants"
 	"github.com/viktheatre/api/internal/social"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -91,6 +92,7 @@ func main() {
 	var socialSvc *social.Service
 	var paymentSvc *payment.Service
 	var notificationSvc *notification.Service
+	var restaurantsSvc *restaurants.Service
 	if pool != nil {
 		progressSvc = progress.New(progress.NewPGStore(pool))
 		assetSvc = asset.New(asset.NewPGStore(pool), muxClient, cfg)
@@ -106,6 +108,12 @@ func main() {
 		socialSvc = social.New(social.NewPGStore(pool), bufferClient, logger)
 		paymentSvc = payment.New(payment.NewPGStore(pool), rpClient)
 		notificationSvc = notification.New(notification.NewPGStore(pool))
+		restaurantsSvc = restaurants.New(
+			restaurants.NewPGStore(pool),
+			cfg.AdminPassword,
+			cfg.AppBaseURL,
+			nil, // Phase 1: log verify links to stdout. Wire Brevo in Phase 2.
+		)
 	}
 
 	router := httpx.NewRouter(httpx.Deps{
@@ -119,6 +127,7 @@ func main() {
 		Social:   socialSvc,
 		Payment:  paymentSvc,
 		Notification: notificationSvc,
+		Restaurants:  restaurantsSvc,
 	})
 
 	srv := &http.Server{

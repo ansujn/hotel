@@ -12,6 +12,7 @@ import (
 	"github.com/viktheatre/api/internal/payment"
 	"github.com/viktheatre/api/internal/platform/config"
 	"github.com/viktheatre/api/internal/progress"
+	"github.com/viktheatre/api/internal/restaurants"
 	"github.com/viktheatre/api/internal/social"
 
 	"github.com/go-chi/chi/v5"
@@ -32,6 +33,7 @@ type Deps struct {
 	Social   *social.Service
 	Payment  *payment.Service
 	Notification *notification.Service
+	Restaurants  *restaurants.Service
 }
 
 func NewRouter(d Deps) http.Handler {
@@ -50,6 +52,19 @@ func NewRouter(d Deps) http.Handler {
 
 	r.Route("/v1", func(r chi.Router) {
 		r.Get("/health", health)
+
+		// Restaurant platform (Phase 1) — public discovery + reviews +
+		// password-gated admin uploads.
+		if d.Restaurants != nil {
+			d.Restaurants.RegisterRoutes(r)
+		} else {
+			r.Get("/restaurants", stub("restaurants list"))
+			r.Get("/restaurants/{id}", stub("restaurant detail"))
+			r.Get("/restaurants/{id}/videos", stub("restaurant videos"))
+			r.Get("/restaurants/{id}/images", stub("restaurant images"))
+			r.Get("/reviews/{restaurant_id}", stub("list reviews"))
+			r.Post("/reviews", stub("create review"))
+		}
 
 		// auth (public)
 		r.Post("/auth/password/login", d.Auth.HandlePasswordLogin)

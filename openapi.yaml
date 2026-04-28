@@ -398,12 +398,227 @@ paths:
       security: []
       responses: { "204": { description: ok } }
 
+  # ---------------------------------------------------------------------
+  # Restaurant platform — Phase 1 (discovery, content, reviews, admin)
+  # ---------------------------------------------------------------------
+  /restaurants:
+    get:
+      summary: List/discover restaurants
+      security: []
+      parameters:
+        - in: query
+          name: cuisine
+          schema: { type: string }
+        - in: query
+          name: location
+          schema: { type: string }
+        - in: query
+          name: city
+          schema: { type: string }
+        - in: query
+          name: min_price
+          schema: { type: integer }
+        - in: query
+          name: max_price
+          schema: { type: integer }
+        - in: query
+          name: capacity_min
+          schema: { type: integer }
+        - in: query
+          name: rating_min
+          schema: { type: number, format: float }
+        - in: query
+          name: page
+          schema: { type: integer, default: 1 }
+        - in: query
+          name: limit
+          schema: { type: integer, default: 20, maximum: 100 }
+      responses:
+        "200":
+          description: Paginated list of restaurants
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/RestaurantListResult" }
+
+  /restaurants/{id}:
+    get:
+      summary: Restaurant detail
+      security: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200":
+          description: Restaurant detail
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/RestaurantDetail" }
+        "404": { description: not found }
+
+  /restaurants/{id}/videos:
+    get:
+      summary: Videos for a restaurant
+      security: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200":
+          description: video list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  videos:
+                    type: array
+                    items: { $ref: "#/components/schemas/RestaurantVideo" }
+
+  /restaurants/{id}/images:
+    get:
+      summary: Images for a restaurant
+      security: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200":
+          description: image list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  images:
+                    type: array
+                    items: { $ref: "#/components/schemas/RestaurantImage" }
+
+  /admin/restaurants/{id}/images:
+    post:
+      summary: Add an image to a restaurant (admin password)
+      security:
+        - adminPassword: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateImageReq" }
+      responses:
+        "201":
+          description: created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/RestaurantImage" }
+        "401": { description: invalid admin password }
+
+  /admin/restaurants/{id}/videos:
+    post:
+      summary: Add a video to a restaurant (admin password)
+      security:
+        - adminPassword: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateVideoReq" }
+      responses:
+        "201":
+          description: created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/RestaurantVideo" }
+        "401": { description: invalid admin password }
+
+  /reviews/{restaurant_id}:
+    get:
+      summary: List verified reviews for a restaurant
+      security: []
+      parameters:
+        - in: path
+          name: restaurant_id
+          required: true
+          schema: { type: string, format: uuid }
+        - in: query
+          name: page
+          schema: { type: integer, default: 1 }
+        - in: query
+          name: limit
+          schema: { type: integer, default: 20 }
+      responses:
+        "200":
+          description: paginated reviews
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ReviewListResult" }
+
+  /reviews:
+    post:
+      summary: Submit a review (email verification required to publish)
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateReviewReq" }
+      responses:
+        "202":
+          description: accepted; verification email sent
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  review: { $ref: "#/components/schemas/RestaurantReview" }
+                  verified: { type: boolean }
+                  message: { type: string }
+
+  /reviews/verify:
+    get:
+      summary: Verify a review via email link
+      security: []
+      parameters:
+        - in: query
+          name: token
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: review verified
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  verified: { type: boolean }
+        "404": { description: invalid or expired token }
+
 components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
+    adminPassword:
+      type: apiKey
+      in: header
+      name: X-Admin-Password
+      description: Shared restaurant-platform admin password (env ADMIN_PASSWORD).
 
   schemas:
     OtpSendReq:
@@ -649,3 +864,156 @@ components:
             social:  { type: boolean }
             print:   { type: boolean }
             valid_months: { type: integer, enum: [6, 12, 24] }
+
+    # ----- Restaurant platform (Phase 1) ---------------------------------
+    Hour:
+      type: object
+      properties:
+        day:    { type: string, enum: [Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday] }
+        open:   { type: string, example: "11:00" }
+        close:  { type: string, example: "23:00" }
+        closed: { type: boolean }
+
+    RestaurantCard:
+      type: object
+      required: [id, name, cuisine, location, city, avg_rating, review_count, has_3d_tour, video_count]
+      properties:
+        id:                   { type: string, format: uuid }
+        name:                 { type: string }
+        cuisine:              { type: array, items: { type: string } }
+        location:             { type: string }
+        city:                 { type: string }
+        avg_price_per_plate:  { type: integer, nullable: true }
+        avg_rating:           { type: number, format: float }
+        review_count:         { type: integer }
+        has_3d_tour:          { type: boolean }
+        hero_image_url:       { type: string, nullable: true }
+        video_count:          { type: integer }
+
+    RestaurantDetail:
+      type: object
+      required: [id, name, cuisine, location, city, address, hours, capacity, highlights, has_3d_tour, avg_rating, review_count, is_verified, created_at]
+      properties:
+        id:                   { type: string, format: uuid }
+        name:                 { type: string }
+        description:          { type: string, nullable: true }
+        cuisine:              { type: array, items: { type: string } }
+        location:             { type: string }
+        city:                 { type: string }
+        address:              { type: string }
+        latitude:             { type: number, nullable: true }
+        longitude:            { type: number, nullable: true }
+        phone:                { type: string, nullable: true }
+        email:                { type: string, nullable: true }
+        website:              { type: string, nullable: true }
+        hours:                { type: array, items: { $ref: "#/components/schemas/Hour" } }
+        avg_price_per_plate:  { type: integer, nullable: true }
+        capacity:             { type: integer }
+        dress_code:           { type: string, nullable: true }
+        highlights:           { type: array, items: { type: string } }
+        hero_image_url:       { type: string, nullable: true }
+        has_3d_tour:          { type: boolean }
+        avg_rating:           { type: number, format: float }
+        review_count:         { type: integer }
+        is_verified:          { type: boolean }
+        owner_id:             { type: string, format: uuid, nullable: true }
+        created_at:           { type: string, format: date-time }
+
+    RestaurantListResult:
+      type: object
+      required: [restaurants, total, has_more]
+      properties:
+        restaurants: { type: array, items: { $ref: "#/components/schemas/RestaurantCard" } }
+        total:       { type: integer }
+        has_more:    { type: boolean }
+
+    RestaurantVideo:
+      type: object
+      required: [id, restaurant_id, title, type, views, created_at]
+      properties:
+        id:                { type: string, format: uuid }
+        restaurant_id:     { type: string, format: uuid }
+        title:             { type: string }
+        type:
+          type: string
+          enum: [ambiance, chef_special, menu_showcase, event_highlight, testimonial]
+        mux_playback_id:   { type: string, nullable: true }
+        thumbnail_url:     { type: string, nullable: true }
+        duration_seconds:  { type: integer, nullable: true }
+        views:             { type: integer }
+        created_at:        { type: string, format: date-time }
+
+    RestaurantImage:
+      type: object
+      required: [id, restaurant_id, url, type, sort_order, created_at]
+      properties:
+        id:             { type: string, format: uuid }
+        restaurant_id:  { type: string, format: uuid }
+        url:            { type: string }
+        type:
+          type: string
+          enum: [hero, gallery, menu, interior, exterior, dish]
+        caption:        { type: string, nullable: true }
+        sort_order:     { type: integer }
+        created_at:     { type: string, format: date-time }
+
+    CreateImageReq:
+      type: object
+      required: [url]
+      properties:
+        url:        { type: string }
+        type:       { type: string, default: gallery }
+        caption:    { type: string, nullable: true }
+        sort_order: { type: integer, default: 0 }
+
+    CreateVideoReq:
+      type: object
+      required: [title]
+      properties:
+        title:            { type: string }
+        type:             { type: string, default: ambiance }
+        mux_asset_id:     { type: string, nullable: true }
+        mux_playback_id:  { type: string, nullable: true }
+        thumbnail_url:    { type: string, nullable: true }
+        duration_seconds: { type: integer, nullable: true }
+
+    RestaurantReview:
+      type: object
+      required: [id, restaurant_id, user_name, rating, photos, created_at]
+      properties:
+        id:              { type: string, format: uuid }
+        restaurant_id:   { type: string, format: uuid }
+        user_name:       { type: string }
+        rating:          { type: number, minimum: 1, maximum: 5 }
+        title:           { type: string, nullable: true }
+        comment:         { type: string, nullable: true }
+        food_rating:     { type: number, nullable: true }
+        ambiance_rating: { type: number, nullable: true }
+        service_rating:  { type: number, nullable: true }
+        value_rating:    { type: number, nullable: true }
+        photos:          { type: array, items: { type: string } }
+        created_at:      { type: string, format: date-time }
+
+    ReviewListResult:
+      type: object
+      required: [reviews, total, has_more]
+      properties:
+        reviews:  { type: array, items: { $ref: "#/components/schemas/RestaurantReview" } }
+        total:    { type: integer }
+        has_more: { type: boolean }
+
+    CreateReviewReq:
+      type: object
+      required: [restaurant_id, user_name, user_email, rating]
+      properties:
+        restaurant_id:   { type: string, format: uuid }
+        user_name:       { type: string }
+        user_email:      { type: string, format: email }
+        rating:          { type: number, minimum: 1, maximum: 5 }
+        title:           { type: string, nullable: true }
+        comment:         { type: string, nullable: true }
+        food_rating:     { type: number, nullable: true }
+        ambiance_rating: { type: number, nullable: true }
+        service_rating:  { type: number, nullable: true }
+        value_rating:    { type: number, nullable: true }
+        photos:          { type: array, items: { type: string } }
