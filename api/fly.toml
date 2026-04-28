@@ -1,8 +1,8 @@
-# Fly.io config — viktheatre-api
+# Fly.io config — kibana-api
 # Secrets managed via `fly secrets set` (never in this file).
 # Set secrets with: scripts/set-fly-secrets.sh
 
-app            = "viktheatre-api"
+app            = "kibana-api"
 primary_region = "bom"  # Mumbai — closest to Neon ap-south-1 + Indian user base
 kill_signal    = "SIGINT"
 kill_timeout   = "30s"
