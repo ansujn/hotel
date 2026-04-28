@@ -11,7 +11,7 @@ import { Ornament } from "@/components/kibana/Ornament";
 export const metadata: Metadata = {
   title: "Banquets",
   description:
-    "Five Kibana Jaipur banquet halls — from a 36-seat haveli to a 500-guest pillar-free hall. Weddings, receptions, corporate galas.",
+    "Kibana Jaipur's premier rooftop banquet hall — 300 seated, 500 standing. Weddings, receptions, corporate events with panoramic city views.",
 };
 
 export default function BanquetsPage() {
@@ -26,11 +26,11 @@ export default function BanquetsPage() {
               Banquets at Kibana
             </p>
             <h1 className="mt-4 font-display text-5xl font-light leading-tight text-amber-50 sm:text-7xl">
-              Halls that hold <span className="kib-shimmer italic">every kind of evening.</span>
+              One hall. <span className="kib-shimmer italic">Infinite possibilities.</span>
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-amber-50/75">
-              We run five distinct event spaces under one roof — décor, catering,
-              photography, valet, live-stream, bridal lounge. One quote, no juggling.
+              Rooftop venue with panoramic city views. 6,800 sq. ft. pillar-free hall.
+              Full-service event coordination: décor, catering, photography, valet, AV, and bridal suite.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <Link
@@ -55,28 +55,30 @@ export default function BanquetsPage() {
               <div className="text-center mb-6">
                 <div className="flex justify-center"><Ornament /></div>
                 <p className="kib-gold-text font-display text-[11px] uppercase tracking-[0.5em] mt-6">
-                  Five Halls
+                  Kibana Banquet Hall
                 </p>
                 <h2 className="mt-4 font-display text-4xl font-light text-[#3B1F1A] sm:text-5xl">
-                  Pick the room. We'll design the night.
+                  We'll design the night.
                 </h2>
               </div>
             </RevealOnScroll>
 
-            <div className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-              {BANQUETS.map((b, i) => (
-                <BanquetCard3D
-                  key={b.id}
-                  id={b.id}
-                  name={b.name.replace(/^The /, "The ")}
-                  blurb={b.blurb}
-                  seated={b.capacity.seated}
-                  floating={b.capacity.floating}
-                  area={b.area_sqft}
-                  priceFromInr={b.pricing_per_event}
-                  index={i}
-                />
-              ))}
+            <div className="mt-16 flex justify-center">
+              <div className="w-full max-w-sm">
+                {BANQUETS.map((b, i) => (
+                  <BanquetCard3D
+                    key={b.id}
+                    id={b.id}
+                    name={b.name.replace(/^The /, "The ")}
+                    blurb={b.blurb}
+                    seated={b.capacity.seated}
+                    floating={b.capacity.floating}
+                    area={b.area_sqft}
+                    priceFromInr={b.pricing_per_event}
+                    index={i}
+                  />
+                ))}
+              </div>
             </div>
           </div>
         </section>
