@@ -46,28 +46,26 @@ export default function MenuPage() {
           </div>
         </section>
 
-        {/* Categories */}
+        {/* Categories with classical chapter styling */}
         {MENU.map((cat, idx) => (
           <section
             key={cat.id}
             id={cat.id}
-            className={`${idx % 2 === 0 ? "kib-paper" : "bg-white"} py-24`}
+            className={`${idx % 2 === 0 ? "kib-paper kib-pattern-damask" : "bg-white"} py-28`}
           >
             <div className="mx-auto max-w-7xl px-6">
               <RevealOnScroll>
-                <header className="text-center">
-                  <p className="kib-gold-text font-display text-[10px] uppercase tracking-[0.5em]">
-                    Course 0{idx + 1}
-                  </p>
-                  <h2 className="mt-3 font-display text-4xl font-light text-[#3B1F1A] sm:text-5xl">
+                <div className="kib-chapter mb-8">
+                  <div className="kib-chapter-number">{String(idx + 1).padStart(2, '0')}</div>
+                  <h2 className="kib-chapter-title">
                     {cat.title}
                   </h2>
-                  <p className="mx-auto mt-3 max-w-xl text-[#3B1F1A]/70">{cat.blurb}</p>
-                  <div className="mt-5 flex justify-center"><Ornament tone="gold" /></div>
-                </header>
+                  <p className="kib-chapter-subtitle">{cat.blurb}</p>
+                  <div className="mt-6 flex justify-center"><Ornament tone="gold" /></div>
+                </div>
               </RevealOnScroll>
 
-              <ul className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              <ul className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
                 {cat.items.map((it, i) => (
                   <li key={it.name}>
                     <MenuFlipCard

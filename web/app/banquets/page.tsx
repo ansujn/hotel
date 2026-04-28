@@ -49,20 +49,21 @@ export default function BanquetsPage() {
           </div>
         </section>
 
-        <section className="kib-paper py-20">
+        <section className="kib-paper kib-texture-marble py-28">
           <div className="mx-auto max-w-7xl px-6">
             <RevealOnScroll>
-              <div className="text-center">
-                <p className="kib-gold-text font-display text-[11px] uppercase tracking-[0.5em]">
+              <div className="text-center mb-6">
+                <div className="flex justify-center"><Ornament /></div>
+                <p className="kib-gold-text font-display text-[11px] uppercase tracking-[0.5em] mt-6">
                   Five Halls
                 </p>
-                <h2 className="mt-3 font-display text-4xl font-light text-[#3B1F1A] sm:text-5xl">
+                <h2 className="mt-4 font-display text-4xl font-light text-[#3B1F1A] sm:text-5xl">
                   Pick the room. We'll design the night.
                 </h2>
               </div>
             </RevealOnScroll>
 
-            <div className="mt-14 grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+            <div className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
               {BANQUETS.map((b, i) => (
                 <BanquetCard3D
                   key={b.id}
@@ -80,9 +81,10 @@ export default function BanquetsPage() {
           </div>
         </section>
 
-        <section className="kib-paper py-20">
+        <section className="kib-paper kib-pattern-damask py-28">
           <div className="mx-auto max-w-7xl px-6">
             <RevealOnScroll>
+              <div className="mb-8 flex justify-center"><Ornament /></div>
               <div className="grid gap-10 lg:grid-cols-3">
                 <Feature
                   title="Décor that earns the photo"

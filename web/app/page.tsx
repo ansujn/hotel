@@ -52,19 +52,27 @@ export default async function HomePage() {
       {/* ───── Cinematic Hero ──────────────────────────────────────── */}
       <HeroVideo videoSrc="/videos/kibana-hero.mp4" />
 
-      {/* ───── Manifesto strip ─────────────────────────────────────── */}
-      <section className="kib-paper border-y border-[#D4AF37]/15 py-20">
-        <div className="mx-auto max-w-4xl px-6 text-center">
-          <RevealOnScroll>
-            <div className="flex justify-center"><Ornament /></div>
-            <p className="mt-6 font-display text-3xl italic leading-snug text-[#3B1F1A] sm:text-4xl">
-              "Where the sun sets twice — once on the horizon, and again on
-              every plate that leaves our kitchen."
-            </p>
-            <p className="mt-6 text-xs font-semibold uppercase tracking-[0.4em] text-[#D4AF37]">
-              Est. 2014 · Saudagar's Lane · Jaipur
-            </p>
-          </RevealOnScroll>
+      {/* ───── Manifesto strip with classical framing ─────────────────────────────────────── */}
+      <section className="kib-paper border-y border-[#D4AF37]/20 py-24">
+        <div className="mx-auto max-w-4xl px-6">
+          <div className="relative rounded-lg border-2 border-[#D4AF37]/25 bg-gradient-to-br from-[#FBF8F1] via-[#FDFBF6] to-[#F9F5EE] p-12 shadow-lg md:p-16">
+            <div className="absolute inset-0 rounded-lg opacity-20 pointer-events-none" style={{
+              backgroundImage: "repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(212,175,55,0.1) 2px, rgba(212,175,55,0.1) 4px)",
+            }}></div>
+            <RevealOnScroll>
+              <div className="relative z-10 text-center">
+                <div className="flex justify-center mb-6"><Ornament /></div>
+                <p className="font-display text-3xl italic leading-snug text-[#3B1F1A] sm:text-4xl">
+                  "Where the sun sets twice — once on the horizon, and again on
+                  every plate that leaves our kitchen."
+                </p>
+                <div className="kib-rule my-6 mx-auto w-24" />
+                <p className="text-xs font-semibold uppercase tracking-[0.4em] text-[#D4AF37]">
+                  Est. 2014 · Saudagar's Lane · Jaipur
+                </p>
+              </div>
+            </RevealOnScroll>
+          </div>
         </div>
       </section>
 
@@ -78,10 +86,11 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ───── Signature dishes ────────────────────────────────────── */}
-      <section className="kib-paper py-24">
+      {/* ───── Signature dishes with classical frames ────────────────────────────────────── */}
+      <section className="kib-paper kib-pattern-damask py-28">
         <div className="mx-auto max-w-7xl px-6">
           <RevealOnScroll>
+            <div className="mb-6 flex justify-center"><Ornament /></div>
             <SectionHead
               kicker="The Signatures"
               title="Plates worth driving across town for"
@@ -90,22 +99,24 @@ export default async function HomePage() {
             />
           </RevealOnScroll>
 
-          <ul className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <ul className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
             {signatureItems.map((d, i) => (
               <li key={d.name}>
                 <RevealOnScroll delay={i * 0.08}>
-                  <article className="kib-frame group relative aspect-[4/5] flex flex-col bg-gradient-to-br from-[#FBF8F1] via-[#F3EBD7] to-[#E9DDB6] p-7 transition-transform duration-700 hover:-translate-y-1">
-                    <p className="kib-gold-text font-display text-[10px] uppercase tracking-[0.4em]">
+                  <article className="kib-frame kib-classical-hover group relative aspect-[4/5] flex flex-col bg-gradient-to-br from-[#FBF8F1] via-[#F3EBD7] to-[#E9DDB6] p-7">
+                    <div className="absolute top-3 left-3 text-[#D4AF37]/30 text-lg" style={{ fontFamily: "serif" }}>✦</div>
+                    <div className="absolute bottom-3 right-3 text-[#D4AF37]/30 text-lg" style={{ fontFamily: "serif" }}>✦</div>
+                    <p className="kib-gold-text font-display text-[9px] uppercase tracking-[0.5em]">
                       {d.category}
                     </p>
-                    <h3 className="mt-4 font-display text-2xl leading-tight text-[#3B1F1A]">
+                    <h3 className="mt-5 font-display text-2xl leading-tight text-[#3B1F1A]">
                       {d.name}
                     </h3>
-                    <div className="kib-rule my-4" />
-                    <p className="text-sm leading-relaxed text-[#3B1F1A]/75">
+                    <div className="kib-rule my-5" />
+                    <p className="text-sm leading-relaxed text-[#3B1F1A]/75 flex-grow">
                       {d.description}
                     </p>
-                    <p className="kib-shimmer mt-auto pt-6 font-display text-3xl">
+                    <p className="kib-shimmer mt-6 pt-4 font-display text-3xl font-light">
                       ₹{d.price}
                     </p>
                   </article>
@@ -163,10 +174,11 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ───── Testimonials ────────────────────────────────────────── */}
-      <section className="kib-paper py-24">
+      {/* ───── Testimonials with classical card frames ────────────────────────────────────── */}
+      <section className="kib-paper kib-texture-marble py-28">
         <div className="mx-auto max-w-7xl px-6">
           <RevealOnScroll>
+            <div className="mb-6 flex justify-center"><Ornament /></div>
             <SectionHead
               kicker="The Guestbook"
               title="What people say"
@@ -174,31 +186,33 @@ export default async function HomePage() {
             />
           </RevealOnScroll>
 
-          <ul className="mt-14 grid gap-6 md:grid-cols-3">
+          <ul className="mt-16 grid gap-8 md:grid-cols-3">
             {topReviews.map((r, i) => (
               <li key={r.id}>
                 <RevealOnScroll delay={i * 0.1}>
-                  <article className="kib-frame relative flex h-full flex-col bg-white p-8">
+                  <article className="kib-card-ornate kib-classical-hover relative flex h-full flex-col bg-white p-10 shadow-md">
+                    <div className="absolute top-4 left-4 text-[#D4AF37]/40 text-xl" style={{ fontFamily: "serif" }}>«</div>
+                    <div className="absolute bottom-4 right-4 text-[#D4AF37]/40 text-xl" style={{ fontFamily: "serif" }}>»</div>
                     <div className="flex items-center gap-1 text-[#D4AF37]">
                       {Array.from({ length: 5 }).map((_, k) => (
                         <Star
                           key={k}
-                          size={14}
+                          size={15}
                           fill={k < Math.round(r.rating) ? "currentColor" : "transparent"}
-                          className={k < Math.round(r.rating) ? "" : "text-[#D4AF37]/30"}
+                          className={k < Math.round(r.rating) ? "" : "text-[#D4AF37]/25"}
                         />
                       ))}
                     </div>
                     {r.title ? (
-                      <p className="mt-4 font-display text-xl text-[#3B1F1A]">
+                      <p className="mt-5 font-display text-lg text-[#3B1F1A] leading-relaxed">
                         "{r.title}"
                       </p>
                     ) : null}
-                    <p className="mt-3 text-sm leading-relaxed text-[#3B1F1A]/75">
+                    <p className="mt-4 text-sm leading-relaxed text-[#3B1F1A]/70 flex-grow">
                       {r.comment}
                     </p>
-                    <div className="kib-rule my-5" />
-                    <p className="mt-auto text-[10px] font-semibold uppercase tracking-[0.3em] text-[#3B1F1A]/60">
+                    <div className="kib-rule my-6" />
+                    <p className="mt-auto text-[9px] font-semibold uppercase tracking-[0.35em] text-[#3B1F1A]/55">
                       — {r.user_name}
                     </p>
                   </article>

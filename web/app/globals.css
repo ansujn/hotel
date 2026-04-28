@@ -145,22 +145,27 @@ h1, h2, h3, h4, .serif {
 .kib-ornament {
   display: inline-flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 1.5rem;
   color: #D4AF37;
   font-family: var(--font-display);
   letter-spacing: 0.4em;
   text-transform: uppercase;
   font-size: 0.7rem;
+  position: relative;
 }
 .kib-ornament::before,
 .kib-ornament::after {
   content: "";
-  width: 3rem;
+  width: 4rem;
   height: 1px;
-  background: linear-gradient(90deg, transparent, #D4AF37, transparent);
+  background: linear-gradient(90deg, transparent, #D4AF37, #D4AF37, transparent);
+  position: relative;
+}
+.kib-ornament::before {
+  box-shadow: 0 -3px 0 -2px rgba(212,175,55,0.4), 0 3px 0 -2px rgba(212,175,55,0.4);
 }
 
-/* Frame for premium imagery */
+/* Frame for premium imagery — classical ornate borders */
 .kib-frame {
   position: relative;
   border-radius: 1.5rem;
@@ -168,7 +173,9 @@ h1, h2, h3, h4, .serif {
   box-shadow:
     0 30px 60px -20px rgba(26,15,13,0.45),
     0 12px 24px -10px rgba(26,15,13,0.25),
-    0 0 0 1px rgba(212,175,55,0.18) inset;
+    0 0 0 2px rgba(212,175,55,0.35) inset,
+    0 0 0 6px rgba(212,175,55,0.08) inset;
+  border: 2px solid rgba(212,175,55,0.2);
 }
 .kib-frame::after {
   content: "";
@@ -177,6 +184,20 @@ h1, h2, h3, h4, .serif {
   border: 1px solid rgba(212,175,55,0.35);
   border-radius: 1.15rem;
   pointer-events: none;
+  box-shadow:
+    0 0 0 1px rgba(212,175,55,0.15) inset,
+    inset 0 0 20px rgba(212,175,55,0.05);
+}
+.kib-frame::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 1.5rem;
+  background:
+    repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(212,175,55,0.03) 2px, rgba(212,175,55,0.03) 4px),
+    repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(212,175,55,0.03) 2px, rgba(212,175,55,0.03) 4px);
+  pointer-events: none;
+  opacity: 0.4;
 }
 
 /* Subtle floating animation */
@@ -202,6 +223,159 @@ h1, h2, h3, h4, .serif {
 
 /* Reveal-on-scroll baseline (Framer overrides actual transitions) */
 .kib-reveal { opacity: 0; transform: translateY(24px); }
+
+/* ───── Classical section dividers ──────────────────────────────────────── */
+
+/* Ornate horizontal divider with corner flourishes */
+.kib-divider-ornate {
+  position: relative;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #D4AF37 10%, #D4AF37 90%, transparent);
+  margin: 2rem 0;
+}
+.kib-divider-ornate::before,
+.kib-divider-ornate::after {
+  content: "✦";
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #D4AF37;
+  font-size: 0.75rem;
+  opacity: 0.6;
+}
+.kib-divider-ornate::before {
+  left: 0;
+}
+.kib-divider-ornate::after {
+  right: 0;
+}
+
+/* Classical chapter header styling */
+.kib-chapter {
+  text-align: center;
+  position: relative;
+  padding: 2rem 0;
+}
+.kib-chapter-number {
+  font-family: var(--font-display);
+  font-size: 3.5rem;
+  font-weight: 300;
+  color: rgba(212,175,55,0.4);
+  line-height: 1;
+  letter-spacing: 0.15em;
+}
+.kib-chapter-title {
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  font-weight: 300;
+  color: #3B1F1A;
+  margin-top: -0.5rem;
+  letter-spacing: -0.01em;
+}
+.kib-chapter-subtitle {
+  font-size: 0.9rem;
+  color: #3B1F1A;
+  opacity: 0.7;
+  margin-top: 1rem;
+  font-style: italic;
+  font-family: var(--font-serif);
+}
+
+/* Classical ornate card borders with filigree-like appearance */
+.kib-card-ornate {
+  position: relative;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(212,175,55,0.3);
+  background: #FBF8F1;
+  overflow: hidden;
+}
+.kib-card-ornate::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(0deg, transparent, transparent 12px, rgba(212,175,55,0.02) 12px, rgba(212,175,55,0.02) 13px),
+    repeating-linear-gradient(90deg, transparent, transparent 12px, rgba(212,175,55,0.02) 12px, rgba(212,175,55,0.02) 13px),
+    linear-gradient(135deg, rgba(212,175,55,0.08) 0%, transparent 30%, transparent 70%, rgba(212,175,55,0.08) 100%);
+  pointer-events: none;
+}
+
+/* Marble-like texture overlay */
+.kib-texture-marble {
+  position: relative;
+  background:
+    radial-gradient(ellipse 800px 600px at 20% 30%, rgba(212,175,55,0.08), transparent),
+    radial-gradient(ellipse 600px 400px at 80% 70%, rgba(59,31,26,0.04), transparent),
+    url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" /></filter><rect width="100" height="100" fill="%23FBF8F1" filter="url(%23noise)" opacity="0.03"/></svg>');
+  background-attachment: fixed;
+}
+
+/* Damask pattern background (subtle) */
+.kib-pattern-damask {
+  background:
+    radial-gradient(circle at 20% 50%, rgba(212,175,55,0.04) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(59,31,26,0.03) 0%, transparent 50%),
+    linear-gradient(120deg, #FBF8F1 0%, #FBF8F1 1%, #FDFBF6 2%, #FBF8F1 100%);
+}
+
+/* Classical drop cap styling for paragraphs */
+.kib-dropcap::first-letter {
+  font-family: var(--font-display);
+  font-size: 2.5em;
+  font-weight: 300;
+  color: #D4AF37;
+  float: left;
+  line-height: 1;
+  margin-right: 0.2em;
+  margin-top: 0.1em;
+}
+
+/* Sophisticated border frames for images */
+.kib-frame-classical {
+  position: relative;
+  padding: 1.5rem;
+  background: #FBF8F1;
+  border: 1px solid rgba(212,175,55,0.25);
+  box-shadow:
+    inset 0 0 0 8px #FBF8F1,
+    inset 0 0 0 9px rgba(212,175,55,0.25),
+    inset 0 0 0 10px #FBF8F1,
+    inset 0 0 0 11px rgba(212,175,55,0.15),
+    0 10px 30px rgba(26,15,13,0.15);
+}
+.kib-frame-classical img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Elegant decorative separator */
+.kib-separator-classic {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 2rem 0;
+  color: rgba(212,175,55,0.5);
+  font-size: 1.2rem;
+  letter-spacing: 0.2em;
+}
+.kib-separator-classic::before,
+.kib-separator-classic::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(212,175,55,0.3), transparent);
+}
+
+/* Classical hover state with smooth transitions */
+.kib-classical-hover {
+  transition: all 320ms cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+.kib-classical-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px rgba(26,15,13,0.2);
+}
 
 /*
  * iOS Safari auto-zooms when focusing an input whose computed font-size is

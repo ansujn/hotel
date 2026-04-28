@@ -11,7 +11,7 @@ export const KIBANA = {
   name: "Kibana Jaipur",
   tagline: "Rooftop dining & banquet halls in the Pink City.",
   description:
-    "Modern Indian and global flavours served on a rooftop overlooking Jaipur's old city. Five banquet halls — from intimate engagements to 500-guest weddings.",
+    "Modern Indian and global flavours served on a rooftop overlooking Jaipur's old city. Premier banquet hall for intimate gatherings to grand celebrations.",
   cuisine: ["North Indian", "Mughlai", "Continental"],
   city: "Jaipur",
   address: "Saudagar's Lane, C-Scheme, Jaipur 302001",
@@ -188,69 +188,22 @@ export interface Banquet {
 
 export const BANQUETS: Banquet[] = [
   {
-    id: "saffron-grand",
-    name: "The Saffron Grand",
+    id: "kibana-main",
+    name: "Kibana Jaipur Banquet Hall",
     blurb:
-      "Pillarless 500-seater with 24-foot ceilings, frescoed walls and a panoramic stage.",
-    capacity: { seated: 320, floating: 500 },
+      "Premier rooftop banquet hall with panoramic city views, perfect for intimate gatherings to grand celebrations.",
+    capacity: { seated: 300, floating: 500 },
     pricing_per_event: 250000,
     area_sqft: 6800,
     features: [
-      "Pillar-free hall",
-      "Live-stream rig",
-      "Bridal lounge",
-      "Valet for 120 cars",
+      "Rooftop venue",
+      "Panoramic city views",
+      "Full-service catering",
+      "Valet parking",
+      "Professional event team",
     ],
     hero_image: "/images/kibana-jaipur/banquets/placeholder.svg",
-    best_for: ["Weddings", "Receptions", "Corporate galas"],
-  },
-  {
-    id: "the-courtyard",
-    name: "The Courtyard",
-    blurb:
-      "Open-sky atrium with citrus trees, fairy lights and a marble fountain.",
-    capacity: { seated: 180, floating: 280 },
-    pricing_per_event: 140000,
-    area_sqft: 3200,
-    features: ["Open sky", "Fountain centrepiece", "Acoustic-ready"],
-    hero_image: "/images/kibana-jaipur/banquets/placeholder.svg",
-    best_for: ["Sangeet", "Cocktail receptions", "Brunches"],
-  },
-  {
-    id: "the-rooftop",
-    name: "The Rooftop",
-    blurb:
-      "Sweeping city views with a glass-floor lounge and bespoke bar.",
-    capacity: { seated: 90, floating: 160 },
-    pricing_per_event: 95000,
-    area_sqft: 1900,
-    features: ["City skyline", "Custom bar", "Sunset terrace"],
-    hero_image: "/images/kibana-jaipur/banquets/placeholder.svg",
-    best_for: ["Engagements", "Birthday dinners", "Product launches"],
-  },
-  {
-    id: "the-haveli",
-    name: "The Haveli",
-    blurb:
-      "Mughal-inspired private dining room with hand-painted ceilings.",
-    capacity: { seated: 36, floating: 60 },
-    pricing_per_event: 55000,
-    area_sqft: 950,
-    features: ["Private dining", "Wine cellar access", "Butler service"],
-    hero_image: "/images/kibana-jaipur/banquets/placeholder.svg",
-    best_for: ["Anniversaries", "Board dinners", "Intimate gatherings"],
-  },
-  {
-    id: "the-pavilion",
-    name: "The Pavilion",
-    blurb:
-      "Garden marquee with pristine lawns, ideal for daytime events.",
-    capacity: { seated: 240, floating: 380 },
-    pricing_per_event: 175000,
-    area_sqft: 4200,
-    features: ["Lawn seating", "Marquee tent", "Daylight event space"],
-    hero_image: "/images/kibana-jaipur/banquets/placeholder.svg",
-    best_for: ["Day weddings", "Corporate offsites", "Brunches"],
+    best_for: ["Weddings", "Receptions", "Corporate events", "Celebrations"],
   },
 ];
 
@@ -290,12 +243,12 @@ const PLACEHOLDER_IMAGE = "/images/kibana-jaipur/restaurant/placeholder.svg";
 const PLACEHOLDER_BANQUET = "/images/kibana-jaipur/banquets/placeholder.svg";
 
 const MOCK_IMAGES: KibanaImage[] = [
-  { id: "img-1", url: "/images/kibana-food/WhatsApp Image 2026-04-28 at 14.02.47.jpeg", type: "dish", caption: "Signature dish with artisanal plating", position: 0 },
-  { id: "img-2", url: "/images/kibana-food/WhatsApp Image 2026-04-28 at 14.02.48.jpeg", type: "dish", caption: "Premium cuisine presentation", position: 1 },
-  { id: "img-3", url: "/images/kibana-food/WhatsApp Image 2026-04-28 at 14.02.48 (1).jpeg", type: "dish", caption: "Gourmet culinary experience", position: 2 },
-  { id: "img-4", url: "/images/kibana-food/WhatsApp Image 2026-04-28 at 14.02.48 (2).jpeg", type: "dish", caption: "Signature preparation", position: 3 },
-  { id: "img-5", url: "/images/kibana-food/WhatsApp Image 2026-04-28 at 14.02.49.jpeg", type: "dish", caption: "Fine dining excellence", position: 4 },
-  { id: "img-6", url: "/images/kibana-food/WhatsApp Image 2026-04-28 at 14.02.49 (1).jpeg", type: "dish", caption: "Culinary masterpiece", position: 5 },
+  { id: "img-1", url: "/images/kibana-food/kibana-dish-01.jpg", type: "dish", caption: "Signature dish with artisanal plating", position: 0 },
+  { id: "img-2", url: "/images/kibana-food/kibana-dish-02.jpg", type: "dish", caption: "Premium cuisine presentation", position: 1 },
+  { id: "img-3", url: "/images/kibana-food/kibana-dish-03.jpg", type: "dish", caption: "Gourmet culinary experience", position: 2 },
+  { id: "img-4", url: "/images/kibana-food/kibana-dish-04.jpg", type: "dish", caption: "Signature preparation", position: 3 },
+  { id: "img-5", url: "/images/kibana-food/kibana-dish-05.jpg", type: "dish", caption: "Fine dining excellence", position: 4 },
+  { id: "img-6", url: "/images/kibana-food/kibana-dish-06.jpg", type: "dish", caption: "Culinary masterpiece", position: 5 },
 ];
 
 const MOCK_VIDEOS: KibanaVideo[] = [
