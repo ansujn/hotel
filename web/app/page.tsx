@@ -1,20 +1,23 @@
 import Link from "next/link";
-import Image from "next/image";
 import type { Route } from "next";
 import { Star, MapPin, Phone } from "lucide-react";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { SiteFooter } from "@/components/site/SiteFooter";
-import { VideoGallery } from "@/components/restaurants/VideoGallery";
-import { KIBANA, getVideos, getReviews, MENU } from "@/lib/kibana";
+import { HeroVideo } from "@/components/kibana/HeroVideo";
+import { BanquetCard3D } from "@/components/kibana/BanquetCard3D";
+import { RevealOnScroll } from "@/components/kibana/RevealOnScroll";
+import { Ornament } from "@/components/kibana/Ornament";
+import { KIBANA, getReviews, MENU, BANQUETS } from "@/lib/kibana";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const [videos, reviews] = await Promise.all([getVideos(), getReviews()]);
+  const reviews = await getReviews();
   const topReviews = reviews.slice(0, 3);
   const signatureItems = MENU.flatMap((c) =>
     c.items.filter((i) => i.signature).map((i) => ({ ...i, category: c.title })),
   ).slice(0, 4);
+  const featuredBanquets = BANQUETS.slice(0, 4);
 
   const ld = {
     "@context": "https://schema.org",
@@ -32,7 +35,7 @@ export default async function HomePage() {
     email: KIBANA.email,
     url: KIBANA.website,
     servesCuisine: KIBANA.cuisine,
-    priceRange: "₹₹₹",
+    priceRange: "₹₹₹₹",
     openingHours: Object.entries(KIBANA.hours)
       .filter(([, h]) => h)
       .map(([d, h]) => `${d.slice(0, 2)} ${h?.open}-${h?.close}`),
@@ -46,204 +49,177 @@ export default async function HomePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }}
       />
 
-      {/* Hero */}
-      <section className="relative overflow-hidden">
-        <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 sm:py-16 lg:grid-cols-[1.1fr_1fr] lg:items-center lg:py-24">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-amber-700">
-              Saudagar's Lane · C-Scheme · Jaipur
+      {/* ───── Cinematic Hero ──────────────────────────────────────── */}
+      <HeroVideo videoSrc="/videos/kibana-hero.mp4" />
+
+      {/* ───── Manifesto strip ─────────────────────────────────────── */}
+      <section className="kib-paper border-y border-[#D4AF37]/15 py-20">
+        <div className="mx-auto max-w-4xl px-6 text-center">
+          <RevealOnScroll>
+            <div className="flex justify-center"><Ornament /></div>
+            <p className="mt-6 font-display text-3xl italic leading-snug text-[#3B1F1A] sm:text-4xl">
+              "Where the sun sets twice — once on the horizon, and again on
+              every plate that leaves our kitchen."
             </p>
-            <h1 className="mt-3 font-serif text-5xl font-bold leading-[1.05] tracking-tight text-[#3B1F1A] sm:text-6xl lg:text-7xl">
-              Where the Pink City dines & celebrates.
-            </h1>
-            <p className="mt-5 max-w-xl text-lg text-[#3B1F1A]/70">
-              {KIBANA.description}
+            <p className="mt-6 text-xs font-semibold uppercase tracking-[0.4em] text-[#D4AF37]">
+              Est. 2014 · Saudagar's Lane · Jaipur
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link
-                href={"/book" as Route}
-                className="rounded-full bg-[#3B1F1A] px-6 py-3 text-sm font-semibold text-amber-50 transition hover:bg-[#4d2823]"
-              >
-                Reserve a table
-              </Link>
-              <Link
-                href={"/banquets" as Route}
-                className="rounded-full border border-[#3B1F1A]/20 bg-white px-6 py-3 text-sm font-semibold text-[#3B1F1A] hover:bg-amber-50"
-              >
-                Plan an event →
-              </Link>
-            </div>
-            <dl className="mt-10 grid grid-cols-3 gap-6 border-t border-amber-200/60 pt-6 text-sm">
-              <Stat label="Years in Jaipur" value="12" />
-              <Stat label="Banquet halls" value="5" />
-              <Stat label="Avg. rating" value="4.7★" />
-            </dl>
-          </div>
-          <div className="relative aspect-[4/5] overflow-hidden rounded-3xl bg-amber-100 shadow-xl ring-1 ring-amber-900/10">
-            <Image
-              src={KIBANA.hero_image}
-              alt="Kibana Jaipur rooftop at sunset"
-              fill
-              sizes="(max-width: 1024px) 100vw, 600px"
-              className="object-cover"
-              priority
+          </RevealOnScroll>
+        </div>
+      </section>
+
+      {/* ───── Stats ───────────────────────────────────────────────── */}
+      <section className="kib-paper py-16">
+        <div className="mx-auto grid max-w-6xl grid-cols-2 gap-10 px-6 sm:grid-cols-4">
+          <Stat label="Years in Jaipur" value="12" />
+          <Stat label="Banquet halls" value="05" />
+          <Stat label="Avg. rating" value="4.7★" />
+          <Stat label="Plates / night" value="600+" />
+        </div>
+      </section>
+
+      {/* ───── Signature dishes ────────────────────────────────────── */}
+      <section className="kib-paper py-24">
+        <div className="mx-auto max-w-7xl px-6">
+          <RevealOnScroll>
+            <SectionHead
+              kicker="The Signatures"
+              title="Plates worth driving across town for"
+              blurb="A few dishes our regulars order without thinking — and a few we keep on the menu by popular demand."
+              link={{ href: "/menu" as Route, label: "View full menu →" }}
             />
-            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#3B1F1A]/85 via-[#3B1F1A]/30 to-transparent p-6 text-amber-50">
-              <p className="font-serif text-2xl font-semibold">The Rooftop</p>
-              <p className="text-sm text-amber-100/80">
-                Sweeping skyline · sunset terrace · custom cocktails
+          </RevealOnScroll>
+
+          <ul className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {signatureItems.map((d, i) => (
+              <li key={d.name}>
+                <RevealOnScroll delay={i * 0.08}>
+                  <article className="kib-frame group relative aspect-[4/5] flex flex-col bg-gradient-to-br from-[#FBF8F1] via-[#F3EBD7] to-[#E9DDB6] p-7 transition-transform duration-700 hover:-translate-y-1">
+                    <p className="kib-gold-text font-display text-[10px] uppercase tracking-[0.4em]">
+                      {d.category}
+                    </p>
+                    <h3 className="mt-4 font-display text-2xl leading-tight text-[#3B1F1A]">
+                      {d.name}
+                    </h3>
+                    <div className="kib-rule my-4" />
+                    <p className="text-sm leading-relaxed text-[#3B1F1A]/75">
+                      {d.description}
+                    </p>
+                    <p className="kib-shimmer mt-auto pt-6 font-display text-3xl">
+                      ₹{d.price}
+                    </p>
+                  </article>
+                </RevealOnScroll>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* ───── Banquets — premium 3D-tilt cards ────────────────────── */}
+      <section className="kib-burgundy py-28">
+        <div className="mx-auto max-w-7xl px-6">
+          <RevealOnScroll>
+            <div className="text-center">
+              <div className="flex justify-center"><Ornament /></div>
+              <p className="kib-gold-text mt-6 font-display text-[11px] uppercase tracking-[0.5em]">
+                Banquets at Kibana
+              </p>
+              <h2 className="mt-4 font-display text-5xl font-light leading-tight text-amber-50 sm:text-7xl">
+                Five halls. <span className="kib-shimmer italic">One unforgettable evening.</span>
+              </h2>
+              <p className="mx-auto mt-6 max-w-2xl text-amber-50/70">
+                From a 36-seat haveli to a 500-guest pillar-free hall, our
+                event team designs every detail — décor, catering, photography,
+                valet, and a bridal lounge built for the moment.
               </p>
             </div>
-          </div>
-        </div>
-      </section>
+          </RevealOnScroll>
 
-      {/* Featured videos */}
-      <section className="bg-white py-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <SectionHead
-            kicker="Watch"
-            title="Inside Kibana"
-            blurb="Step onto the rooftop, into the kitchen, and through a wedding night."
-            link={{ href: "/gallery" as Route, label: "Full gallery →" }}
-          />
-          <div className="mt-8">
-            <VideoGallery videos={videos.map((v) => ({
-              id: v.id,
-              title: v.title,
-              type: (["ambiance", "chef", "menu", "event"].includes(v.type) ? v.type : "ambiance") as "ambiance" | "chef" | "menu" | "event",
-              mux_playback_id: v.mux_playback_id,
-              thumbnail_url: v.thumbnail_url,
-              duration_s: v.duration_s,
-              views: v.views,
-            }))} />
-          </div>
-        </div>
-      </section>
-
-      {/* Signature dishes */}
-      <section className="py-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <SectionHead
-            kicker="Signatures"
-            title="Dishes worth driving across town for"
-            blurb="A few of the plates our regulars order without thinking."
-            link={{ href: "/menu" as Route, label: "View full menu →" }}
-          />
-          <ul className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {signatureItems.map((d) => (
-              <li
-                key={d.name}
-                className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-amber-900/5 transition hover:shadow-lg"
-              >
-                <p className="text-xs font-medium uppercase tracking-wide text-amber-700">
-                  {d.category}
-                </p>
-                <p className="mt-2 font-serif text-xl font-semibold text-[#3B1F1A]">
-                  {d.name}
-                </p>
-                <p className="mt-2 text-sm text-[#3B1F1A]/70">{d.description}</p>
-                <p className="mt-3 text-sm font-semibold text-[#3B1F1A]">
-                  ₹{d.price}
-                </p>
-              </li>
+          <div className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+            {featuredBanquets.map((b, i) => (
+              <BanquetCard3D
+                key={b.id}
+                id={b.id}
+                name={b.name.replace(/^The /, "The ")}
+                blurb={b.blurb}
+                seated={b.capacity.seated}
+                floating={b.capacity.floating}
+                area={b.area_sqft}
+                priceFromInr={b.pricing_per_event}
+                index={i}
+              />
             ))}
-          </ul>
-        </div>
-      </section>
+          </div>
 
-      {/* Banquets teaser */}
-      <section className="bg-[#3B1F1A] py-20 text-amber-50">
-        <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[1.2fr_1fr] lg:items-center">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-amber-200/80">
-              Banquets
-            </p>
-            <h2 className="mt-2 font-serif text-4xl font-bold sm:text-5xl">
-              Five halls. One unforgettable evening.
-            </h2>
-            <p className="mt-4 max-w-lg text-amber-100/80">
-              From a 36-seat haveli to a 500-guest pillar-free hall, our event
-              team designs every detail — décor, catering, photography, valet.
-            </p>
+          <div className="mt-12 flex justify-center">
             <Link
               href={"/banquets" as Route}
-              className="mt-6 inline-flex rounded-full bg-amber-50 px-5 py-2.5 text-sm font-semibold text-[#3B1F1A] hover:bg-amber-100"
+              className="kib-btn-gold rounded-full px-8 py-3.5 text-sm font-semibold uppercase tracking-[0.18em]"
             >
-              Tour the halls
+              Tour all five halls
             </Link>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            {["Saffron Grand", "Courtyard", "Rooftop", "Haveli"].map((h, i) => (
-              <div
-                key={h}
-                className={`relative aspect-square overflow-hidden rounded-2xl bg-amber-100/10 ring-1 ring-amber-50/10 ${i % 2 ? "translate-y-6" : ""}`}
-              >
-                <Image
-                  src="/images/kibana-jaipur/banquets/placeholder.svg"
-                  alt={`The ${h}`}
-                  fill
-                  sizes="(max-width: 1024px) 50vw, 280px"
-                  className="object-cover opacity-80 transition hover:opacity-100"
-                />
-                <span className="absolute bottom-2 left-2 rounded-full bg-[#3B1F1A]/80 px-2 py-1 text-xs font-medium text-amber-50">
-                  The {h}
-                </span>
-              </div>
-            ))}
           </div>
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section className="py-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <SectionHead
-            kicker="Guestbook"
-            title="What people say"
-            link={{ href: "/reviews" as Route, label: "Read all reviews →" }}
-          />
-          <ul className="mt-8 grid gap-5 md:grid-cols-3">
-            {topReviews.map((r) => (
-              <li
-                key={r.id}
-                className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-amber-900/5"
-              >
-                <div className="flex items-center gap-1 text-amber-600">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star
-                      key={i}
-                      size={14}
-                      fill={i < Math.round(r.rating) ? "currentColor" : "transparent"}
-                      className={i < Math.round(r.rating) ? "" : "text-amber-300"}
-                    />
-                  ))}
-                </div>
-                {r.title ? (
-                  <p className="mt-3 font-serif text-lg font-semibold">
-                    {r.title}
-                  </p>
-                ) : null}
-                <p className="mt-2 text-sm leading-relaxed text-[#3B1F1A]/80">
-                  {r.comment}
-                </p>
-                <p className="mt-4 text-xs font-semibold uppercase tracking-wide text-[#3B1F1A]/60">
-                  — {r.user_name}
-                </p>
+      {/* ───── Testimonials ────────────────────────────────────────── */}
+      <section className="kib-paper py-24">
+        <div className="mx-auto max-w-7xl px-6">
+          <RevealOnScroll>
+            <SectionHead
+              kicker="The Guestbook"
+              title="What people say"
+              link={{ href: "/reviews" as Route, label: "Read all reviews →" }}
+            />
+          </RevealOnScroll>
+
+          <ul className="mt-14 grid gap-6 md:grid-cols-3">
+            {topReviews.map((r, i) => (
+              <li key={r.id}>
+                <RevealOnScroll delay={i * 0.1}>
+                  <article className="kib-frame relative flex h-full flex-col bg-white p-8">
+                    <div className="flex items-center gap-1 text-[#D4AF37]">
+                      {Array.from({ length: 5 }).map((_, k) => (
+                        <Star
+                          key={k}
+                          size={14}
+                          fill={k < Math.round(r.rating) ? "currentColor" : "transparent"}
+                          className={k < Math.round(r.rating) ? "" : "text-[#D4AF37]/30"}
+                        />
+                      ))}
+                    </div>
+                    {r.title ? (
+                      <p className="mt-4 font-display text-xl text-[#3B1F1A]">
+                        "{r.title}"
+                      </p>
+                    ) : null}
+                    <p className="mt-3 text-sm leading-relaxed text-[#3B1F1A]/75">
+                      {r.comment}
+                    </p>
+                    <div className="kib-rule my-5" />
+                    <p className="mt-auto text-[10px] font-semibold uppercase tracking-[0.3em] text-[#3B1F1A]/60">
+                      — {r.user_name}
+                    </p>
+                  </article>
+                </RevealOnScroll>
               </li>
             ))}
           </ul>
         </div>
       </section>
 
-      {/* Bottom CTA */}
-      <section className="bg-amber-50 py-14">
-        <div className="mx-auto flex max-w-5xl flex-col items-start justify-between gap-5 px-4 sm:flex-row sm:items-center sm:px-6">
+      {/* ───── Bottom CTA ──────────────────────────────────────────── */}
+      <section className="kib-burgundy py-20">
+        <div className="mx-auto flex max-w-5xl flex-col items-start justify-between gap-6 px-6 sm:flex-row sm:items-center">
           <div>
-            <h2 className="font-serif text-3xl font-bold text-[#3B1F1A]">
+            <p className="kib-gold-text font-display text-[11px] uppercase tracking-[0.4em]">
+              Reserve
+            </p>
+            <h2 className="mt-3 font-display text-4xl font-light text-amber-50 sm:text-5xl">
               See you at the table.
             </h2>
-            <p className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-1 text-sm text-[#3B1F1A]/70">
+            <p className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-1 text-sm text-amber-50/70">
               <span className="inline-flex items-center gap-1.5">
                 <MapPin size={14} aria-hidden /> {KIBANA.city}
               </span>
@@ -255,13 +231,13 @@ export default async function HomePage() {
           <div className="flex flex-wrap gap-3">
             <Link
               href={"/book" as Route}
-              className="rounded-full bg-[#3B1F1A] px-5 py-2.5 text-sm font-semibold text-amber-50 hover:bg-[#4d2823]"
+              className="kib-btn-gold rounded-full px-7 py-3 text-sm font-semibold uppercase tracking-[0.18em]"
             >
               Reserve
             </Link>
             <a
               href={`tel:${KIBANA.phone.replace(/\s+/g, "")}`}
-              className="rounded-full border border-[#3B1F1A]/20 bg-white px-5 py-2.5 text-sm font-semibold text-[#3B1F1A] hover:bg-amber-50"
+              className="kib-btn-ghost rounded-full px-7 py-3 text-sm font-semibold uppercase tracking-[0.18em]"
             >
               Call us
             </a>
@@ -276,11 +252,13 @@ export default async function HomePage() {
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div>
-      <dt className="text-xs uppercase tracking-wide text-[#3B1F1A]/60">
+    <div className="text-center">
+      <dd className="kib-shimmer font-display text-5xl font-light leading-none">
+        {value}
+      </dd>
+      <dt className="mt-3 text-[10px] font-semibold uppercase tracking-[0.4em] text-[#3B1F1A]/55">
         {label}
       </dt>
-      <dd className="mt-1 font-serif text-2xl font-bold">{value}</dd>
     </div>
   );
 }
@@ -299,20 +277,20 @@ function SectionHead({
   return (
     <div className="flex flex-wrap items-end justify-between gap-3">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-amber-700">
+        <p className="kib-gold-text font-display text-[11px] uppercase tracking-[0.5em]">
           {kicker}
         </p>
-        <h2 className="mt-2 font-serif text-3xl font-bold text-[#3B1F1A] sm:text-4xl">
+        <h2 className="mt-4 font-display text-4xl font-light text-[#3B1F1A] sm:text-5xl lg:text-6xl">
           {title}
         </h2>
         {blurb ? (
-          <p className="mt-2 max-w-xl text-[#3B1F1A]/70">{blurb}</p>
+          <p className="mt-4 max-w-xl text-[#3B1F1A]/70">{blurb}</p>
         ) : null}
       </div>
       {link ? (
         <Link
           href={link.href}
-          className="text-sm font-semibold text-amber-700 hover:text-[#3B1F1A]"
+          className="text-xs font-semibold uppercase tracking-[0.3em] text-[#D4AF37] hover:text-[#3B1F1A]"
         >
           {link.label}
         </Link>

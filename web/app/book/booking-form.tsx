@@ -15,7 +15,7 @@ export function BookingForm(props: Props) {
   return (
     <Suspense
       fallback={
-        <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-amber-900/5">
+        <div className="rounded-2xl bg-white p-8 text-sm text-[#3B1F1A]/60">
           Loading…
         </div>
       }
@@ -54,23 +54,22 @@ function Inner({ banquets, occasions }: Props) {
 
   if (m.isSuccess && m.data) {
     return (
-      <div className="rounded-2xl bg-white p-8 shadow-sm ring-1 ring-amber-900/5">
-        <div className="flex items-start gap-3">
-          <CheckCircle2
-            className="mt-1 shrink-0 text-emerald-600"
-            size={28}
-            aria-hidden
-          />
+      <div className="rounded-2xl bg-gradient-to-br from-[#FBF8F1] to-[#F3EBD7] p-10">
+        <div className="flex items-start gap-4">
+          <CheckCircle2 className="mt-1 shrink-0 text-[#D4AF37]" size={32} aria-hidden />
           <div>
-            <h2 className="font-serif text-2xl font-bold text-[#3B1F1A]">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.4em] text-[#D4AF37]">
+              Confirmed
+            </p>
+            <h2 className="mt-2 font-display text-3xl text-[#3B1F1A]">
               Request received.
             </h2>
-            <p className="mt-2 text-[#3B1F1A]/70">
+            <p className="mt-3 text-[#3B1F1A]/75">
               We've sent a confirmation to{" "}
-              <span className="font-medium">{email}</span>. Our team will reply
-              within a few hours during business hours.
+              <span className="font-semibold">{email}</span>. Our team will
+              reply within a few hours during business hours.
             </p>
-            <p className="mt-3 text-sm text-[#3B1F1A]/60">
+            <p className="mt-4 text-sm text-[#3B1F1A]/60">
               Reference:{" "}
               <span className="font-mono font-semibold text-[#3B1F1A]">
                 {m.data.reference}
@@ -78,7 +77,7 @@ function Inner({ banquets, occasions }: Props) {
             </p>
             <a
               href="/menu"
-              className="mt-6 inline-flex rounded-full bg-[#3B1F1A] px-5 py-2.5 text-sm font-semibold text-amber-50 hover:bg-[#4d2823]"
+              className="kib-btn-gold mt-7 inline-flex rounded-full px-6 py-3 text-xs font-semibold uppercase tracking-[0.2em]"
             >
               Browse the menu while you wait →
             </a>
@@ -96,7 +95,7 @@ function Inner({ banquets, occasions }: Props) {
         e.preventDefault();
         if (!m.isPending) m.mutate();
       }}
-      className="space-y-5 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-amber-900/5 sm:p-8"
+      className="space-y-6 rounded-2xl bg-white p-8 sm:p-10"
     >
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Name">
@@ -104,7 +103,7 @@ function Inner({ banquets, occasions }: Props) {
             required
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full rounded-xl border border-amber-200 bg-white px-3 py-2.5 text-sm focus:border-[#3B1F1A] focus:outline-none focus:ring-1 focus:ring-[#3B1F1A]"
+            className="w-full rounded-xl border border-[#D4AF37]/30 bg-[#FBF8F1] px-4 py-3 text-sm transition focus:border-[#D4AF37] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/30"
           />
         </Field>
         <Field label="Phone">
@@ -114,7 +113,7 @@ function Inner({ banquets, occasions }: Props) {
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             placeholder="+91 …"
-            className="w-full rounded-xl border border-amber-200 bg-white px-3 py-2.5 text-sm focus:border-[#3B1F1A] focus:outline-none focus:ring-1 focus:ring-[#3B1F1A]"
+            className="w-full rounded-xl border border-[#D4AF37]/30 bg-[#FBF8F1] px-4 py-3 text-sm transition focus:border-[#D4AF37] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/30"
           />
         </Field>
         <Field label="Email">
@@ -123,7 +122,7 @@ function Inner({ banquets, occasions }: Props) {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full rounded-xl border border-amber-200 bg-white px-3 py-2.5 text-sm focus:border-[#3B1F1A] focus:outline-none focus:ring-1 focus:ring-[#3B1F1A]"
+            className="w-full rounded-xl border border-[#D4AF37]/30 bg-[#FBF8F1] px-4 py-3 text-sm transition focus:border-[#D4AF37] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/30"
           />
         </Field>
         <Field label="Date">
@@ -132,7 +131,7 @@ function Inner({ banquets, occasions }: Props) {
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
-            className="w-full rounded-xl border border-amber-200 bg-white px-3 py-2.5 text-sm focus:border-[#3B1F1A] focus:outline-none focus:ring-1 focus:ring-[#3B1F1A]"
+            className="w-full rounded-xl border border-[#D4AF37]/30 bg-[#FBF8F1] px-4 py-3 text-sm transition focus:border-[#D4AF37] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/30"
           />
         </Field>
         <Field label="Guests">
@@ -143,14 +142,14 @@ function Inner({ banquets, occasions }: Props) {
             max={1000}
             value={guests}
             onChange={(e) => setGuests(Number(e.target.value) || 1)}
-            className="w-full rounded-xl border border-amber-200 bg-white px-3 py-2.5 text-sm focus:border-[#3B1F1A] focus:outline-none focus:ring-1 focus:ring-[#3B1F1A]"
+            className="w-full rounded-xl border border-[#D4AF37]/30 bg-[#FBF8F1] px-4 py-3 text-sm transition focus:border-[#D4AF37] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/30"
           />
         </Field>
         <Field label="Occasion">
           <select
             value={occasion}
             onChange={(e) => setOccasion(e.target.value)}
-            className="w-full rounded-xl border border-amber-200 bg-white px-3 py-2.5 text-sm focus:border-[#3B1F1A] focus:outline-none focus:ring-1 focus:ring-[#3B1F1A]"
+            className="w-full rounded-xl border border-[#D4AF37]/30 bg-[#FBF8F1] px-4 py-3 text-sm transition focus:border-[#D4AF37] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/30"
           >
             {occasions.map((o) => (
               <option key={o} value={o}>
@@ -165,7 +164,7 @@ function Inner({ banquets, occasions }: Props) {
         <select
           value={banquet}
           onChange={(e) => setBanquet(e.target.value)}
-          className="w-full rounded-xl border border-amber-200 bg-white px-3 py-2.5 text-sm focus:border-[#3B1F1A] focus:outline-none focus:ring-1 focus:ring-[#3B1F1A]"
+          className="w-full rounded-xl border border-[#D4AF37]/30 bg-[#FBF8F1] px-4 py-3 text-sm transition focus:border-[#D4AF37] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/30"
         >
           <option value="">Just a table — no banquet</option>
           {banquets.map((b) => (
@@ -199,21 +198,20 @@ function Inner({ banquets, occasions }: Props) {
         </p>
       ) : null}
 
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="flex flex-wrap items-center gap-4 pt-2">
         <button
           type="submit"
           disabled={m.isPending}
-          className="rounded-full bg-[#3B1F1A] px-6 py-3 text-sm font-semibold text-amber-50 hover:bg-[#4d2823] disabled:opacity-50"
+          className="kib-btn-gold rounded-full px-8 py-3.5 text-sm font-semibold uppercase tracking-[0.18em] disabled:opacity-50"
         >
           {m.isPending
             ? "Sending…"
             : isEvent
-              ? "Request quote"
-              : "Reserve a table"}
+              ? "Request a quote →"
+              : "Reserve a table →"}
         </button>
-        <p className="text-xs text-[#3B1F1A]/60">
-          By submitting you agree to be contacted by Kibana Jaipur. We don't
-          share your info.
+        <p className="text-[11px] uppercase tracking-[0.18em] text-[#3B1F1A]/55">
+          We never share your details.
         </p>
       </div>
     </form>
@@ -229,10 +227,10 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="block text-xs font-semibold uppercase tracking-wide text-[#3B1F1A]/60">
+      <span className="block text-[10px] font-semibold uppercase tracking-[0.3em] text-[#D4AF37]">
         {label}
       </span>
-      <span className="mt-1 block">{children}</span>
+      <span className="mt-2 block">{children}</span>
     </label>
   );
 }

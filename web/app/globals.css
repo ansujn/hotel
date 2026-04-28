@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 @theme {
+  /* Theater dark theme — kept for legacy /home, /faq, etc. */
   --color-bg: #0B0B0F;
   --color-surface: #15151C;
   --color-surface-2: #1C1C26;
@@ -9,14 +10,24 @@
   --color-accent: #8B5CF6;
   --color-muted: #8A8A96;
   --color-fg: #F5F5F7;
+
+  /* Kibana luxury palette */
+  --color-kibana-cream: #FBF8F1;
+  --color-kibana-cream-2: #F3EBD7;
+  --color-kibana-gold: #D4AF37;
+  --color-kibana-gold-soft: #E5C572;
+  --color-kibana-burgundy: #3B1F1A;
+  --color-kibana-burgundy-2: #2A1411;
+  --color-kibana-ink: #1A0F0D;
+
   --font-serif: "Fraunces", ui-serif, Georgia, serif;
+  --font-display: "Cormorant Garamond", "Fraunces", ui-serif, Georgia, serif;
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 }
 
 /*
- * Kibana Jaipur palette — warm cream + dark cocoa with a saffron accent.
- * (Theater dark theme retained as CSS vars above for legacy /home, /faq,
- * etc. — those routes still render dark.)
+ * Kibana Jaipur palette — warm cream + dark cocoa with a gold accent.
+ * Dark theme retained as CSS vars above for legacy /home, /faq, etc.
  */
 html, body {
   background: #FBF8F1;
@@ -26,12 +37,20 @@ html, body {
 body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 h1, h2, h3, h4, .serif {
   font-family: var(--font-serif);
+  letter-spacing: -0.01em;
 }
 
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: 0.01em;
+}
+
+/* Legacy theater backgrounds */
 .grad-hero {
   background:
     radial-gradient(1200px 600px at 20% 10%, rgba(139,92,246,0.25), transparent 60%),
@@ -50,9 +69,143 @@ h1, h2, h3, h4, .serif {
   background: conic-gradient(#E8C872 0% var(--p, 72%), #2A2A36 var(--p, 72%) 100%);
 }
 
+/* ───── Kibana luxury utilities ──────────────────────────────────────── */
+
+/* Cinematic vignette over hero video */
+.kib-cinema-overlay {
+  background:
+    radial-gradient(120% 80% at 50% 30%, transparent 0%, rgba(26,15,13,0.35) 60%, rgba(26,15,13,0.85) 100%),
+    linear-gradient(180deg, rgba(26,15,13,0.45) 0%, rgba(26,15,13,0.10) 30%, rgba(26,15,13,0.55) 70%, rgba(26,15,13,0.95) 100%);
+}
+
+/* Burgundy-on-cream subtle texture for body sections */
+.kib-paper {
+  background-color: #FBF8F1;
+  background-image:
+    radial-gradient(1100px 500px at 100% 0%, rgba(212,175,55,0.10), transparent 60%),
+    radial-gradient(900px 400px at 0% 100%, rgba(59,31,26,0.06), transparent 60%);
+}
+
+/* Deep burgundy background for premium sections */
+.kib-burgundy {
+  background:
+    radial-gradient(1200px 700px at 80% 10%, rgba(212,175,55,0.22), transparent 60%),
+    radial-gradient(900px 500px at 10% 100%, rgba(212,175,55,0.10), transparent 60%),
+    linear-gradient(180deg, #2A1411 0%, #3B1F1A 50%, #2A1411 100%);
+  color: #FBF8F1;
+}
+
+/* Gold gradient text */
+.kib-gold-text {
+  background: linear-gradient(135deg, #F4D27E 0%, #D4AF37 45%, #B08A1F 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Gold gradient button */
+.kib-btn-gold {
+  background: linear-gradient(135deg, #E5C572 0%, #D4AF37 50%, #B08A1F 100%);
+  color: #2A1411;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.4) inset,
+    0 -1px 0 rgba(0,0,0,0.15) inset,
+    0 12px 28px -10px rgba(212,175,55,0.55),
+    0 4px 10px -2px rgba(0,0,0,0.25);
+  transition: transform 280ms cubic-bezier(.2,.8,.2,1), box-shadow 280ms;
+}
+.kib-btn-gold:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.5) inset,
+    0 -1px 0 rgba(0,0,0,0.18) inset,
+    0 18px 36px -12px rgba(212,175,55,0.7),
+    0 6px 14px -2px rgba(0,0,0,0.3);
+}
+
+.kib-btn-ghost {
+  border: 1px solid rgba(251,248,241,0.4);
+  color: #FBF8F1;
+  backdrop-filter: blur(10px);
+  background: rgba(255,255,255,0.06);
+  transition: background 240ms, border-color 240ms;
+}
+.kib-btn-ghost:hover {
+  background: rgba(255,255,255,0.14);
+  border-color: rgba(251,248,241,0.7);
+}
+
+/* Hairline gold rule */
+.kib-rule {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(212,175,55,0.45), transparent);
+}
+
+/* Ornate divider — used between sections */
+.kib-ornament {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #D4AF37;
+  font-family: var(--font-display);
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+}
+.kib-ornament::before,
+.kib-ornament::after {
+  content: "";
+  width: 3rem;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #D4AF37, transparent);
+}
+
+/* Frame for premium imagery */
+.kib-frame {
+  position: relative;
+  border-radius: 1.5rem;
+  overflow: hidden;
+  box-shadow:
+    0 30px 60px -20px rgba(26,15,13,0.45),
+    0 12px 24px -10px rgba(26,15,13,0.25),
+    0 0 0 1px rgba(212,175,55,0.18) inset;
+}
+.kib-frame::after {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border: 1px solid rgba(212,175,55,0.35);
+  border-radius: 1.15rem;
+  pointer-events: none;
+}
+
+/* Subtle floating animation */
+@keyframes kib-float {
+  0%, 100% { transform: translateY(0) }
+  50% { transform: translateY(-8px) }
+}
+.kib-float { animation: kib-float 7s ease-in-out infinite; }
+
+/* Slow shimmer for the gold text */
+@keyframes kib-shimmer {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+.kib-shimmer {
+  background: linear-gradient(110deg, #D4AF37 0%, #F7E7A6 25%, #D4AF37 50%, #F7E7A6 75%, #D4AF37 100%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: kib-shimmer 6s linear infinite;
+}
+
+/* Reveal-on-scroll baseline (Framer overrides actual transitions) */
+.kib-reveal { opacity: 0; transform: translateY(24px); }
+
 /*
  * iOS Safari auto-zooms when focusing an input whose computed font-size is
- * < 16px. Force ≥16px on touch viewports so admin pages don't jolt around.
+ * < 16px. Force ≥16px on touch viewports.
  */
 @media (max-width: 767px) {
   input,

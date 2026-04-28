@@ -4,6 +4,8 @@ import { SiteFooter } from "@/components/site/SiteFooter";
 import { BookingForm } from "./booking-form";
 import { KIBANA, BANQUETS, OCCASIONS } from "@/lib/kibana";
 import { Phone, Mail, MapPin } from "lucide-react";
+import { Ornament } from "@/components/kibana/Ornament";
+import { RevealOnScroll } from "@/components/kibana/RevealOnScroll";
 
 export const metadata: Metadata = {
   title: "Book",
@@ -16,105 +18,121 @@ export default function BookPage() {
     <>
       <SiteHeader />
       <main>
-        <section className="border-b border-amber-100 bg-white">
-          <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16">
-            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-amber-700">
-              Book
+        <section className="kib-burgundy py-24 sm:py-28">
+          <div className="mx-auto max-w-5xl px-6 text-center">
+            <div className="flex justify-center"><Ornament /></div>
+            <p className="kib-gold-text mt-6 font-display text-[11px] uppercase tracking-[0.5em]">
+              Reservations · Events
             </p>
-            <h1 className="mt-2 max-w-3xl font-serif text-4xl font-bold text-[#3B1F1A] sm:text-5xl">
-              Reserve a table or plan an event.
+            <h1 className="mt-4 font-display text-5xl font-light leading-tight text-amber-50 sm:text-7xl">
+              Reserve a table or <span className="kib-shimmer italic">plan an evening.</span>
             </h1>
-            <p className="mt-3 max-w-2xl text-[#3B1F1A]/70">
+            <p className="mx-auto mt-6 max-w-2xl text-amber-50/75">
               Tell us a little about your evening. Our team responds within a
               few hours during business hours.
             </p>
           </div>
         </section>
 
-        <section className="py-12">
-          <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[1.3fr_1fr]">
-            <BookingForm
-              banquets={BANQUETS.map((b) => ({ id: b.id, name: b.name }))}
-              occasions={OCCASIONS as unknown as string[]}
-            />
-
-            <aside className="space-y-4">
-              <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-amber-900/5">
-                <h2 className="font-serif text-xl font-semibold text-[#3B1F1A]">
-                  Prefer to talk?
-                </h2>
-                <ul className="mt-4 space-y-3 text-sm">
-                  <li className="flex items-start gap-2">
-                    <Phone size={14} aria-hidden className="mt-1 text-amber-700" />
-                    <div>
-                      <p className="font-medium text-[#3B1F1A]">Front desk</p>
-                      <a
-                        href={`tel:${KIBANA.phone.replace(/\s+/g, "")}`}
-                        className="text-[#3B1F1A]/70 hover:underline"
-                      >
-                        {KIBANA.phone}
-                      </a>
-                    </div>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Phone size={14} aria-hidden className="mt-1 text-amber-700" />
-                    <div>
-                      <p className="font-medium text-[#3B1F1A]">
-                        Events (WhatsApp)
-                      </p>
-                      <a
-                        href={`https://wa.me/${KIBANA.whatsapp.replace(/\D+/g, "")}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-[#3B1F1A]/70 hover:underline"
-                      >
-                        {KIBANA.whatsapp}
-                      </a>
-                    </div>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <Mail size={14} aria-hidden className="mt-1 text-amber-700" />
-                    <div>
-                      <p className="font-medium text-[#3B1F1A]">Email</p>
-                      <a
-                        href={`mailto:${KIBANA.email}`}
-                        className="text-[#3B1F1A]/70 hover:underline"
-                      >
-                        {KIBANA.email}
-                      </a>
-                    </div>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <MapPin size={14} aria-hidden className="mt-1 text-amber-700" />
-                    <div>
-                      <p className="font-medium text-[#3B1F1A]">Find us</p>
-                      <a
-                        href={KIBANA.google_maps}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-[#3B1F1A]/70 hover:underline"
-                      >
-                        {KIBANA.address}
-                      </a>
-                    </div>
-                  </li>
-                </ul>
+        <section className="kib-paper py-20">
+          <div className="mx-auto grid max-w-7xl gap-10 px-6 lg:grid-cols-[1.3fr_1fr]">
+            <RevealOnScroll>
+              <div className="kib-frame bg-white p-2">
+                <BookingForm
+                  banquets={BANQUETS.map((b) => ({ id: b.id, name: b.name }))}
+                  occasions={OCCASIONS as unknown as string[]}
+                />
               </div>
+            </RevealOnScroll>
 
-              <div className="rounded-2xl bg-amber-50 p-6 ring-1 ring-amber-200">
-                <h3 className="font-serif text-lg font-semibold text-[#3B1F1A]">
-                  Hosting an event?
-                </h3>
-                <p className="mt-2 text-sm text-[#3B1F1A]/75">
-                  Pick a banquet from the dropdown to get a draft quote with
-                  capacity, pricing, and add-ons.
-                </p>
-              </div>
+            <aside className="space-y-5">
+              <RevealOnScroll delay={0.1}>
+                <div className="kib-frame bg-gradient-to-br from-[#3B1F1A] to-[#2A1411] p-8 text-amber-50">
+                  <Ornament />
+                  <h2 className="mt-4 font-display text-2xl">Prefer to talk?</h2>
+                  <ul className="mt-6 space-y-4 text-sm">
+                    <ContactRow
+                      icon={<Phone size={14} aria-hidden />}
+                      label="Front desk"
+                      value={KIBANA.phone}
+                      href={`tel:${KIBANA.phone.replace(/\s+/g, "")}`}
+                    />
+                    <ContactRow
+                      icon={<Phone size={14} aria-hidden />}
+                      label="Events (WhatsApp)"
+                      value={KIBANA.whatsapp}
+                      href={`https://wa.me/${KIBANA.whatsapp.replace(/\D+/g, "")}`}
+                      external
+                    />
+                    <ContactRow
+                      icon={<Mail size={14} aria-hidden />}
+                      label="Email"
+                      value={KIBANA.email}
+                      href={`mailto:${KIBANA.email}`}
+                    />
+                    <ContactRow
+                      icon={<MapPin size={14} aria-hidden />}
+                      label="Find us"
+                      value={KIBANA.address}
+                      href={KIBANA.google_maps}
+                      external
+                    />
+                  </ul>
+                </div>
+              </RevealOnScroll>
+
+              <RevealOnScroll delay={0.18}>
+                <div className="kib-frame bg-gradient-to-br from-[#FBF8F1] to-[#F3EBD7] p-8">
+                  <p className="kib-gold-text font-display text-[10px] uppercase tracking-[0.5em]">
+                    Hosting an event?
+                  </p>
+                  <h3 className="mt-4 font-display text-2xl text-[#3B1F1A]">
+                    Pick a banquet
+                  </h3>
+                  <p className="mt-3 text-sm text-[#3B1F1A]/75">
+                    Choose a hall in the dropdown to receive a draft quote with
+                    capacity, pricing, and add-ons.
+                  </p>
+                </div>
+              </RevealOnScroll>
             </aside>
           </div>
         </section>
       </main>
       <SiteFooter />
     </>
+  );
+}
+
+function ContactRow({
+  icon,
+  label,
+  value,
+  href,
+  external,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+  href: string;
+  external?: boolean;
+}) {
+  return (
+    <li className="flex items-start gap-3">
+      <span className="mt-1 text-[#D4AF37]">{icon}</span>
+      <div>
+        <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-amber-50/55">
+          {label}
+        </p>
+        <a
+          href={href}
+          target={external ? "_blank" : undefined}
+          rel={external ? "noreferrer" : undefined}
+          className="mt-1 block text-amber-50/95 hover:text-[#D4AF37]"
+        >
+          {value}
+        </a>
+      </div>
+    </li>
   );
 }

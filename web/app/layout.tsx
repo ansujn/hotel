@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Fraunces, Inter } from "next/font/google";
+import { Fraunces, Inter, Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
 import { QueryProvider } from "@/lib/query-client";
 
@@ -7,6 +7,14 @@ const fraunces = Fraunces({
   subsets: ["latin"],
   weight: ["400", "700", "900"],
   variable: "--font-serif",
+  display: "swap",
+});
+
+const cormorant = Cormorant_Garamond({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  style: ["normal", "italic"],
+  variable: "--font-display",
   display: "swap",
 });
 
@@ -45,7 +53,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${fraunces.variable} ${inter.variable}`}>
+    <html
+      lang="en"
+      className={`${fraunces.variable} ${cormorant.variable} ${inter.variable}`}
+    >
       <body className="bg-[#FBF8F1] text-[#3B1F1A] antialiased">
         <QueryProvider>{children}</QueryProvider>
       </body>
