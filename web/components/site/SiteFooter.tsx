@@ -32,9 +32,12 @@ export function SiteFooter() {
             </li>
             <li className="flex items-center gap-2">
               <Phone size={14} aria-hidden className="shrink-0 text-amber-200" />
-              <a href={`tel:${KIBANA.phone.replace(/\s+/g, "")}`} className="hover:underline">
-                {KIBANA.phone}
-              </a>
+              <div className="flex flex-col gap-0.5">
+                <a href={`tel:${KIBANA.phone.replace(/\s+/g, "")}`} className="hover:underline">
+                  {KIBANA.phone}
+                </a>
+                <span className="text-xs text-amber-100/60">{KIBANA.contact_person} · {KIBANA.contact_phone}</span>
+              </div>
             </li>
             <li className="flex items-center gap-2">
               <Mail size={14} aria-hidden className="shrink-0 text-amber-200" />

@@ -19,10 +19,12 @@ export const KIBANA = {
   whatsapp: "+91 98290 12345",
   email: "hello@kibanajaipur.in",
   website: "https://kibana.saudagars.org",
-  instagram: "https://instagram.com/kibana.jaipur",
+  instagram: "https://www.instagram.com/kibana.jaipur/",
   facebook: "https://facebook.com/kibanajaipur",
   google_maps:
     "https://maps.google.com/?q=Kibana+Jaipur+Saudagars+Lane+C-Scheme+Jaipur",
+  contact_person: "Pankaj Jain",
+  contact_phone: "+91 9829550201",
   hours: {
     Mon: { open: "12:00", close: "23:00" },
     Tue: { open: "12:00", close: "23:00" },
@@ -288,12 +290,12 @@ const PLACEHOLDER_IMAGE = "/images/kibana-jaipur/restaurant/placeholder.svg";
 const PLACEHOLDER_BANQUET = "/images/kibana-jaipur/banquets/placeholder.svg";
 
 const MOCK_IMAGES: KibanaImage[] = [
-  { id: "img-1", url: PLACEHOLDER_IMAGE, type: "hero", caption: "Rooftop at golden hour", position: 0 },
-  { id: "img-2", url: PLACEHOLDER_IMAGE, type: "interior", caption: "The main dining room", position: 1 },
-  { id: "img-3", url: PLACEHOLDER_IMAGE, type: "dish", caption: "Signature lamb shank", position: 2 },
-  { id: "img-4", url: PLACEHOLDER_BANQUET, type: "event", caption: "Sangeet at The Courtyard", position: 3 },
-  { id: "img-5", url: PLACEHOLDER_IMAGE, type: "interior", caption: "Private dining at The Haveli", position: 4 },
-  { id: "img-6", url: PLACEHOLDER_BANQUET, type: "event", caption: "Wedding mandap, The Saffron Grand", position: 5 },
+  { id: "img-1", url: "/images/kibana-food/WhatsApp Image 2026-04-28 at 14.02.47.jpeg", type: "dish", caption: "Signature dish with artisanal plating", position: 0 },
+  { id: "img-2", url: "/images/kibana-food/WhatsApp Image 2026-04-28 at 14.02.48.jpeg", type: "dish", caption: "Premium cuisine presentation", position: 1 },
+  { id: "img-3", url: "/images/kibana-food/WhatsApp Image 2026-04-28 at 14.02.48 (1).jpeg", type: "dish", caption: "Gourmet culinary experience", position: 2 },
+  { id: "img-4", url: "/images/kibana-food/WhatsApp Image 2026-04-28 at 14.02.48 (2).jpeg", type: "dish", caption: "Signature preparation", position: 3 },
+  { id: "img-5", url: "/images/kibana-food/WhatsApp Image 2026-04-28 at 14.02.49.jpeg", type: "dish", caption: "Fine dining excellence", position: 4 },
+  { id: "img-6", url: "/images/kibana-food/WhatsApp Image 2026-04-28 at 14.02.49 (1).jpeg", type: "dish", caption: "Culinary masterpiece", position: 5 },
 ];
 
 const MOCK_VIDEOS: KibanaVideo[] = [
