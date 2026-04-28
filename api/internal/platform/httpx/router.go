@@ -9,6 +9,7 @@ import (
 	"github.com/viktheatre/api/internal/auth"
 	"github.com/viktheatre/api/internal/consent"
 	"github.com/viktheatre/api/internal/notification"
+	"github.com/viktheatre/api/internal/kibana"
 	"github.com/viktheatre/api/internal/payment"
 	"github.com/viktheatre/api/internal/platform/config"
 	"github.com/viktheatre/api/internal/progress"
@@ -34,6 +35,7 @@ type Deps struct {
 	Payment  *payment.Service
 	Notification *notification.Service
 	Restaurants  *restaurants.Service
+	Kibana       *kibana.Service
 }
 
 func NewRouter(d Deps) http.Handler {
@@ -45,13 +47,27 @@ func NewRouter(d Deps) http.Handler {
 	r.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   []string{"*"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
-		AllowedHeaders:   []string{"Authorization", "Content-Type"},
+		AllowedHeaders:   []string{"Authorization", "Content-Type", "X-Admin-Password"},
 		AllowCredentials: true,
 		MaxAge:           300,
 	}))
 
 	r.Route("/v1", func(r chi.Router) {
 		r.Get("/health", health)
+
+		// Kibana single-restaurant endpoints (profile, banquets, menu,
+		// videos, images, reviews, bookings). Mounted in addition to the
+		// generic multi-restaurant routes below.
+		if d.Kibana != nil && d.Restaurants != nil {
+			d.Kibana.RegisterRoutes(r, d.Restaurants)
+		} else {
+			r.Get("/kibana/profile",  stub("kibana profile"))
+			r.Get("/kibana/banquets", stub("kibana banquets"))
+			r.Get("/kibana/menus",    stub("kibana menu"))
+			r.Get("/videos",          stub("videos"))
+			r.Get("/images",          stub("images"))
+			r.Post("/bookings",       stub("create booking"))
+		}
 
 		// Restaurant platform (Phase 1) — public discovery + reviews +
 		// password-gated admin uploads.

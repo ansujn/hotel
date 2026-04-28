@@ -608,6 +608,118 @@ paths:
                   verified: { type: boolean }
         "404": { description: invalid or expired token }
 
+  # ---------------------------------------------------------------------
+  # Kibana single-restaurant endpoints
+  # ---------------------------------------------------------------------
+  /kibana/profile:
+    get:
+      summary: Kibana restaurant profile
+      security: []
+      responses:
+        "200":
+          description: Kibana detail
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/RestaurantDetail" }
+
+  /kibana/banquets:
+    get:
+      summary: Kibana banquet halls
+      security: []
+      responses:
+        "200":
+          description: banquet halls
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  banquets:
+                    type: array
+                    items: { $ref: "#/components/schemas/BanquetHall" }
+
+  /kibana/menus:
+    get:
+      summary: Kibana menu (categories with items)
+      security: []
+      responses:
+        "200":
+          description: menu
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  categories:
+                    type: array
+                    items: { $ref: "#/components/schemas/MenuCategory" }
+
+  /videos:
+    get:
+      summary: All Kibana videos
+      security: []
+      responses:
+        "200":
+          description: videos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  videos:
+                    type: array
+                    items: { $ref: "#/components/schemas/RestaurantVideo" }
+
+  /images:
+    get:
+      summary: All Kibana images
+      security: []
+      responses:
+        "200":
+          description: images
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  images:
+                    type: array
+                    items: { $ref: "#/components/schemas/RestaurantImage" }
+
+  /reviews:
+    get:
+      summary: Kibana reviews (verified, paginated)
+      security: []
+      parameters:
+        - in: query
+          name: page
+          schema: { type: integer, default: 1 }
+        - in: query
+          name: limit
+          schema: { type: integer, default: 20 }
+      responses:
+        "200":
+          description: paginated reviews
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ReviewListResult" }
+
+  /bookings:
+    post:
+      summary: Submit an event booking enquiry
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateBookingReq" }
+      responses:
+        "201":
+          description: booking accepted
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Booking" }
+
 components:
   securitySchemes:
     bearerAuth:
@@ -1017,3 +1129,88 @@ components:
         service_rating:  { type: number, nullable: true }
         value_rating:    { type: number, nullable: true }
         photos:          { type: array, items: { type: string } }
+
+    # ----- Kibana single-restaurant -------------------------------------
+    BanquetHall:
+      type: object
+      required: [id, name, capacity_min, capacity_max, price_per_plate, hire_charge, features, images, sort_order]
+      properties:
+        id:               { type: string, format: uuid }
+        name:             { type: string }
+        description:      { type: string, nullable: true }
+        capacity_min:     { type: integer }
+        capacity_max:     { type: integer }
+        price_per_plate:  { type: integer }
+        hire_charge:      { type: integer }
+        features:         { type: array, items: { type: string } }
+        hero_image_url:   { type: string, nullable: true }
+        images:           { type: array, items: { type: string } }
+        sort_order:       { type: integer }
+
+    MenuItem:
+      type: object
+      required: [id, category_id, name, price, is_veg, is_signature, spice_level, sort_order]
+      properties:
+        id:           { type: string, format: uuid }
+        category_id:  { type: string, format: uuid }
+        name:         { type: string }
+        description:  { type: string, nullable: true }
+        price:        { type: integer }
+        is_veg:       { type: boolean }
+        is_signature: { type: boolean }
+        spice_level:  { type: integer, minimum: 0, maximum: 3 }
+        image_url:    { type: string, nullable: true }
+        sort_order:   { type: integer }
+
+    MenuCategory:
+      type: object
+      required: [id, name, sort_order, items]
+      properties:
+        id:          { type: string, format: uuid }
+        name:        { type: string }
+        description: { type: string, nullable: true }
+        sort_order:  { type: integer }
+        items:       { type: array, items: { $ref: "#/components/schemas/MenuItem" } }
+
+    CreateBookingReq:
+      type: object
+      required: [event_type, guest_count, event_date, start_time, duration_minutes, contact_name, contact_phone, contact_email]
+      properties:
+        banquet_hall_id:      { type: string, format: uuid, nullable: true }
+        event_type:
+          type: string
+          enum: [wedding, corporate, private_dinner, anniversary, birthday, other]
+        guest_count:          { type: integer, minimum: 1 }
+        event_date:           { type: string, format: date }
+        start_time:           { type: string, example: "19:30" }
+        duration_minutes:     { type: integer, minimum: 30 }
+        cuisine_preference:   { type: array, items: { type: string } }
+        dietary_restrictions: { type: array, items: { type: string } }
+        budget_per_plate:     { type: integer, nullable: true }
+        special_requests:     { type: string, nullable: true }
+        contact_name:         { type: string }
+        contact_phone:        { type: string }
+        contact_email:        { type: string, format: email }
+
+    Booking:
+      type: object
+      required: [id, event_type, guest_count, event_date, start_time, duration_minutes, status, contact_name, contact_phone, contact_email, created_at]
+      properties:
+        id:                   { type: string, format: uuid }
+        banquet_hall_id:      { type: string, format: uuid, nullable: true }
+        event_type:           { type: string }
+        guest_count:          { type: integer }
+        event_date:           { type: string, format: date }
+        start_time:           { type: string }
+        duration_minutes:     { type: integer }
+        cuisine_preference:   { type: array, items: { type: string } }
+        dietary_restrictions: { type: array, items: { type: string } }
+        budget_per_plate:     { type: integer, nullable: true }
+        special_requests:     { type: string, nullable: true }
+        contact_name:         { type: string }
+        contact_phone:        { type: string }
+        contact_email:        { type: string }
+        status:
+          type: string
+          enum: [pending, confirmed, completed, cancelled]
+        created_at:           { type: string, format: date-time }

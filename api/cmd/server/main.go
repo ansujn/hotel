@@ -20,9 +20,12 @@ import (
 	"github.com/viktheatre/api/internal/platform/httpx"
 	muxpkg "github.com/viktheatre/api/internal/platform/mux"
 	razorpaypkg "github.com/viktheatre/api/internal/platform/razorpay"
+	"github.com/viktheatre/api/internal/kibana"
 	"github.com/viktheatre/api/internal/progress"
 	"github.com/viktheatre/api/internal/restaurants"
 	"github.com/viktheatre/api/internal/social"
+
+	"github.com/google/uuid"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"go.uber.org/zap"
@@ -93,6 +96,7 @@ func main() {
 	var paymentSvc *payment.Service
 	var notificationSvc *notification.Service
 	var restaurantsSvc *restaurants.Service
+	var kibanaSvc *kibana.Service
 	if pool != nil {
 		progressSvc = progress.New(progress.NewPGStore(pool))
 		assetSvc = asset.New(asset.NewPGStore(pool), muxClient, cfg)
@@ -114,6 +118,7 @@ func main() {
 			cfg.AppBaseURL,
 			nil, // Phase 1: log verify links to stdout. Wire Brevo in Phase 2.
 		)
+		kibanaSvc = kibana.New(kibana.NewPGStore(pool), uuid.MustParse(kibana.KibanaID))
 	}
 
 	router := httpx.NewRouter(httpx.Deps{
@@ -128,6 +133,7 @@ func main() {
 		Payment:  paymentSvc,
 		Notification: notificationSvc,
 		Restaurants:  restaurantsSvc,
+		Kibana:       kibanaSvc,
 	})
 
 	srv := &http.Server{
