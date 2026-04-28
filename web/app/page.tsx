@@ -80,7 +80,7 @@ export default async function HomePage() {
       <section className="kib-paper py-16">
         <div className="mx-auto grid max-w-6xl grid-cols-2 gap-10 px-6 sm:grid-cols-4">
           <Stat label="Years in Jaipur" value="12" />
-          <Stat label="Banquet halls" value="05" />
+          <Stat label="Banquet hall" value="01" />
           <Stat label="Avg. rating" value="4.7★" />
           <Stat label="Plates / night" value="600+" />
         </div>
@@ -137,11 +137,11 @@ export default async function HomePage() {
                 Banquets at Kibana
               </p>
               <h2 className="mt-4 font-display text-5xl font-light leading-tight text-amber-50 sm:text-7xl">
-                Five halls. <span className="kib-shimmer italic">One unforgettable evening.</span>
+                One hall. <span className="kib-shimmer italic">Unforgettable evenings.</span>
               </h2>
               <p className="mx-auto mt-6 max-w-2xl text-amber-50/70">
-                From a 36-seat haveli to a 500-guest pillar-free hall, our
-                event team designs every detail — décor, catering, photography,
+                Rooftop venue with panoramic city views, 6,800 sq. ft. pillar-free hall.
+                Our event team designs every detail — décor, catering, photography,
                 valet, and a bridal lounge built for the moment.
               </p>
             </div>
