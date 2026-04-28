@@ -6,6 +6,7 @@ import { VideoGallery } from "@/components/restaurants/VideoGallery";
 import { getImages, getVideos } from "@/lib/kibana";
 import { Ornament } from "@/components/kibana/Ornament";
 import { RevealOnScroll } from "@/components/kibana/RevealOnScroll";
+import { GalleryClient } from "@/components/kibana/GalleryClient";
 
 export const metadata: Metadata = {
   title: "Gallery",
@@ -14,14 +15,6 @@ export const metadata: Metadata = {
 };
 
 export const dynamic = "force-dynamic";
-
-const TABS = [
-  { id: "all", label: "All" },
-  { id: "interior", label: "Interior" },
-  { id: "dish", label: "Food" },
-  { id: "event", label: "Events" },
-  { id: "hero", label: "Rooftop" },
-];
 
 export default async function GalleryPage() {
   const [images, videos] = await Promise.all([getImages(), getVideos()]);
@@ -104,45 +97,10 @@ export default async function GalleryPage() {
                     A few moments, captured.
                   </h2>
                 </div>
-                <ul className="flex flex-wrap gap-2 text-xs">
-                  {TABS.map((t) => (
-                    <li
-                      key={t.id}
-                      className="rounded-full border border-[#D4AF37]/40 px-3 py-1 font-semibold uppercase tracking-[0.2em] text-[#3B1F1A]/80"
-                    >
-                      {t.label}
-                    </li>
-                  ))}
-                </ul>
               </div>
             </RevealOnScroll>
 
-            <ul className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-              {images.map((img, i) => (
-                <li
-                  key={img.id}
-                  className={`kib-frame relative bg-amber-100 ${
-                    i % 5 === 0 ? "row-span-2 sm:col-span-2" : ""
-                  }`}
-                  style={{
-                    aspectRatio: i % 5 === 0 ? "1 / 1" : "4 / 5",
-                  }}
-                >
-                  <Image
-                    src={img.url}
-                    alt={img.caption ?? "Kibana Jaipur"}
-                    fill
-                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                    className="object-cover transition duration-700 hover:scale-110"
-                  />
-                  {img.caption ? (
-                    <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#1A0F0D]/95 via-[#1A0F0D]/60 to-transparent p-4 text-xs uppercase tracking-[0.2em] text-amber-50">
-                      {img.caption}
-                    </span>
-                  ) : null}
-                </li>
-              ))}
-            </ul>
+            <GalleryClient images={images} />
           </div>
         </section>
       </main>
