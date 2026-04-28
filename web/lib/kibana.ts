@@ -298,6 +298,30 @@ const MOCK_IMAGES: KibanaImage[] = [
 
 const MOCK_VIDEOS: KibanaVideo[] = [
   {
+    id: "v-hero",
+    title: "Welcome to Kibana Jaipur",
+    type: "ambiance",
+    mux_playback_id: "/videos/kibana-hero.mp4",
+    duration_s: 60,
+    views: 2800,
+  },
+  {
+    id: "v-ambiance",
+    title: "Restaurant Ambiance & Dining Experience",
+    type: "ambiance",
+    mux_playback_id: "/videos/kibana-ambiance.mp4",
+    duration_s: 120,
+    views: 1960,
+  },
+  {
+    id: "v-events",
+    title: "Banquet Events & Celebrations",
+    type: "event",
+    mux_playback_id: "/videos/kibana-events.mp4",
+    duration_s: 85,
+    views: 1240,
+  },
+  {
     id: "v-1",
     title: "Sunset on the Kibana rooftop",
     type: "ambiance",

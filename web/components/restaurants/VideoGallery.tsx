@@ -22,18 +22,30 @@ export function VideoGallery({ videos }: { videos: RestaurantVideo[] }) {
     );
   }
 
+  const isLocalVideo = (id: string) => id.startsWith("/");
+
   return (
     <div className="grid gap-4 lg:grid-cols-[1fr_280px]">
       <div className="overflow-hidden rounded-2xl bg-black shadow-sm ring-1 ring-slate-200/70">
         {active ? (
-          <MuxPlayer
-            key={active.id}
-            playbackId={active.mux_playback_id}
-            metadata={{ video_title: active.title, video_id: active.id }}
-            streamType="on-demand"
-            accentColor="#0f172a"
-            style={{ aspectRatio: "16 / 9", width: "100%", height: "auto" }}
-          />
+          isLocalVideo(active.mux_playback_id) ? (
+            <video
+              key={active.id}
+              src={active.mux_playback_id}
+              controls
+              style={{ aspectRatio: "16 / 9", width: "100%", height: "auto" }}
+              className="bg-black"
+            />
+          ) : (
+            <MuxPlayer
+              key={active.id}
+              playbackId={active.mux_playback_id}
+              metadata={{ video_title: active.title, video_id: active.id }}
+              streamType="on-demand"
+              accentColor="#0f172a"
+              style={{ aspectRatio: "16 / 9", width: "100%", height: "auto" }}
+            />
+          )
         ) : null}
         {active ? (
           <div className="flex items-center justify-between gap-3 bg-white p-4">
