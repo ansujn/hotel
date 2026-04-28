@@ -1,7 +1,9 @@
 import { NextResponse, type NextRequest } from "next/server";
 
 // `/channel/**` is intentionally public — the API filters private assets per viewer.
-const PROTECTED = ["/home", "/progress", "/admin", "/upload", "/students", "/batches", "/social", "/parent", "/notifications"];
+// `/admin/[id]` is the restaurant-platform owner dashboard — it has its own
+// password gate (see app/(restaurants)/admin/[id]/page.tsx) so no JWT cookie required.
+const PROTECTED = ["/home", "/progress", "/upload", "/students", "/batches", "/social", "/parent", "/notifications"];
 
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
@@ -24,7 +26,6 @@ export const config = {
   matcher: [
     "/home/:path*",
     "/progress/:path*",
-    "/admin/:path*",
     "/upload/:path*",
     "/students/:path*",
     "/batches/:path*",

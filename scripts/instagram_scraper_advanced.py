@@ -73,19 +73,36 @@ class AdvancedInstagramScraper:
 
             posts = []
             for idx, media in enumerate(medias):
+                # instagrapi exposes caption as caption_text and the cover image as thumbnail_url.
+                caption_text = getattr(media, 'caption_text', '') or ''
+                image_url = getattr(media, 'thumbnail_url', None)
+                if image_url is None:
+                    image_url = str(image_url) if image_url else None
+                else:
+                    image_url = str(image_url)
+
+                # For carousels/albums, also collect every resource thumbnail.
+                extra_urls = []
+                for res in (getattr(media, 'resources', []) or []):
+                    rurl = getattr(res, 'thumbnail_url', None)
+                    if rurl:
+                        extra_urls.append(str(rurl))
+
                 post_data = {
                     'index': idx,
-                    'caption': media.caption or '',
+                    'caption': caption_text,
                     'likes': media.like_count,
                     'comments': media.comment_count,
                     'timestamp': int(media.taken_at.timestamp()),
-                    'image_url': media.image_versions2.candidate_0.url if media.image_versions2 else None,
+                    'image_url': image_url,
+                    'extra_urls': extra_urls,
                     'media_type': media.media_type,
-                    'media_id': media.id,
+                    'media_id': str(media.id),
                 }
 
                 posts.append(post_data)
-                print(f"  [{idx+1}] {media.caption[:50] if media.caption else 'No caption'}...")
+                preview = caption_text[:50] if caption_text else 'No caption'
+                print(f"  [{idx+1}] {preview}...")
 
                 # Respect rate limits
                 if (idx + 1) % 10 == 0:
@@ -109,51 +126,59 @@ class AdvancedInstagramScraper:
         print(f"\n📥 Downloading {len(posts)} images...")
         download_count = 0
 
+        import requests
         for idx, post in enumerate(posts):
-            image_url = post.get('image_url')
-            caption = post.get('caption', 'no-caption')
+            caption = post.get('caption', '') or ''
+            urls = []
+            primary = post.get('image_url')
+            if primary:
+                urls.append(primary)
+            urls.extend(post.get('extra_urls') or [])
+            # de-dupe while preserving order
+            seen = set()
+            urls = [u for u in urls if not (u in seen or seen.add(u))]
 
-            if not image_url:
+            if not urls:
                 print(f"  ⚠️ [{idx+1}] No image URL")
                 continue
 
-            try:
-                # Categorize
-                category = self._categorize_post(caption)
-                category_dir = self.subdirs.get(category, self.subdirs['other'])
+            category = self._categorize_post(caption)
+            category_dir = self.subdirs.get(category, self.subdirs['other'])
+            timestamp = datetime.fromtimestamp(post['timestamp']).strftime('%Y-%m-%d')
 
-                # Create filename
-                timestamp = datetime.fromtimestamp(post['timestamp']).strftime('%Y-%m-%d')
-                filename = f"{timestamp}_{idx:03d}.jpg"
-                filepath = category_dir / filename
+            for slide_i, image_url in enumerate(urls):
+                try:
+                    suffix = '' if slide_i == 0 else f"_s{slide_i}"
+                    filename = f"{timestamp}_{idx:03d}{suffix}.jpg"
+                    filepath = category_dir / filename
 
-                # Download
-                import requests
-                response = requests.get(image_url, timeout=15)
-
-                if response.status_code == 200:
-                    with open(filepath, 'wb') as f:
-                        f.write(response.content)
-
-                    download_count += 1
-                    print(f"  ✅ [{idx+1}/{len(posts)}] {filename} ({category})")
+                    if filepath.exists() and filepath.stat().st_size > 0:
+                        # Already downloaded — skip but still record metadata
+                        download_count += 1
+                    else:
+                        response = requests.get(image_url, timeout=20)
+                        if response.status_code != 200:
+                            print(f"  ❌ [{idx+1}.{slide_i}] HTTP {response.status_code}")
+                            continue
+                        with open(filepath, 'wb') as f:
+                            f.write(response.content)
+                        download_count += 1
+                        print(f"  ✅ [{idx+1}/{len(posts)}.{slide_i}] {filename} ({category})")
 
                     self.metadata.append({
                         'filename': filename,
                         'category': category,
-                        'caption': caption[:200],  # Truncate long captions
+                        'caption': caption[:300].replace('\n', ' '),
                         'timestamp': timestamp,
                         'likes': post.get('likes', 0),
                         'comments': post.get('comments', 0),
                         'media_id': post.get('media_id'),
                     })
-                else:
-                    print(f"  ❌ [{idx+1}] Download failed: {response.status_code}")
 
-                time.sleep(0.3)  # Rate limiting
+                    time.sleep(0.4)  # rate-limit politeness
 
-            except Exception as e:
-                print(f"  ⚠️ [{idx+1}] Error: {e}")
+                except Exception as e:
+                    print(f"  ⚠️ [{idx+1}.{slide_i}] Error: {e}")
 
         print(f"\n✅ Downloaded {download_count}/{len(posts)} images")
 
@@ -176,13 +201,38 @@ class AdvancedInstagramScraper:
         return 'other'
 
     def save_metadata(self) -> None:
-        """Save metadata to JSON"""
+        """Save metadata to JSON + IMAGE_CATALOG.csv"""
         metadata_file = self.output_dir / "metadata.json"
 
         with open(metadata_file, 'w', encoding='utf-8') as f:
             json.dump(self.metadata, f, indent=2, ensure_ascii=False)
 
         print(f"📋 Metadata saved: {metadata_file}")
+
+        # Also emit IMAGE_CATALOG.csv (filename, category, caption, timestamp, likes, recommended_for)
+        import csv
+        catalog_file = self.output_dir / "IMAGE_CATALOG.csv"
+        recommend_map = {
+            'food': 'menu, hero',
+            'ambiance': 'hero, gallery',
+            'event': 'events page, gallery',
+            'interior': 'about, gallery',
+            'staff': 'about',
+            'other': 'gallery',
+        }
+        with open(catalog_file, 'w', newline='', encoding='utf-8') as f:
+            w = csv.writer(f)
+            w.writerow(['filename', 'category', 'caption', 'timestamp', 'likes', 'recommended_for'])
+            for m in self.metadata:
+                w.writerow([
+                    m['filename'],
+                    m['category'],
+                    (m.get('caption') or '').replace('\n', ' ')[:300],
+                    m.get('timestamp', ''),
+                    m.get('likes', 0),
+                    recommend_map.get(m['category'], 'gallery'),
+                ])
+        print(f"📋 Catalog saved:  {catalog_file}")
 
     def generate_summary(self) -> None:
         """Generate summary report"""
@@ -258,8 +308,17 @@ def main():
         print("\nOption 2: Login with credentials (all posts, including private)")
         print("-" * 70)
 
-        ig_username = input("Enter Instagram username: ").strip()
-        ig_password = input("Enter Instagram password (or press Enter to skip): ").strip()
+        # Prefer env vars (non-interactive); fall back to prompt if a TTY exists.
+        ig_username = os.environ.get('IG_USERNAME', '').strip()
+        ig_password = os.environ.get('IG_PASSWORD', '').strip()
+        if not ig_username or not ig_password:
+            if sys.stdin.isatty():
+                ig_username = ig_username or input("Enter Instagram username: ").strip()
+                ig_password = ig_password or input("Enter Instagram password (or press Enter to skip): ").strip()
+            else:
+                print("⚠️  Non-interactive run and IG_USERNAME / IG_PASSWORD env vars not set.")
+                print("   Re-run with:  IG_USERNAME=kibana.jaipur IG_PASSWORD=*** python3 instagram_scraper_advanced.py")
+                return
 
         if ig_username and ig_password:
             if scraper.login(ig_username, ig_password):
