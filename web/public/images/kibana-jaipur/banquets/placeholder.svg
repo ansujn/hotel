@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#3b1f1a"/>
+      <stop offset="50%" stop-color="#7a3f30"/>
+      <stop offset="100%" stop-color="#e0b97a"/>
+    </linearGradient>
+    <radialGradient id="chand" cx="50%" cy="22%" r="22%">
+      <stop offset="0%" stop-color="#fde7b1" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#fde7b1" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1600" height="1000" fill="url(#g)"/>
+  <rect width="1600" height="1000" fill="url(#chand)"/>
+  <g stroke="#fbf8f1" stroke-opacity="0.35" stroke-width="2" fill="none">
+    <path d="M0 720 L1600 720"/>
+    <path d="M0 760 L1600 760"/>
+    <path d="M200 720 L260 600 L320 720 Z"/>
+    <path d="M380 720 L460 540 L540 720 Z"/>
+    <path d="M620 720 L720 480 L820 720 Z"/>
+    <path d="M880 720 L960 540 L1040 720 Z"/>
+    <path d="M1080 720 L1180 580 L1280 720 Z"/>
+  </g>
+  <g font-family="serif" fill="#fbf8f1" opacity="0.85">
+    <text x="60" y="900" font-size="84" font-weight="700">Banquet Hall</text>
+    <text x="60" y="950" font-size="28" letter-spacing="6">KIBANA · PLACEHOLDER</text>
+  </g>
+</svg>

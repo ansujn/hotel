@@ -17,15 +17,36 @@ const inter = Inter({
   display: "swap",
 });
 
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://kibana.saudagars.org";
+
 export const metadata: Metadata = {
-  title: "Vik Theatre",
-  description: "Where every voice finds its stage.",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "Kibana Jaipur · Rooftop dining & banquets in the Pink City",
+    template: "%s · Kibana Jaipur",
+  },
+  description:
+    "Modern Indian and global flavours on a Jaipur rooftop. Five banquet halls for weddings, corporate events, and intimate gatherings.",
+  openGraph: {
+    type: "website",
+    siteName: "Kibana Jaipur",
+    title: "Kibana Jaipur",
+    description:
+      "Rooftop dining and banquet halls in the Pink City. Reserve, browse the menu, host an event.",
+    url: SITE_URL,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Kibana Jaipur",
+    description: "Rooftop dining & banquet halls in Jaipur.",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${fraunces.variable} ${inter.variable}`}>
-      <body className="bg-[#0B0B0F] text-[#F5F5F7] antialiased">
+      <body className="bg-[#FBF8F1] text-[#3B1F1A] antialiased">
         <QueryProvider>{children}</QueryProvider>
       </body>
     </html>

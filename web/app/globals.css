@@ -13,9 +13,14 @@
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 }
 
+/*
+ * Kibana Jaipur palette — warm cream + dark cocoa with a saffron accent.
+ * (Theater dark theme retained as CSS vars above for legacy /home, /faq,
+ * etc. — those routes still render dark.)
+ */
 html, body {
-  background: #0B0B0F;
-  color: #F5F5F7;
+  background: #FBF8F1;
+  color: #3B1F1A;
 }
 
 body {
